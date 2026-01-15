@@ -73,4 +73,4 @@ exports.createRefund = async (paymentIntentId, amount) => {
     }
 };
 
-module.exports = stripe;
+exports.stripe = stripe;
