@@ -4,10 +4,8 @@ import { userAPI, courseAPI } from '../../services/api';
 import { FiBook, FiClock, FiTrendingUp, FiAward } from 'react-icons/fi';
 import CourseCard from '../course/CourseCard';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
 
 const StudentDashboard = () => {
-    const { user } = useAuth();
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -171,7 +169,7 @@ const StudentDashboard = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Recommended for You</h2>
                 <div className="grid md:grid-cols-4 gap-6">
                     {recommendedCourses.map((course) => (
-                        <CourseCard key={course._id} course={course} currentUser={user}/>
+                        <CourseCard key={course._id} course={course} />
                     ))}
                 </div>
             </section>

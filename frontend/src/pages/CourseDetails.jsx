@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { FiStar, FiUsers, FiClock, FiBook, FiCheckCircle, FiPlay, FiLock, FiAward, FiGlobe } from 'react-icons/fi';
 import { loadStripe } from '@stripe/stripe-js';
 import CourseDetails from '../components/course/CourseDetails';
+import toast from 'react-hot-toast';
 
 
 

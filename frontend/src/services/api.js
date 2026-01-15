@@ -113,10 +113,10 @@ export const reviewAPI = {
 
 // User APIs
 export const userAPI = {
-    getEnrolledCourses: () => api.get('/enrolled-courses'),
-    getProgress: (courseId) => api.get(`/progress/${courseId}`),
+    getEnrolledCourses: () => api.get('/users/enrolled-courses'),
+    getProgress: (courseId) => api.get(`/users/progress/${courseId}`),
     completeLesson: (courseId, data) =>
-        api.post(`/progress/${courseId}/complete-lesson`, data),
+        api.post(`/users/progress/${courseId}/complete-lesson`, data),
     getTrainerCourses: () => api.get('/users/trainer/my-courses'),
 };
 

@@ -86,15 +86,16 @@ const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
     console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🚀 LMS Platform API Server Running                     ║
-║                                                           ║
-║   📍 Port: ${PORT}                                         ║
-║   🌍 Environment: ${process.env.NODE_ENV}                ║
-║   📡 Frontend URL: ${process.env.FRONTEND_URL}           ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════╗
+║                                                  ║
+║   🚀 LMS Platform API Server Running             ║
+║                                                  ║
+║   📍 Port: 5000                                  ║
+║   🌍 Environment: development                    ║
+║   📡 Frontend URL: http://localhost:5173         ║
+║                                                  ║
+╚══════════════════════════════════════════════════╝
+
   `);
 });
 
