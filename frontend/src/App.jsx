@@ -17,6 +17,8 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import EditCoursePage from './pages/EditCoursePage';
 import TrainerDashboard from './components/dashboard/TrainerDashboard';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
               <Route path="/create-course" element={<CreateCourse />} />
               <Route path="/courses/:id/edit" element={<ProtectedRoute><EditCoursePage /></ProtectedRoute>} />
               <Route path="/dashboard/trainer" element={<ProtectedRoute><TrainerDashboard /></ProtectedRoute>} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/cancel" element={<PaymentCancel />} />
 
               {/* Protected Routes */}
               <Route

@@ -75,11 +75,11 @@ const CourseView = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 mt-10">
             <div className="max-w-7xl mx-auto">
                 <div className="grid lg:grid-cols-3 gap-0">
                     {/* Video Player Section */}
-                    <div className="lg:col-span-2 bg-black">
+                    <div className="lg:col-span-2 bg-black ">
                         {currentLesson && (
                             <div>
                                 <VideoPlayer
