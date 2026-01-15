@@ -11,6 +11,7 @@ const morgan = require('morgan');
 const connectDatabase = require('./config/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -65,6 +66,13 @@ app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+
+// Serve static files (for certificate PDFs)
+app.use('/certificates', express.static(path.join(__dirname, 'public/certificates')));
+
+// Routes
+app.use('/api/certificates', require('./routes/certificateRoutes'));
+
 
 // Welcome route
 app.get('/', (req, res) => {
