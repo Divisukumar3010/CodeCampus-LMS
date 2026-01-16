@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const {
     getCourses,
     getCourse,
@@ -20,10 +21,44 @@ const isEnrolled = require('../middleware/isEnrolled');
 
 const router = express.Router();
 
-// Public routes
-router.get('/', optionalAuth, getCourses);
+// ============================================================
+// RATE LIMITING CONFIG
+// ============================================================
 
-// Admin approval routes (MUST come before /:id route to avoid conflicts)
+const browseLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 60, // 60 requests per minute
+    message: 'Too many requests. Please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req, res) => {
+        // Use user ID if authenticated, otherwise use IP
+        return req.user?.id || req.ip;
+    }
+});
+
+const createLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // 5 courses per hour
+    message: 'Too many courses created. Please wait before creating another.',
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// ============================================================
+// PUBLIC ROUTES
+// ============================================================
+
+// Get all courses - with rate limiting
+router.get('/', browseLimiter, optionalAuth, getCourses);
+
+// Get single course - with rate limiting
+router.get('/:id', browseLimiter, optionalAuth, getCourse);
+
+// ============================================================
+// ADMIN ONLY ROUTES
+// ============================================================
+
 router.get(
     '/admin/pending',
     protect,
@@ -51,30 +86,29 @@ router.get(
     getApprovalStatus
 );
 
-// Single course (public)
-router.get('/:id', optionalAuth, getCourse);
+// ============================================================
+// PROTECTED ROUTES (Trainer/Admin)
+// ============================================================
 
-// Create course - use uploadAny() to handle thumbnail + lesson videos
 router.post(
     '/',
     protect,
     authorize('trainer', 'admin'),
+    createLimiter,
     uploadAny(),
     handleUploadError,
     createCourse
 );
 
-// Update course
 router.put(
     '/:id',
     protect,
     authorize('trainer', 'admin'),
-    uploadAny(),  // Change from uploadSingle('thumbnail') to uploadAny()
+    uploadAny(),
     handleUploadError,
     updateCourse
 );
 
-// Delete course
 router.delete(
     '/:id',
     protect,
@@ -82,7 +116,6 @@ router.delete(
     deleteCourse
 );
 
-// Add section
 router.post(
     '/:id/sections',
     protect,
@@ -90,7 +123,6 @@ router.post(
     addSection
 );
 
-// Add lesson
 router.post(
     '/:id/sections/:sectionId/lessons',
     protect,
@@ -100,14 +132,17 @@ router.post(
     addLesson
 );
 
-// Get enrolled students
 router.get(
     '/:id/students',
     protect,
     authorize('trainer', 'admin'),
     getEnrolledStudents
 );
-// 🔒 Course learning content (PAID)
+
+// ============================================================
+// PAID CONTENT (Requires enrollment)
+// ============================================================
+
 router.get(
     '/:id/content',
     protect,

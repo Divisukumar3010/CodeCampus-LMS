@@ -7,10 +7,9 @@ const router = express.Router();
 
 // Get user's enrolled courses
 router.get('/enrolled-courses', protect, async (req, res, next) => {
-    console.log('User in enrolled-courses route:', req.user);
     try {
         const progress = await Progress.find({ user: req.user.id })
-            .populate('course', 'title thumbnail trainer price averageRating totalLessons')
+            .populate('course', 'title thumbnail trainer price averageRating totalLessons totalDuration') // Added totalDuration
             .sort({ lastAccessedAt: -1 });
 
         res.status(200).json({

@@ -13,6 +13,7 @@ const StudentDashboard = () => {
         totalEnrolled: 0,
         inProgress: 0,
         completed: 0,
+        learningHours: 0,
     });
 
     useEffect(() => {
@@ -34,7 +35,23 @@ const StudentDashboard = () => {
             const inProgress = enrolled.filter(p => p.percentComplete > 0 && p.percentComplete < 100).length;
             const completed = enrolled.filter(p => p.percentComplete === 100).length;
 
-            setStats({ totalEnrolled, inProgress, completed });
+            // Calculate total learning hours from enrolled courses
+            const totalSeconds = enrolled.reduce((total, progress) => {
+                // Get total duration from course
+                const courseDuration = progress.course?.totalDuration || 0;
+                return total + courseDuration;
+            }, 0);
+
+            // Convert seconds to hours
+            const learningHours = Math.round(totalSeconds / 3600);
+
+            setStats({
+                totalEnrolled,
+                inProgress,
+                completed,
+                learningHours
+            });
+
             setRecommendedCourses(recommendedRes.data.courses || []);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -89,7 +106,7 @@ const StudentDashboard = () => {
                         <div>
                             <p className="text-gray-600 text-sm font-medium">Learning Hours</p>
                             <p className="text-3xl font-bold text-gray-900 mt-1">
-                                {Math.floor(Math.random() * 100)}
+                                {stats.learningHours}
                             </p>
                         </div>
                         <FiTrendingUp className="text-secondary-500 text-4xl" />
@@ -101,7 +118,7 @@ const StudentDashboard = () => {
             <section className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-900">Continue Learning</h2>
-                    <Link to="/courses" className="text-primary-600 hover:text-primary-700 font-semibold">
+                    <Link to="/my-courses" className="text-primary-600 hover:text-primary-700 font-semibold">
                         View All →
                     </Link>
                 </div>
@@ -118,31 +135,41 @@ const StudentDashboard = () => {
                             <Link
                                 key={progress._id}
                                 to={`/course/view/${progress.course._id}`}
-                                className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                                className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group"
                             >
-                                <img
-                                    src={progress.course.thumbnail.url}
-                                    alt={progress.course.title}
-                                    className="w-full h-48 object-cover"
-                                />
+                                <div className="relative">
+                                    <img
+                                        src={progress.course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
+                                        alt={progress.course.title}
+                                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    {progress.percentComplete === 100 && (
+                                        <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <FiAward size={14} />
+                                            Completed
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="p-5">
-                                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                                    <h3 className="font-semibold text-lg mb-2 line-clamp-2 text-gray-900">
                                         {progress.course.title}
                                     </h3>
-                                    <div className="mb-3">
-                                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                                            <span>Progress</span>
-                                            <span>{progress.percentComplete}%</span>
+                                    <div className="mb-4">
+                                        <div className="flex justify-between text-sm text-gray-600 mb-2">
+                                            <span className="font-medium">Progress</span>
+                                            <span className="font-bold text-primary-600">
+                                                {progress.percentComplete}%
+                                            </span>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
                                             <div
-                                                className="bg-primary-600 h-2 rounded-full transition-all"
+                                                className="bg-gradient-to-r from-primary-500 to-primary-600 h-2.5 rounded-full transition-all duration-500"
                                                 style={{ width: `${progress.percentComplete}%` }}
                                             />
                                         </div>
                                     </div>
-                                    <button className="w-full btn-primary py-2">
-                                        Continue Learning
+                                    <button className="w-full btn-primary py-2.5 text-sm font-semibold">
+                                        {progress.percentComplete === 100 ? 'Review Course' : 'Continue Learning'}
                                     </button>
                                 </div>
                             </Link>
@@ -150,7 +177,9 @@ const StudentDashboard = () => {
                     </div>
                 ) : (
                     <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-                        <FiBook className="text-6xl text-gray-300 mx-auto mb-4" />
+                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FiBook className="text-4xl text-gray-400" />
+                        </div>
                         <h3 className="text-xl font-semibold text-gray-700 mb-2">
                             No Courses Yet
                         </h3>
@@ -167,11 +196,17 @@ const StudentDashboard = () => {
             {/* Recommended Courses */}
             <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Recommended for You</h2>
-                <div className="grid md:grid-cols-4 gap-6">
-                    {recommendedCourses.map((course) => (
-                        <CourseCard key={course._id} course={course} />
-                    ))}
-                </div>
+                {recommendedCourses.length > 0 ? (
+                    <div className="grid md:grid-cols-4 gap-6">
+                        {recommendedCourses.map((course) => (
+                            <CourseCard key={course._id} course={course} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">
+                        No recommendations available
+                    </div>
+                )}
             </section>
         </div>
     );

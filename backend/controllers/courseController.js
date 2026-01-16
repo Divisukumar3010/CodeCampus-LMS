@@ -16,21 +16,36 @@ exports.getCourses = async (req, res, next) => {
         // Build query
         const query = { status: 'published', isApproved: true };
 
+        // Search - supports both 'search' and 'keyword' parameters
+        const searchTerm = req.query.search || req.query.keyword;
+        if (searchTerm && searchTerm.trim()) {
+            query.$or = [
+                { title: { $regex: searchTerm, $options: 'i' } },
+                { subtitle: { $regex: searchTerm, $options: 'i' } },
+                { description: { $regex: searchTerm, $options: 'i' } },
+                { tags: { $in: [new RegExp(searchTerm, 'i')] } }
+            ];
+        }
+
         // Category filter
-        if (req.query.category) {
+        if (req.query.category && req.query.category.trim()) {
             query.category = req.query.category;
         }
 
         // Level filter
-        if (req.query.level) {
+        if (req.query.level && req.query.level.trim() && req.query.level !== 'all') {
             query.level = req.query.level;
         }
 
         // Price filter
         if (req.query.minPrice || req.query.maxPrice) {
             query.price = {};
-            if (req.query.minPrice) query.price.$gte = parseInt(req.query.minPrice);
-            if (req.query.maxPrice) query.price.$lte = parseInt(req.query.maxPrice);
+            if (req.query.minPrice) {
+                query.price.$gte = parseInt(req.query.minPrice);
+            }
+            if (req.query.maxPrice) {
+                query.price.$lte = parseInt(req.query.maxPrice);
+            }
         }
 
         // Rating filter
@@ -38,39 +53,49 @@ exports.getCourses = async (req, res, next) => {
             query.averageRating = { $gte: parseFloat(req.query.minRating) };
         }
 
-        // Search
-        if (req.query.search) {
-            query.$text = { $search: req.query.search };
-        }
-
         // Trainer filter
-        if (req.query.trainer) {
+        if (req.query.trainer && req.query.trainer.trim()) {
             query.trainer = req.query.trainer;
         }
 
-        // Sort
-        let sort = {};
-        if (req.query.sort === 'popular') {
-            sort = { enrollmentCount: -1 };
-        } else if (req.query.sort === 'rating') {
-            sort = { averageRating: -1 };
-        } else if (req.query.sort === 'newest') {
-            sort = { createdAt: -1 };
-        } else if (req.query.sort === 'price-low') {
-            sort = { price: 1 };
-        } else if (req.query.sort === 'price-high') {
-            sort = { price: -1 };
-        } else {
-            sort = { createdAt: -1 };
+        // Determine sort order - FIX: Make sure this works correctly
+        let sort = { createdAt: -1 }; // default
+
+        const sortParam = req.query.sort || 'newest';
+
+        switch (sortParam) {
+            case 'popular':
+                sort = { enrollmentCount: -1 };
+                break;
+            case 'rating':
+                sort = { averageRating: -1, totalReviews: -1 };
+                break;
+            case 'newest':
+                sort = { createdAt: -1 };
+                break;
+            case 'price-low':
+                sort = { price: 1 }; // Ascending - low to high
+                break;
+            case 'price-high':
+                sort = { price: -1 }; // Descending - high to low
+                break;
+            default:
+                sort = { createdAt: -1 };
         }
 
+        console.log('Sort parameter:', sortParam);
+        console.log('Sort object:', sort);
+        console.log('Search Query:', JSON.stringify(query, null, 2));
+
+        // Execute the query
         const courses = await Course.find(query)
             .populate('trainer', 'name avatar')
             .populate('category', 'name slug')
             .select('-sections')
             .sort(sort)
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean(); // Add lean() for better performance
 
         const total = await Course.countDocuments(query);
 
@@ -83,6 +108,7 @@ exports.getCourses = async (req, res, next) => {
             courses
         });
     } catch (error) {
+        console.error('Error in getCourses:', error);
         next(error);
     }
 };

@@ -50,6 +50,15 @@ const Navbar = () => {
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-600 to-secondary-600 group-hover:w-full transition-all duration-300"></span>
                         </Link>
 
+                        {isAuthenticated && user?.role === 'student' && (
+                            <Link
+                                to="/my-courses"
+                                className="text-gray-800 hover:text-primary-600 font-semibold transition-colors relative group"
+                            >
+                                My Courses
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-600 to-secondary-600 group-hover:w-full transition-all duration-300"></span>
+                            </Link>
+                        )}
                         {isAuthenticated && (
                             <Link
                                 to="/dashboard"

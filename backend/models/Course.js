@@ -178,6 +178,12 @@ const courseSchema = new mongoose.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
+courseSchema.index({
+    title: 'text',
+    subtitle: 'text',
+    description: 'text',
+    tags: 'text'
+});
 
 // Virtual for reviews
 courseSchema.virtual('reviews', {

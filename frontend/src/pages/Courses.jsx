@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { courseAPI, adminAPI } from '../services/api';
 import CourseCard from '../components/course/CourseCard';
-import { FiSearch, FiFilter, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,7 +10,12 @@ const Courses = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [courses, setCourses] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    
+    const searchTimeoutRef = useRef(null);
+    const fetchAbortRef = useRef(null);
+
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         category: searchParams.get('category') || '',
@@ -21,45 +25,49 @@ const Courses = () => {
         minRating: searchParams.get('minRating') || '',
         sort: searchParams.get('sort') || 'newest',
     });
-    const [showFilters, setShowFilters] = useState(false);
+
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
         total: 0,
     });
 
+    // Load categories only once
     useEffect(() => {
-        fetchCategories();
+        loadCategories();
     }, []);
 
+    // Load courses when filters or page changes
     useEffect(() => {
-        fetchCourses();
+        loadCourses();
     }, [filters, pagination.currentPage]);
 
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
         try {
             const response = await adminAPI.getCategories();
             setCategories(response.data.categories || []);
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            console.error('Error loading categories:', error);
         }
     };
 
-    const fetchCourses = async () => {
+    const loadCourses = async () => {
         setLoading(true);
         try {
-            const params = {
-                page: pagination.currentPage,
-                limit: 12,
-                ...filters,
-            };
+            const params = new URLSearchParams();
+            params.append('page', pagination.currentPage);
+            params.append('limit', 12);
+            
+            if (filters.search) params.append('search', filters.search);
+            if (filters.category) params.append('category', filters.category);
+            if (filters.level && filters.level !== 'all') params.append('level', filters.level);
+            if (filters.minPrice) params.append('minPrice', filters.minPrice);
+            if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+            if (filters.minRating) params.append('minRating', filters.minRating);
+            params.append('sort', filters.sort);
 
-            // Remove empty filters
-            Object.keys(params).forEach(key => {
-                if (!params[key]) delete params[key];
-            });
-
-            const response = await courseAPI.getAll(params);
+            const response = await courseAPI.getAll(Object.fromEntries(params));
+            
             setCourses(response.data.courses || []);
             setPagination({
                 currentPage: response.data.currentPage,
@@ -67,25 +75,33 @@ const Courses = () => {
                 total: response.data.total,
             });
         } catch (error) {
-            console.error('Error fetching courses:', error);
-            toast.error('Failed to load courses');
+            console.error('Error loading courses:', error);
+            if (error.response?.status !== 429) {
+                toast.error('Failed to load courses');
+            }
         } finally {
             setLoading(false);
         }
     };
 
+    const handleSearchChange = (value) => {
+        setFilters(prev => ({ ...prev, search: value }));
+        
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            setPagination(prev => ({ ...prev, currentPage: 1 }));
+        }, 1200);
+    };
+
     const handleFilterChange = (name, value) => {
         setFilters(prev => ({ ...prev, [name]: value }));
-        setPagination(prev => ({ ...prev, currentPage: 1 }));
-
-        // Update URL params
-        const newParams = new URLSearchParams(searchParams);
-        if (value) {
-            newParams.set(name, value);
-        } else {
-            newParams.delete(name);
+        // Reset to page 1 only for filters, not for sort
+        if (name !== 'sort') {
+            setPagination(prev => ({ ...prev, currentPage: 1 }));
         }
-        setSearchParams(newParams);
     };
 
     const clearFilters = () => {
@@ -99,172 +115,175 @@ const Courses = () => {
             sort: 'newest',
         });
         setSearchParams({});
+        setPagination(prev => ({ ...prev, currentPage: 1 }));
     };
 
+    const hasActiveFilters = Object.values(filters).some(val => val && val !== 'newest');
+
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Explore Courses</h1>
-                    <p className="text-xl text-gray-600">
-                        {pagination.total} courses available
-                    </p>
-                </div>
-
-                {/* Search and Filter Bar */}
-                <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        {/* Search */}
-                        <div className="flex-grow relative">
-                            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search courses..."
-                                value={filters.search}
-                                onChange={(e) => handleFilterChange('search', e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                            />
+        <div className="min-h-screen bg-slate-50">
+            {/* Header */}
+            <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-900">Browse Courses</h1>
+                            <p className="text-slate-600 mt-1">{pagination.total} courses available</p>
                         </div>
-
-                        {/* Filter Toggle (Mobile) */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="md:hidden btn-outline flex items-center justify-center gap-2"
+                            className="md:hidden inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                         >
-                            <FiFilter /> Filters
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filters
                         </button>
+                    </div>
 
-                        {/* Sort */}
-                        <select
-                            value={filters.sort}
-                            onChange={(e) => handleFilterChange('sort', e.target.value)}
-                            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                        >
-                            <option value="newest">Newest</option>
-                            <option value="popular">Most Popular</option>
-                            <option value="rating">Highest Rated</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                        </select>
+                    {/* Search Bar */}
+                    <div className="relative">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Search courses..."
+                            value={filters.search}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     </div>
                 </div>
+            </div>
 
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
-                    {/* Filters Sidebar */}
-                    <aside className={`md:w-64 ${showFilters ? 'block' : 'hidden md:block'}`}>
-                        <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-semibold text-lg">Filters</h3>
-                                <button
-                                    onClick={clearFilters}
-                                    className="text-sm text-primary-600 hover:text-primary-700"
-                                >
-                                    Clear All
-                                </button>
+                    {/* Sidebar Filters */}
+                    <aside className={`${showFilters ? 'block' : 'hidden md:block'} md:w-64 flex-shrink-0`}>
+                        <div className="bg-white rounded-xl border border-slate-200 p-6 sticky top-24">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="font-bold text-lg text-slate-900">Filters</h2>
+                                {hasActiveFilters && (
+                                    <button
+                                        onClick={clearFilters}
+                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 px-2 py-1"
+                                    >
+                                        Reset
+                                    </button>
+                                )}
                             </div>
 
-                            {/* Category Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Category
-                                </label>
-                                <select
-                                    value={filters.category}
-                                    onChange={(e) => handleFilterChange('category', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                >
-                                    <option value="">All Categories</option>
-                                    {categories.map(cat => (
-                                        <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Level Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Level
-                                </label>
-                                <select
-                                    value={filters.level}
-                                    onChange={(e) => handleFilterChange('level', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                >
-                                    <option value="">All Levels</option>
-                                    <option value="beginner">Beginner</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                    <option value="all">All Levels</option>
-                                </select>
-                            </div>
-
-                            {/* Price Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Price Range
-                                </label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="number"
-                                        placeholder="Min"
-                                        value={filters.minPrice}
-                                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Max"
-                                        value={filters.maxPrice}
-                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                    />
+                            <div className="space-y-5">
+                                {/* Category */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Category</label>
+                                    <select
+                                        value={filters.category}
+                                        onChange={(e) => handleFilterChange('category', e.target.value)}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    >
+                                        <option value="">All Categories</option>
+                                        {categories.map(cat => (
+                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                            </div>
 
-                            {/* Rating Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Minimum Rating
-                                </label>
-                                <select
-                                    value={filters.minRating}
-                                    onChange={(e) => handleFilterChange('minRating', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                >
-                                    <option value="">Any Rating</option>
-                                    <option value="4.5">4.5 & up</option>
-                                    <option value="4.0">4.0 & up</option>
-                                    <option value="3.5">3.5 & up</option>
-                                    <option value="3.0">3.0 & up</option>
-                                </select>
+                                {/* Level */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Level</label>
+                                    <select
+                                        value={filters.level}
+                                        onChange={(e) => handleFilterChange('level', e.target.value)}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    >
+                                        <option value="">All Levels</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+
+                                {/* Price */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Price Range</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="number"
+                                            placeholder="Min"
+                                            value={filters.minPrice}
+                                            onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Max"
+                                            value={filters.maxPrice}
+                                            onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Rating */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Rating</label>
+                                    <select
+                                        value={filters.minRating}
+                                        onChange={(e) => handleFilterChange('minRating', e.target.value)}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    >
+                                        <option value="">Any Rating</option>
+                                        <option value="4.5">4.5+ ⭐</option>
+                                        <option value="4.0">4.0+ ⭐</option>
+                                        <option value="3.5">3.5+ ⭐</option>
+                                        <option value="3.0">3.0+ ⭐</option>
+                                    </select>
+                                </div>
+
+                                {/* Sort */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Sort By</label>
+                                    <select
+                                        value={filters.sort}
+                                        onChange={(e) => handleFilterChange('sort', e.target.value)}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    >
+                                        <option value="newest">Newest</option>
+                                        <option value="popular">Most Popular</option>
+                                        <option value="rating">Highest Rated</option>
+                                        <option value="price-low">Price: Low to High</option>
+                                        <option value="price-high">Price: High to Low</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </aside>
 
-                    {/* Courses Grid */}
+                    {/* Main Content */}
                     <main className="flex-grow">
                         {loading ? (
-                            <div className="grid md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...Array(9)].map((_, i) => (
-                                    <div key={i} className="bg-gray-200 h-96 rounded-xl animate-pulse" />
+                                    <div key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse h-80"></div>
                                 ))}
                             </div>
                         ) : courses.length > 0 ? (
                             <>
-                                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                                     {courses.map(course => (
-                                        <CourseCard key={course._id} course={course} currentUser={user}/>
+                                        <CourseCard key={course._id} course={course} currentUser={user} />
                                     ))}
                                 </div>
 
                                 {/* Pagination */}
                                 {pagination.totalPages > 1 && (
-                                    <div className="flex justify-center gap-2">
+                                    <div className="flex justify-center items-center gap-2 mt-12">
                                         <button
                                             onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                             disabled={pagination.currentPage === 1}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-4 py-2 border border-slate-300 rounded-lg disabled:opacity-50"
                                         >
                                             Previous
                                         </button>
@@ -272,10 +291,11 @@ const Courses = () => {
                                             <button
                                                 key={i}
                                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: i + 1 }))}
-                                                className={`px-4 py-2 rounded-lg ${pagination.currentPage === i + 1
-                                                        ? 'bg-primary-600 text-white'
-                                                        : 'border border-gray-300 hover:bg-gray-50'
-                                                    }`}
+                                                className={`px-3 py-2 rounded-lg ${
+                                                    pagination.currentPage === i + 1
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'border border-slate-300'
+                                                }`}
                                             >
                                                 {i + 1}
                                             </button>
@@ -283,7 +303,7 @@ const Courses = () => {
                                         <button
                                             onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                             disabled={pagination.currentPage === pagination.totalPages}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-4 py-2 border border-slate-300 rounded-lg disabled:opacity-50"
                                         >
                                             Next
                                         </button>
@@ -291,10 +311,10 @@ const Courses = () => {
                                 )}
                             </>
                         ) : (
-                            <div className="text-center py-16">
-                                <h3 className="text-2xl font-semibold text-gray-700 mb-2">No courses found</h3>
-                                <p className="text-gray-500 mb-6">Try adjusting your filters</p>
-                                <button onClick={clearFilters} className="btn-primary">
+                            <div className="text-center py-20">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-2">No Courses Found</h3>
+                                <p className="text-slate-600 mb-6">Try adjusting your filters</p>
+                                <button onClick={clearFilters} className="px-6 py-2 bg-blue-600 text-white rounded-lg">
                                     Clear Filters
                                 </button>
                             </div>

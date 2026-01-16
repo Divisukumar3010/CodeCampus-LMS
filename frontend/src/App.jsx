@@ -19,6 +19,7 @@ import EditCoursePage from './pages/EditCoursePage';
 import TrainerDashboard from './components/dashboard/TrainerDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
+import MyCourses from './pages/MyCourses';
 
 function App() {
   return (
@@ -81,6 +82,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/my-courses"
+                element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <MyCourses />
+                </ProtectedRoute>
+              } />
 
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
