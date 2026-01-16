@@ -27,7 +27,7 @@ const Navbar = () => {
                         <div className="w-12 h-12 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform">
                             <img
                                 src="/CodeCampus.png"
-                                alt="LearnHub"
+                                alt="CodeCampus"
                                 className="w-10 h-10 object-contain"
                             />
                         </div>

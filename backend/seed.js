@@ -92,7 +92,7 @@ const seedDatabase = async () => {
         // Admin
         const admin = await User.create({
             name: 'Admin User',
-            email: 'admin@learnhub.com',
+            email: 'admin@codecampus.com',
             password: 'Admin@123',
             role: 'admin',
             isVerified: true,
@@ -103,7 +103,7 @@ const seedDatabase = async () => {
         // Trainers
         const trainer1 = await User.create({
             name: 'John Doe',
-            email: 'trainer@learnhub.com',
+            email: 'trainer@codecampus.com',
             password: 'Trainer@123',
             role: 'trainer',
             isVerified: true,
@@ -114,7 +114,7 @@ const seedDatabase = async () => {
 
         const trainer2 = await User.create({
             name: 'Sarah Johnson',
-            email: 'sarah@learnhub.com',
+            email: 'sarah@codecampus.com',
             password: 'Trainer@123',
             role: 'trainer',
             isVerified: true,
@@ -125,7 +125,7 @@ const seedDatabase = async () => {
 
         const trainer3 = await User.create({
             name: 'Mike Wilson',
-            email: 'mike@learnhub.com',
+            email: 'mike@codecampus.com',
             password: 'Trainer@123',
             role: 'trainer',
             isVerified: true,
@@ -139,7 +139,7 @@ const seedDatabase = async () => {
         // Student
         const student = await User.create({
             name: 'Jane Student',
-            email: 'student@learnhub.com',
+            email: 'student@codecampus.com',
             password: 'Student@123',
             role: 'student',
             isVerified: true,
@@ -496,15 +496,15 @@ const seedDatabase = async () => {
         console.log('🔐 Login Credentials:');
         console.log('');
         console.log('   👨‍💼 Admin:');
-        console.log('      Email: admin@learnhub.com');
+        console.log('      Email: admin@codecampus.com');
         console.log('      Password: Admin@123');
         console.log('');
         console.log('   👨‍🏫 Trainer:');
-        console.log('      Email: trainer@learnhub.com');
+        console.log('      Email: trainer@codecampus.com');
         console.log('      Password: Trainer@123');
         console.log('');
         console.log('   👨‍🎓 Student:');
-        console.log('      Email: student@learnhub.com');
+        console.log('      Email: student@codecampus.com');
         console.log('      Password: Student@123');
         console.log('');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

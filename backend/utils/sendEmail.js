@@ -1,39 +1,39 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    });
+  // Create transporter
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
 
-    // Define email options
-    const mailOptions = {
-        from: `${process.env.EMAIL_FROM_NAME || 'LearnHub'} <${process.env.EMAIL_FROM}>`,
-        to: options.email,
-        subject: options.subject,
-        html: options.html || options.message,
-    };
+  // Define email options
+  const mailOptions = {
+    from: `${process.env.EMAIL_FROM_NAME || 'CodeCampus'} <${process.env.EMAIL_FROM}>`,
+    to: options.email,
+    subject: options.subject,
+    html: options.html || options.message,
+  };
 
-    // Send email
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent successfully');
-        return { success: true };
-    } catch (error) {
-        console.error('❌ Email send error:', error);
-        throw new Error('Email could not be sent');
-    }
+  // Send email
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Email send error:', error);
+    throw new Error('Email could not be sent');
+  }
 };
 
 // Email templates
 const sendWelcomeEmail = async (user) => {
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -49,11 +49,11 @@ const sendWelcomeEmail = async (user) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Welcome to LearnHub! 🎓</h1>
+          <h1>Welcome to CodeCampus! 🎓</h1>
         </div>
         <div class="content">
           <h2>Hi ${user.name},</h2>
-          <p>Thank you for joining LearnHub! We're excited to have you on board.</p>
+          <p>Thank you for joining CodeCampus! We're excited to have you on board.</p>
           <p>As a ${user.role}, you can now:</p>
           <ul>
             ${user.role === 'student' ? `
@@ -71,26 +71,26 @@ const sendWelcomeEmail = async (user) => {
           <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Go to Dashboard</a>
           <p>If you have any questions, feel free to reach out to our support team.</p>
           <p>Happy Learning!</p>
-          <p><strong>The LearnHub Team</strong></p>
+          <p><strong>The CodeCampus Team</strong></p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LearnHub. All rights reserved.</p>
-          <p>You received this email because you signed up for LearnHub.</p>
+          <p>© ${new Date().getFullYear()} CodeCampus. All rights reserved.</p>
+          <p>You received this email because you signed up for CodeCampus.</p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-    return sendEmail({
-        email: user.email,
-        subject: 'Welcome to LearnHub - Start Your Learning Journey!',
-        html,
-    });
+  return sendEmail({
+    email: user.email,
+    subject: 'Welcome to CodeCampus - Start Your Learning Journey!',
+    html,
+  });
 };
 
 const sendEnrollmentEmail = async (user, course) => {
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -119,22 +119,22 @@ const sendEnrollmentEmail = async (user, course) => {
           <a href="${process.env.FRONTEND_URL}/course/view/${course._id}" class="button">Start Learning Now</a>
           <p>Your learning journey begins now. Take your time, practice, and don't hesitate to ask questions!</p>
           <p>Good luck!</p>
-          <p><strong>The LearnHub Team</strong></p>
+          <p><strong>The CodeCampus Team</strong></p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-    return sendEmail({
-        email: user.email,
-        subject: `You're enrolled in ${course.title}!`,
-        html,
-    });
+  return sendEmail({
+    email: user.email,
+    subject: `You're enrolled in ${course.title}!`,
+    html,
+  });
 };
 
 const sendCourseApprovalEmail = async (trainer, course, isApproved) => {
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html>
     <body>
@@ -142,24 +142,24 @@ const sendCourseApprovalEmail = async (trainer, course, isApproved) => {
       <p>Hi ${trainer.name},</p>
       <p>Your course "<strong>${course.title}</strong>" has been ${isApproved ? 'approved' : 'rejected'}.</p>
       ${isApproved
-            ? '<p>It is now live on the platform and students can enroll!</p>'
-            : '<p>Please review the course content and resubmit for approval.</p>'
-        }
-      <p>Best regards,<br>LearnHub Team</p>
+      ? '<p>It is now live on the platform and students can enroll!</p>'
+      : '<p>Please review the course content and resubmit for approval.</p>'
+    }
+      <p>Best regards,<br>CodeCampus Team</p>
     </body>
     </html>
   `;
 
-    return sendEmail({
-        email: trainer.email,
-        subject: `Course ${isApproved ? 'Approved' : 'Rejected'}: ${course.title}`,
-        html,
-    });
+  return sendEmail({
+    email: trainer.email,
+    subject: `Course ${isApproved ? 'Approved' : 'Rejected'}: ${course.title}`,
+    html,
+  });
 };
 
 module.exports = {
-    sendEmail,
-    sendWelcomeEmail,
-    sendEnrollmentEmail,
-    sendCourseApprovalEmail,
+  sendEmail,
+  sendWelcomeEmail,
+  sendEnrollmentEmail,
+  sendCourseApprovalEmail,
 };
