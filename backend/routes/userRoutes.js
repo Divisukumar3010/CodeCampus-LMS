@@ -123,5 +123,57 @@ router.get('/trainer/my-courses', protect, authorize('trainer', 'admin'), async 
         next(error);
     }
 });
+// Mark lesson as complete
+router.post('/progress/:courseId/complete-lesson', protect, async (req, res, next) => {
+    try {
+        const { lessonId, watchTime } = req.body;
+
+        let progress = await Progress.findOne({
+            user: req.user.id,
+            course: req.params.courseId
+        });
+
+        if (!progress) {
+            return res.status(404).json({
+                success: false,
+                message: 'You are not enrolled in this course'
+            });
+        }
+
+        // Check if lesson already completed
+        const alreadyCompleted = progress.completedLessons.some(
+            cl => cl.lessonId.toString() === lessonId
+        );
+
+        if (!alreadyCompleted) {
+            progress.completedLessons.push({
+                lessonId,
+                watchTime: watchTime || 0,
+                completedAt: new Date()
+            });
+        }
+
+        progress.lastAccessedLesson = lessonId;
+        progress.lastAccessedAt = new Date();
+
+        // Calculate progress
+        await progress.calculateProgress();
+
+        // Log for debugging
+        console.log('Progress after calculation:', {
+            percentComplete: progress.percentComplete,
+            isCompleted: progress.isCompleted,
+            completedLessons: progress.completedLessons.length
+        });
+
+        res.status(200).json({
+            success: true,
+            progress
+        });
+    } catch (error) {
+        console.error('Complete lesson error:', error);
+        next(error);
+    }
+});
 
 module.exports = router;

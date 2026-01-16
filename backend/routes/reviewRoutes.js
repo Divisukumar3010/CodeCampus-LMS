@@ -1,6 +1,7 @@
 const express = require('express');
 const Review = require('../models/Review');
 const Order = require('../models/Order');
+const Course = require('../models/Course');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -9,6 +10,14 @@ const router = express.Router();
 router.post('/', protect, authorize('student'), async (req, res, next) => {
     try {
         const { courseId, rating, comment } = req.body;
+
+        // Validate rating
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).json({
+                success: false,
+                message: 'Rating must be between 1 and 5'
+            });
+        }
 
         // Check if user purchased the course
         const order = await Order.findOne({
@@ -44,6 +53,11 @@ router.post('/', protect, authorize('student'), async (req, res, next) => {
             comment,
             isVerifiedPurchase: true
         });
+
+        // Update course rating
+        await updateCourseRating(courseId);
+
+        await review.populate('user', 'name');
 
         res.status(201).json({
             success: true,
@@ -82,6 +96,23 @@ router.get('/course/:courseId', async (req, res, next) => {
     }
 });
 
+// Get my review for a specific course - ADD THIS NEW ROUTE
+router.get('/my-review/:courseId', protect, async (req, res, next) => {
+    try {
+        const review = await Review.findOne({
+            user: req.user.id,
+            course: req.params.courseId
+        }).populate('user', 'name');
+
+        res.status(200).json({
+            success: true,
+            review: review || null
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Update review
 router.put('/:id', protect, async (req, res, next) => {
     try {
@@ -101,11 +132,22 @@ router.put('/:id', protect, async (req, res, next) => {
             });
         }
 
+        // Validate rating if provided
+        if (req.body.rating && (req.body.rating < 1 || req.body.rating > 5)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Rating must be between 1 and 5'
+            });
+        }
+
         review = await Review.findByIdAndUpdate(
             req.params.id,
             { rating: req.body.rating, comment: req.body.comment },
             { new: true, runValidators: true }
-        );
+        ).populate('user', 'name');
+
+        // Update course rating
+        await updateCourseRating(review.course);
 
         res.status(200).json({
             success: true,
@@ -135,7 +177,11 @@ router.delete('/:id', protect, async (req, res, next) => {
             });
         }
 
+        const courseId = review.course;
         await review.deleteOne();
+
+        // Update course rating
+        await updateCourseRating(courseId);
 
         res.status(200).json({
             success: true,
@@ -145,5 +191,30 @@ router.delete('/:id', protect, async (req, res, next) => {
         next(error);
     }
 });
+
+// Helper function to update course rating
+async function updateCourseRating(courseId) {
+    try {
+        const reviews = await Review.find({ course: courseId });
+
+        if (reviews.length === 0) {
+            await Course.findByIdAndUpdate(courseId, {
+                averageRating: 0,
+                totalReviews: 0
+            });
+            return;
+        }
+
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = totalRating / reviews.length;
+
+        await Course.findByIdAndUpdate(courseId, {
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalReviews: reviews.length
+        });
+    } catch (error) {
+        console.error('Error updating course rating:', error);
+    }
+}
 
 module.exports = router;

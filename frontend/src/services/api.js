@@ -105,8 +105,8 @@ export const orderAPI = {
 // Review APIs
 export const reviewAPI = {
     create: (data) => api.post('/reviews', data),
-    getByCourse: (courseId, params) =>
-        api.get(`/reviews/course/${courseId}`, { params }),
+    getByCourse: (courseId, params) => api.get(`/reviews/course/${courseId}`, { params }),
+    getMyReview: (courseId) => api.get(`/reviews/my-review/${courseId}`),
     update: (id, data) => api.put(`/reviews/${id}`, data),
     delete: (id) => api.delete(`/reviews/${id}`),
 };

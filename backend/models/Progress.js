@@ -111,20 +111,17 @@ progressSchema.methods.calculateProgress = async function () {
     // Ensure percent never exceeds 100
     if (this.percentComplete >= 100) {
         this.percentComplete = 100;
+        this.isCompleted = true; // ✅ Mark as completed
 
         // Mark course as completed
         if (!this.completedAt) {
             this.completedAt = new Date();
         }
-
-        // 🔑 UNLOCK CERTIFICATE
-        if (!this.certificateIssued) {
-            this.certificateIssued = true;
-        }
+    } else {
+        this.isCompleted = false; // Reset if not 100%
     }
 
     await this.save();
 };
-
 
 module.exports = mongoose.model('Progress', progressSchema);

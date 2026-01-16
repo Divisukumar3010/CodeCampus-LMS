@@ -20,10 +20,18 @@ const lessonSchema = new mongoose.Schema({
     },
     videoPublicId: String,
     resources: [{
+        type: {
+            type: String,
+            enum: ['pdf', 'doc', 'video', 'link', 'other'],
+            default: 'pdf'
+        },
         title: String,
         url: String,
-        publicId: String,
-        fileType: String
+        fileSize: Number,
+        uploadedAt: {
+            type: Date,
+            default: Date.now
+        }
     }],
     isFree: {
         type: Boolean,

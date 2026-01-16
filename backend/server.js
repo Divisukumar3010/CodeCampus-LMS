@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -8,13 +7,10 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const morgan = require('morgan');
+const path = require('path');
 const connectDatabase = require('./config/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
-const path = require('path');
-
-// Load environment variables
-dotenv.config();
 
 // Connect to database
 connectDatabase();
@@ -47,6 +43,10 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
+// Serve static files BEFORE routes
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/certificates', express.static(path.join(__dirname, 'public/certificates')));
+
 // Rate limiting
 app.use('/api', apiLimiter);
 
@@ -59,21 +59,6 @@ app.get('/health', (req, res) => {
     });
 });
 
-// API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/courses', require('./routes/courseRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
-app.use('/api/reviews', require('./routes/reviewRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-
-// Serve static files (for certificate PDFs)
-app.use('/certificates', express.static(path.join(__dirname, 'public/certificates')));
-
-// Routes
-app.use('/api/certificates', require('./routes/certificateRoutes'));
-
-
 // Welcome route
 app.get('/', (req, res) => {
     res.json({
@@ -84,10 +69,22 @@ app.get('/', (req, res) => {
     });
 });
 
-// 404 Handler
+// API Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/courses', require('./routes/courseRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/certificates', require('./routes/certificateRoutes'));
+
+// Favicon handler (to prevent 404 errors)
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
+// 404 Handler - Must be AFTER all routes
 app.use(notFound);
 
-// Error Handler
+// Error Handler - Must be LAST
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
@@ -98,13 +95,12 @@ const server = app.listen(PORT, () => {
 ║                                                  ║
 ║   🚀 LMS Platform API Server Running             ║
 ║                                                  ║
-║   📍 Port: 5000                                  ║
-║   🌍 Environment: development                    ║
-║   📡 Frontend URL: http://localhost:5173         ║
+║   📍 Port: ${PORT}                                  ║
+║   🌍 Environment: ${process.env.NODE_ENV || 'development'}                    ║
+║   📡 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}         ║
 ║                                                  ║
 ╚══════════════════════════════════════════════════╝
-
-  `);
+    `);
 });
 
 // Handle unhandled promise rejections
