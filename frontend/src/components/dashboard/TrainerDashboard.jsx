@@ -97,7 +97,7 @@ const TrainerDashboard = () => {
                             <div>
                                 <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
                                 <p className="text-3xl font-bold text-gray-900 mt-1">
-                                    ${stats.totalRevenue?.toFixed(2) || '0.00'}
+                                    ₹{stats.totalRevenue?.toFixed(2) || '0.00'}
                                 </p>
                             </div>
                             <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
@@ -146,7 +146,7 @@ const TrainerDashboard = () => {
                                     </div>
                                     <div>
                                         <p className="text-primary-100 text-sm">Revenue</p>
-                                        <p className="text-2xl font-bold">${bestCourse.revenue?.toFixed(2) || '0.00'}</p>
+                                        <p className="text-2xl font-bold">₹{bestCourse.revenue?.toFixed(2) || '0.00'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -237,7 +237,7 @@ const TrainerDashboard = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 font-semibold text-gray-900">
-                                                ${course.revenue?.toFixed(2) || '0.00'}
+                                                ₹{course.revenue?.toFixed(2) || '0.00'}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${course.status === 'published' ? 'bg-green-100 text-green-800' :
