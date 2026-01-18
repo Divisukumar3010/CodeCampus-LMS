@@ -7,10 +7,10 @@ const Footer = () => {
             <div
                 className="
       w-full max-w-[98%]
-      mx-4
+      mx-2
       rounded-[3rem]
       bg-gray-900 text-gray-300
-      px-6 sm:px-10
+      px-6 sm:px-12
       py-9
     "
             >

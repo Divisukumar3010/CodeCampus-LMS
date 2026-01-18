@@ -62,58 +62,58 @@ const MyCourses = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
                 <div className="spinner"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h1>
-                    <p className="text-gray-600">Manage and continue your learning journey</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Courses</h1>
+                    <p className="text-gray-600 dark:text-slate-400">Manage and continue your learning journey</p>
                 </div>
 
                 {/* Stats Overview */}
                 <div className="grid md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
+                    <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-600 text-sm font-medium">Total Enrolled</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
+                                <p className="text-gray-600 dark:text-slate-300 text-sm font-medium">Total Enrolled</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.total}</p>
                             </div>
                             <FiBook className="text-primary-500 text-4xl" />
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+                    <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-600 text-sm font-medium">In Progress</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.inProgress}</p>
+                                <p className="text-gray-600 dark:text-slate-300 text-sm font-medium">In Progress</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.inProgress}</p>
                             </div>
                             <FiClock className="text-yellow-500 text-4xl" />
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+                    <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-green-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-600 text-sm font-medium">Completed</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.completed}</p>
+                                <p className="text-gray-600 dark:text-slate-300 text-sm font-medium">Completed</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.completed}</p>
                             </div>
                             <FiAward className="text-green-500 text-4xl" />
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-gray-400">
+                    <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-gray-400">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-600 text-sm font-medium">Not Started</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.notStarted}</p>
+                                <p className="text-gray-600 dark:text-slate-300 text-sm font-medium">Not Started</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.notStarted}</p>
                             </div>
                             <FiBook className="text-gray-400 text-4xl" />
                         </div>
@@ -121,17 +121,17 @@ const MyCourses = () => {
                 </div>
 
                 {/* Filters and Search */}
-                <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 mb-8">
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         {/* Search */}
                         <div className="relative flex-1 w-full md:w-auto">
-                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500" />
                             <input
                                 type="text"
                                 placeholder="Search your courses..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
                             />
                         </div>
 
@@ -140,8 +140,8 @@ const MyCourses = () => {
                             <button
                                 onClick={() => setFilter('all')}
                                 className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'all'
-                                        ? 'bg-primary-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-primary-600 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 All ({stats.total})
@@ -149,8 +149,8 @@ const MyCourses = () => {
                             <button
                                 onClick={() => setFilter('in-progress')}
                                 className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'in-progress'
-                                        ? 'bg-yellow-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-yellow-500 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 In Progress ({stats.inProgress})
@@ -158,8 +158,8 @@ const MyCourses = () => {
                             <button
                                 onClick={() => setFilter('completed')}
                                 className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'completed'
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 Completed ({stats.completed})
@@ -167,8 +167,8 @@ const MyCourses = () => {
                             <button
                                 onClick={() => setFilter('not-started')}
                                 className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'not-started'
-                                        ? 'bg-gray-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gray-600 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 Not Started ({stats.notStarted})
@@ -184,7 +184,7 @@ const MyCourses = () => {
                             <Link
                                 key={progress._id}
                                 to={`/course/view/${progress.course._id}`}
-                                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group"
+                                className="bg-white dark:bg-slate-900 rounded-xl shadow-sm hover:shadow-lg dark:shadow-slate-700 transition overflow-hidden group"
                             >
                                 <div className="relative">
                                     <img
@@ -205,23 +205,23 @@ const MyCourses = () => {
                                     )}
                                 </div>
                                 <div className="p-5">
-                                    <h3 className="font-semibold text-lg mb-3 line-clamp-2 text-gray-900 group-hover:text-primary-600 transition">
+                                    <h3 className="font-semibold text-lg mb-3 line-clamp-2 text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
                                         {progress.course.title}
                                     </h3>
 
                                     {/* Progress Bar */}
                                     <div className="mb-4">
-                                        <div className="flex justify-between text-sm text-gray-600 mb-2">
+                                        <div className="flex justify-between text-sm text-gray-600 dark:text-slate-400 mb-2">
                                             <span className="font-medium">Progress</span>
-                                            <span className="font-bold text-primary-600">
+                                            <span className="font-bold text-primary-600 dark:text-primary-400">
                                                 {progress.percentComplete}%
                                             </span>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
                                             <div
                                                 className={`h-2.5 rounded-full transition-all duration-500 ${progress.percentComplete === 100
-                                                        ? 'bg-gradient-to-r from-green-400 to-green-600'
-                                                        : 'bg-gradient-to-r from-primary-500 to-primary-600'
+                                                    ? 'bg-gradient-to-r from-green-400 to-green-600'
+                                                    : 'bg-gradient-to-r from-primary-500 to-primary-600'
                                                     }`}
                                                 style={{ width: `${progress.percentComplete}%` }}
                                             />
@@ -241,14 +241,14 @@ const MyCourses = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FiBook className="text-4xl text-gray-400" />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-12 text-center">
+                        <div className="w-24 h-24 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FiBook className="text-4xl text-gray-400 dark:text-slate-500" />
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                        <h3 className="text-xl font-semibold text-gray-700 dark:text-slate-200 mb-2">
                             No courses found
                         </h3>
-                        <p className="text-gray-500 mb-6">
+                        <p className="text-gray-500 dark:text-slate-400 mb-6">
                             {searchQuery
                                 ? `No courses match "${searchQuery}"`
                                 : 'You haven\'t enrolled in any courses yet'}

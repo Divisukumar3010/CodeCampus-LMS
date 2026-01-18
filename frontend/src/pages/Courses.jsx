@@ -12,7 +12,7 @@ const Courses = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
-    
+
     const searchTimeoutRef = useRef(null);
     const fetchAbortRef = useRef(null);
 
@@ -57,7 +57,7 @@ const Courses = () => {
             const params = new URLSearchParams();
             params.append('page', pagination.currentPage);
             params.append('limit', 12);
-            
+
             if (filters.search) params.append('search', filters.search);
             if (filters.category) params.append('category', filters.category);
             if (filters.level && filters.level !== 'all') params.append('level', filters.level);
@@ -67,7 +67,7 @@ const Courses = () => {
             params.append('sort', filters.sort);
 
             const response = await courseAPI.getAll(Object.fromEntries(params));
-            
+
             setCourses(response.data.courses || []);
             setPagination({
                 currentPage: response.data.currentPage,
@@ -86,7 +86,7 @@ const Courses = () => {
 
     const handleSearchChange = (value) => {
         setFilters(prev => ({ ...prev, search: value }));
-        
+
         if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current);
         }
@@ -121,14 +121,14 @@ const Courses = () => {
     const hasActiveFilters = Object.values(filters).some(val => val && val !== 'newest');
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
             {/* Header */}
-            <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-40 mt-10 rounded-3xl shadow-sm mx-4 sm:mx-6 lg:mx-8 sticky top-[2%]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-900">Browse Courses</h1>
-                            <p className="text-slate-600 mt-1">{pagination.total} courses available</p>
+                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Browse Courses</h1>
+                            <p className="text-slate-600 dark:text-slate-400 mt-1">{pagination.total} courses available</p>
                         </div>
                         <button
                             onClick={() => setShowFilters(!showFilters)}
@@ -151,7 +151,7 @@ const Courses = () => {
                             placeholder="Search courses..."
                             value={filters.search}
                             onChange={(e) => handleSearchChange(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                         />
                     </div>
                 </div>
@@ -160,14 +160,14 @@ const Courses = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar Filters */}
-                    <aside className={`${showFilters ? 'block' : 'hidden md:block'} md:w-64 flex-shrink-0`}>
-                        <div className="bg-white rounded-xl border border-slate-200 p-6 sticky top-24">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="font-bold text-lg text-slate-900">Filters</h2>
+                    <aside className={`${showFilters ? 'block' : 'hidden md:block'} md:w-64 flex-shrink-0 sticky top-1/2`}>
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 sticky top-[31%]">
+                            <div className="flex items-center justify-between mb-6 ">
+                                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Filters</h2>
                                 {hasActiveFilters && (
                                     <button
                                         onClick={clearFilters}
-                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 px-2 py-1"
+                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 px-2 py-1"
                                     >
                                         Reset
                                     </button>
@@ -177,11 +177,11 @@ const Courses = () => {
                             <div className="space-y-5">
                                 {/* Category */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Category</label>
+                                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Category</label>
                                     <select
                                         value={filters.category}
                                         onChange={(e) => handleFilterChange('category', e.target.value)}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                     >
                                         <option value="">All Categories</option>
                                         {categories.map(cat => (
@@ -192,11 +192,11 @@ const Courses = () => {
 
                                 {/* Level */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Level</label>
+                                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Level</label>
                                     <select
                                         value={filters.level}
                                         onChange={(e) => handleFilterChange('level', e.target.value)}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                     >
                                         <option value="">All Levels</option>
                                         <option value="beginner">Beginner</option>
@@ -207,32 +207,32 @@ const Courses = () => {
 
                                 {/* Price */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Price Range</label>
+                                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Price Range</label>
                                     <div className="flex gap-2">
                                         <input
                                             type="number"
                                             placeholder="Min"
                                             value={filters.minPrice}
                                             onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                                         />
                                         <input
                                             type="number"
                                             placeholder="Max"
                                             value={filters.maxPrice}
                                             onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Rating */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Rating</label>
+                                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Rating</label>
                                     <select
                                         value={filters.minRating}
                                         onChange={(e) => handleFilterChange('minRating', e.target.value)}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                     >
                                         <option value="">Any Rating</option>
                                         <option value="4.5">4.5+ ⭐</option>
@@ -244,11 +244,11 @@ const Courses = () => {
 
                                 {/* Sort */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-800 mb-2">Sort By</label>
+                                    <label className="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Sort By</label>
                                     <select
                                         value={filters.sort}
                                         onChange={(e) => handleFilterChange('sort', e.target.value)}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                     >
                                         <option value="newest">Newest</option>
                                         <option value="popular">Most Popular</option>
@@ -266,7 +266,7 @@ const Courses = () => {
                         {loading ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...Array(9)].map((_, i) => (
-                                    <div key={i} className="bg-white rounded-xl border border-slate-200 animate-pulse h-80"></div>
+                                    <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse h-80"></div>
                                 ))}
                             </div>
                         ) : courses.length > 0 ? (
@@ -283,7 +283,7 @@ const Courses = () => {
                                         <button
                                             onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                             disabled={pagination.currentPage === 1}
-                                            className="px-4 py-2 border border-slate-300 rounded-lg disabled:opacity-50"
+                                            className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg disabled:opacity-50 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                                         >
                                             Previous
                                         </button>
@@ -291,11 +291,10 @@ const Courses = () => {
                                             <button
                                                 key={i}
                                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: i + 1 }))}
-                                                className={`px-3 py-2 rounded-lg ${
-                                                    pagination.currentPage === i + 1
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'border border-slate-300'
-                                                }`}
+                                                className={`px-3 py-2 rounded-lg ${pagination.currentPage === i + 1
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition'
+                                                    }`}
                                             >
                                                 {i + 1}
                                             </button>
@@ -303,7 +302,7 @@ const Courses = () => {
                                         <button
                                             onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                             disabled={pagination.currentPage === pagination.totalPages}
-                                            className="px-4 py-2 border border-slate-300 rounded-lg disabled:opacity-50"
+                                            className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg disabled:opacity-50 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                                         >
                                             Next
                                         </button>
@@ -312,9 +311,9 @@ const Courses = () => {
                             </>
                         ) : (
                             <div className="text-center py-20">
-                                <h3 className="text-2xl font-bold text-slate-900 mb-2">No Courses Found</h3>
-                                <p className="text-slate-600 mb-6">Try adjusting your filters</p>
-                                <button onClick={clearFilters} className="px-6 py-2 bg-blue-600 text-white rounded-lg">
+                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No Courses Found</h3>
+                                <p className="text-slate-600 dark:text-slate-400 mb-6">Try adjusting your filters</p>
+                                <button onClick={clearFilters} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                                     Clear Filters
                                 </button>
                             </div>

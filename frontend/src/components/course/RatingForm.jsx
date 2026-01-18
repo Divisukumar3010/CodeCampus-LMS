@@ -96,16 +96,15 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
     if (existingReview && !isEditing) {
         return (
             <div className="card">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Your Review</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Your Review</h3>
                 <div className="flex items-center gap-2 mb-3">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <FiStar
                             key={star}
-                            className={`${
-                                star <= existingReview.rating
+                            className={`${star <= existingReview.rating
                                     ? 'text-yellow-500 fill-current'
                                     : 'text-gray-300'
-                            }`}
+                                }`}
                             size={24}
                         />
                     ))}
@@ -133,7 +132,7 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
 
     return (
         <div className="card">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
                 {existingReview ? 'Edit Your Review' : 'Rate This Course'}
             </h3>
             <form onSubmit={handleSubmit}>
@@ -153,11 +152,10 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
                                 className="focus:outline-none transition-transform hover:scale-110"
                             >
                                 <FiStar
-                                    className={`${
-                                        star <= (hoverRating || rating)
+                                    className={`${star <= (hoverRating || rating)
                                             ? 'text-yellow-500 fill-current'
                                             : 'text-gray-300'
-                                    }`}
+                                        }`}
                                     size={32}
                                 />
                             </button>

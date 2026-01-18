@@ -31,7 +31,7 @@ const CheckoutForm = ({ courseId, courseName, price }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 p-6">
             <h3 className="text-2xl font-bold mb-4">{courseName}</h3>
             <div className="text-4xl font-bold text-primary-600 mb-6">
                 ${price}

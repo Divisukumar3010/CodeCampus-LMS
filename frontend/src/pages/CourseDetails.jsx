@@ -119,7 +119,7 @@ const CourseDetailsPage = () => {
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-4">😞</div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Course Not Found</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Course Not Found</h2>
                     <p className="text-gray-600 mb-6">{error || 'The course you are looking for does not exist.'}</p>
                     <Link to="/courses" className="btn-primary inline-block">
                         Browse All Courses
@@ -144,7 +144,7 @@ const CourseDetailsPage = () => {
   w-[90%] mx-auto
   rounded-[2rem]
   px-8 py-4 mt-6 md:mt-10 lg:mt-12
-  shadow-lg
+  shadow-lg dark:shadow-slate-700
 ">
                 <div className="container-custom py-12 md:py-16">
                     <div className="grid lg:grid-cols-3 gap-8">
@@ -194,7 +194,7 @@ const CourseDetailsPage = () => {
                             </div>
 
                             {/* Trainer Info */}
-                            <div className="flex items-center gap-4 p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl">
+                            <div className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 dark:bg-slate-900 bg-opacity-10 backdrop-blur-sm rounded-xl">
                                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-xl">
                                     {course.trainer?.name?.charAt(0).toUpperCase()}
                                 </div>
@@ -211,7 +211,7 @@ const CourseDetailsPage = () => {
                         {/* Right Column - Course Card (Desktop) */}
                         <div className="hidden lg:block">
                             <div className="sticky top-24">
-                                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                                <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden">
                                     <div className="relative">
                                         <img
                                             src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
@@ -219,7 +219,7 @@ const CourseDetailsPage = () => {
                                             className="w-full h-56 object-cover"
                                         />
                                         {hasDiscount && (
-                                            <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                                            <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg dark:shadow-slate-700">
                                                 {discountPercentage}% OFF
                                             </div>
                                         )}
@@ -301,7 +301,7 @@ const CourseDetailsPage = () => {
                         {/* What You'll Learn */}
                         {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                             <div className="card">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">What you'll learn</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">What you'll learn</h2>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     {course.whatYouWillLearn.map((item, index) => (
                                         <div key={index} className="flex items-start gap-3">
@@ -315,20 +315,20 @@ const CourseDetailsPage = () => {
 
                         {/* Description */}
                         <div className="card">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Description</h2>
                             <p className="text-gray-700 leading-relaxed whitespace-pre-line">{course.description}</p>
                         </div>
 
                         {/* Course Content */}
                         <div className="card">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Content</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Course Content</h2>
                             <CourseDetails course={course} />
                         </div>
 
                         {/* Requirements */}
                         {course.requirements && course.requirements.length > 0 && (
                             <div className="card">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-4">Requirements</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Requirements</h2>
                                 <ul className="list-disc list-inside space-y-2">
                                     {course.requirements.map((req, index) => (
                                         <li key={index} className="text-gray-700">{req}</li>
@@ -340,7 +340,7 @@ const CourseDetailsPage = () => {
                         {/* Target Audience */}
                         {course.targetAudience && course.targetAudience.length > 0 && (
                             <div className="card">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-4">Who this course is for</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Who this course is for</h2>
                                 <ul className="list-disc list-inside space-y-2">
                                     {course.targetAudience.map((audience, index) => (
                                         <li key={index} className="text-gray-700">{audience}</li>
@@ -352,7 +352,7 @@ const CourseDetailsPage = () => {
                         {/* Reviews */}
                         {reviews.length > 0 && (
                             <div className="card">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Reviews</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Student Reviews</h2>
                                 <div className="space-y-6">
                                     {reviews.map((review) => (
                                         <div key={review._id} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
@@ -362,7 +362,7 @@ const CourseDetailsPage = () => {
                                                 </div>
                                                 <div className="flex-grow">
                                                     <div className="flex items-center gap-3 mb-2">
-                                                        <h4 className="font-semibold text-gray-900">{review.user?.name || 'Anonymous'}</h4>
+                                                        <h4 className="font-semibold text-gray-900 dark:text-gray-100">{review.user?.name || 'Anonymous'}</h4>
                                                         <div className="flex items-center gap-1">
                                                             {[...Array(5)].map((_, i) => (
                                                                 <FiStar
@@ -387,7 +387,7 @@ const CourseDetailsPage = () => {
 
                     {/* Right Column - Mobile Course Card */}
                     <div className="lg:hidden">
-                        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden sticky top-24">
+                        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden sticky top-24">
                             <div className="relative">
                                 <img
                                     src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
@@ -395,7 +395,7 @@ const CourseDetailsPage = () => {
                                     className="w-full h-48 object-cover"
                                 />
                                 {hasDiscount && (
-                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg dark:shadow-slate-700">
                                         {discountPercentage}% OFF
                                     </div>
                                 )}

@@ -59,7 +59,7 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                     <FiAward className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
                     Certificate Locked
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
@@ -78,17 +78,17 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
     if (certificate) {
         return (
             <div className="text-center py-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg dark:shadow-slate-700">
                     <FiCheck className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
                     Certificate Ready! 🎉
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
                     Congratulations on completing the course
                 </p>
 
-                <div className="bg-white rounded-lg p-4 mb-4 border-2 border-gray-200">
+                <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-lg p-4 mb-4 border-2 border-gray-200">
                     <div className="text-xs text-gray-500 mb-1">Certificate ID</div>
                     <div className="font-mono text-sm font-bold text-primary-600">
                         {certificate.certificateId}
@@ -97,7 +97,7 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
 
                 <button
                     onClick={handleDownload}
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition shadow-lg hover:shadow-xl"
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition shadow-lg dark:shadow-slate-700 hover:shadow-xl"
                 >
                     <FiDownload className="w-5 h-5" />
                     Download Certificate
@@ -112,10 +112,10 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
 
     return (
         <div className="text-center py-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg dark:shadow-slate-700">
                 <FiAward className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Claim Your Certificate!
             </h3>
             <p className="text-sm text-gray-600 mb-6">
@@ -124,7 +124,7 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
             <button
                 onClick={handleGenerateCertificate}
                 disabled={generating}
-                className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition shadow-lg hover:shadow-xl disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition shadow-lg dark:shadow-slate-700 hover:shadow-xl disabled:opacity-50"
             >
                 {generating ? (
                     <>

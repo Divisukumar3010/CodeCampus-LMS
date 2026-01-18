@@ -109,7 +109,7 @@ const CourseView = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Course not found</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Course not found</h2>
                     <p className="text-gray-600">The course you're looking for doesn't exist.</p>
                 </div>
             </div>
@@ -125,7 +125,7 @@ const CourseView = () => {
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden">
                             {currentLesson ? (
                                 <div>
                                     <div className="bg-black aspect-video">
@@ -135,7 +135,7 @@ const CourseView = () => {
                                         />
                                     </div>
                                     <div className="p-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                                             {currentLesson.title}
                                         </h2>
                                         <p className="text-primary-600 font-medium mb-4">{currentLesson.sectionTitle}</p>
@@ -145,7 +145,7 @@ const CourseView = () => {
 
                                         {currentLesson.resources && currentLesson.resources.length > 0 && (
                                             <div className="mb-6">
-                                                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                                                     <FiDownload className="text-primary-600" />
                                                     Course Resources
                                                 </h3>
@@ -196,7 +196,7 @@ const CourseView = () => {
 
                     {/* Course Content Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24">
+                        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden sticky top-24">
                             {/* Progress Header */}
                             <div className="p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
                                 <h3 className="font-bold text-lg mb-3">Your Progress</h3>
@@ -206,9 +206,9 @@ const CourseView = () => {
                                             <span>{progress.completedLessons?.length || 0} / {course.totalLessons || 0} lessons</span>
                                             <span className="font-bold">{progress.percentComplete || 0}%</span>
                                         </div>
-                                        <div className="w-full bg-white bg-opacity-30 rounded-full h-3">
+                                        <div className="w-full bg-white dark:bg-slate-950 dark:bg-slate-900 bg-opacity-30 rounded-full h-3">
                                             <div
-                                                className={`h-3 rounded-full transition-all duration-500 shadow-lg ${progress.isCompleted ? 'bg-green-500' : 'bg-yellow-500'
+                                                className={`h-3 rounded-full transition-all duration-500 shadow-lg dark:shadow-slate-700 ${progress.isCompleted ? 'bg-green-500' : 'bg-yellow-500'
                                                     }`}
                                                 style={{ width: `${progress.percentComplete || 0}%` }}
                                             />
@@ -233,7 +233,7 @@ const CourseView = () => {
                             {/* Course Sections */}
                             <div className="max-h-[600px] overflow-y-auto">
                                 <div className="p-4 bg-gray-50 border-b border-gray-200">
-                                    <h4 className="font-semibold text-gray-900">Course Content</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100">Course Content</h4>
                                 </div>
                                 {sections.length > 0 ? (
                                     sections.map((section) => (
@@ -243,7 +243,7 @@ const CourseView = () => {
                                                 onClick={() => toggleSection(section._id)}
                                                 className="w-full p-4 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between group"
                                             >
-                                                <span className="font-semibold text-gray-900 text-left">
+                                                <span className="font-semibold text-gray-900 dark:text-gray-100 text-left">
                                                     {section.title}
                                                 </span>
                                                 <div className="flex items-center gap-3">
@@ -260,7 +260,7 @@ const CourseView = () => {
 
                                             {/* Lessons List - Collapsible */}
                                             {expandedSections[section._id] && (
-                                                <div className="bg-white">
+                                                <div className="bg-white dark:bg-slate-950 dark:bg-slate-900">
                                                     {section.lessons?.map((lesson) => {
                                                         const isCompleted = isLessonCompleted(lesson._id);
                                                         const isCurrent = currentLesson?._id === lesson._id;
@@ -284,7 +284,7 @@ const CourseView = () => {
                                                                             <FiCheckCircle className="text-white" size={16} />
                                                                         </div>
                                                                     ) : (
-                                                                        <div className="w-6 h-6 rounded-full border-2 border-gray-300" />
+                                                                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-slate-600 dark:border-slate-700" />
                                                                     )}
                                                                 </div>
                                                                 <div className="flex-grow text-left">

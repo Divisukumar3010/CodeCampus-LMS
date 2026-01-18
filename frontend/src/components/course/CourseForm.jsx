@@ -102,8 +102,8 @@ const CourseForm = ({ course, onSubmit, isLoading }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Basic Information</h3>
+            <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Basic Information</h3>
 
                 <div className="space-y-4">
                     <div>
@@ -233,8 +233,8 @@ const CourseForm = ({ course, onSubmit, isLoading }) => {
             </div>
 
             {/* Learning Outcomes */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">What You'll Learn</h3>
+            <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">What You'll Learn</h3>
                 {formData.whatYouWillLearn.map((item, index) => (
                     <div key={index} className="flex gap-2 mb-3">
                         <input

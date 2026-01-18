@@ -42,7 +42,7 @@ const CoursesTable = ({
         <div>
             {/* Header + Filters */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h3>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     {/* Search */}
@@ -52,7 +52,7 @@ const CoursesTable = ({
                             placeholder="Search by course or trainer..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-64"
+                            className="px-4 py-2 border border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-64"
                         />
                     )}
 
@@ -61,7 +61,7 @@ const CoursesTable = ({
                         <select
                             value={selectedTrainer}
                             onChange={(e) => setSelectedTrainer(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-56"
+                            className="px-4 py-2 border border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-56"
                         >
                             <option value="all">All Trainers</option>
                             {trainers.map(trainer => (
@@ -104,7 +104,7 @@ const CoursesTable = ({
                             {filteredCourses.map(course => (
                                 <tr key={course._id} className="hover:bg-gray-50 transition">
                                     <td className="px-6 py-4">
-                                        <p className="text-sm font-semibold text-gray-900">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                             {course.title}
                                         </p>
                                         <p className="text-sm text-gray-500">

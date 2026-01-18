@@ -112,7 +112,7 @@ const DocumentList = ({ documents, onRemove }) => {
                         <div className="flex items-center gap-3">
                             <FiFile className="text-primary-600" size={20} />
                             <div>
-                                <p className="text-sm font-medium text-gray-900">{doc.title}</p>
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.title}</p>
                                 <p className="text-xs text-gray-500">
                                     {(doc.fileSize / 1024 / 1024).toFixed(2)} MB
                                 </p>

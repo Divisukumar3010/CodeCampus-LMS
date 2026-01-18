@@ -367,14 +367,14 @@ const EditCoursePage = () => {
         <div className="min-h-screen bg-gray-50 py-12">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Edit Course</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Edit Course</h1>
                     <p className="text-gray-600">Update your course details and curriculum</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Information */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Basic Information</h2>
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Course Title *</label>
@@ -433,8 +433,8 @@ const EditCoursePage = () => {
                     </div>
 
                     {/* Thumbnail */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Thumbnail</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Course Thumbnail</h2>
                         {thumbnailPreview ? (
                             <div className="relative">
                                 <img src={thumbnailPreview} alt="Thumbnail preview" className="w-full h-64 object-cover rounded-xl" />
@@ -443,7 +443,7 @@ const EditCoursePage = () => {
                                 </button>
                             </div>
                         ) : (
-                            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary-500 transition bg-gray-50">
+                            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-500 transition bg-gray-50">
                                 <FiUpload className="text-5xl text-gray-400 mb-4" />
                                 <p className="text-gray-600 font-medium mb-2">Click to upload thumbnail</p>
                                 <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
@@ -453,8 +453,8 @@ const EditCoursePage = () => {
                     </div>
 
                     {/* What You'll Learn */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">What You'll Learn</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">What You'll Learn</h2>
                         <div className="space-y-3">
                             {formData.whatYouWillLearn.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -473,8 +473,8 @@ const EditCoursePage = () => {
                     </div>
 
                     {/* Requirements */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Requirements</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Requirements</h2>
                         <div className="space-y-3">
                             {formData.requirements.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -493,8 +493,8 @@ const EditCoursePage = () => {
                     </div>
 
                     {/* Target Audience */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Target Audience</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Target Audience</h2>
                         <div className="space-y-3">
                             {formData.targetAudience.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -513,16 +513,16 @@ const EditCoursePage = () => {
                     </div>
 
                     {/* Tags */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Tags</h2>
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Tags</h2>
                         <input type="text" name="tags" value={formData.tags} onChange={handleChange} className="input-field w-full" placeholder="web development, html, css, javascript (comma separated)" />
                         <p className="text-sm text-gray-500 mt-2">Enter tags separated by commas</p>
                     </div>
 
                     {/* Course Sections */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">Course Curriculum</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Course Curriculum</h2>
                             <button type="button" onClick={addSection} className="flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
                                 <FiPlus /> Add Section
                             </button>
@@ -556,7 +556,7 @@ const EditCoursePage = () => {
 
                                                 <div className="mt-6">
                                                     <div className="flex justify-between items-center mb-4">
-                                                        <h4 className="font-bold text-gray-900">Lessons</h4>
+                                                        <h4 className="font-bold text-gray-900 dark:text-gray-100">Lessons</h4>
                                                         <button type="button" onClick={() => addLesson(sectionIndex)} className="flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700">
                                                             <FiPlus /> Add Lesson
                                                         </button>
@@ -567,9 +567,9 @@ const EditCoursePage = () => {
                                                     ) : (
                                                         <div className="space-y-4">
                                                             {section.lessons.map((lesson, lessonIndex) => (
-                                                                <div key={lessonIndex} className="bg-white border border-gray-200 rounded-lg p-4">
+                                                                <div key={lessonIndex} className="bg-white dark:bg-slate-950 dark:bg-slate-900 border border-gray-200 rounded-lg p-4">
                                                                     <div className="flex justify-between items-start mb-4">
-                                                                        <h5 className="font-semibold text-gray-900">Lesson {lessonIndex + 1}</h5>
+                                                                        <h5 className="font-semibold text-gray-900 dark:text-gray-100">Lesson {lessonIndex + 1}</h5>
                                                                         <button type="button" onClick={() => removeLesson(sectionIndex, lessonIndex)} className="text-red-600 hover:bg-red-50 p-2 rounded">
                                                                             <FiTrash2 />
                                                                         </button>
