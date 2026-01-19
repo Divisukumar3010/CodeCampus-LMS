@@ -65,13 +65,6 @@ const CourseView = () => {
             // Update progress with the response
             setProgress(response.data.progress);
 
-            // // Log to check completion status
-            // console.log('Progress updated:', {
-            //     isCompleted: response.data.progress.isCompleted,
-            //     percentComplete: response.data.progress.percentComplete,
-            //     completedLessons: response.data.progress.completedLessons.length
-            // });
-
             toast.success('Lesson marked as complete!');
 
             // If course is now completed, show celebration
@@ -99,7 +92,7 @@ const CourseView = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
                 <div className="spinner"></div>
             </div>
         );
@@ -107,10 +100,10 @@ const CourseView = () => {
 
     if (!course) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Course not found</h2>
-                    <p className="text-gray-600">The course you're looking for doesn't exist.</p>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Course not found</h2>
+                    <p className="text-gray-600 dark:text-slate-400">The course you're looking for doesn't exist.</p>
                 </div>
             </div>
         );
@@ -120,12 +113,12 @@ const CourseView = () => {
     const sections = course.sections || [];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
             <div className="max-w-7xl mx-auto py-8 px-4">
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden">
                             {currentLesson ? (
                                 <div>
                                     <div className="bg-black aspect-video">
@@ -135,18 +128,18 @@ const CourseView = () => {
                                         />
                                     </div>
                                     <div className="p-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                             {currentLesson.title}
                                         </h2>
-                                        <p className="text-primary-600 font-medium mb-4">{currentLesson.sectionTitle}</p>
+                                        <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">{currentLesson.sectionTitle}</p>
                                         {currentLesson.description && (
-                                            <p className="text-gray-700 mb-6">{currentLesson.description}</p>
+                                            <p className="text-gray-700 dark:text-slate-300 mb-6">{currentLesson.description}</p>
                                         )}
 
                                         {currentLesson.resources && currentLesson.resources.length > 0 && (
                                             <div className="mb-6">
-                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                                                    <FiDownload className="text-primary-600" />
+                                                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                                    <FiDownload className="text-primary-600 dark:text-primary-400" />
                                                     Course Resources
                                                 </h3>
                                                 <div className="space-y-2">
@@ -156,10 +149,10 @@ const CourseView = () => {
                                                             href={resource.url}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-primary-50 hover:border-primary-200 border border-transparent transition"
+                                                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 hover:border-primary-200 border border-transparent dark:border-slate-700 transition"
                                                         >
-                                                            <FiDownload className="text-primary-600" />
-                                                            <span className="text-gray-700 font-medium">{resource.title}</span>
+                                                            <FiDownload className="text-primary-600 dark:text-primary-400" />
+                                                            <span className="text-gray-700 dark:text-slate-300 font-medium">{resource.title}</span>
                                                         </a>
                                                     ))}
                                                 </div>
@@ -177,7 +170,7 @@ const CourseView = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="aspect-video bg-gray-900 flex items-center justify-center text-white">
+                                <div className="aspect-video bg-gray-900 dark:bg-slate-900 flex items-center justify-center text-white">
                                     <p>No lessons available</p>
                                 </div>
                             )}
@@ -196,7 +189,7 @@ const CourseView = () => {
 
                     {/* Course Content Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden sticky top-24">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden sticky top-24">
                             {/* Progress Header */}
                             <div className="p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
                                 <h3 className="font-bold text-lg mb-3">Your Progress</h3>
@@ -206,9 +199,9 @@ const CourseView = () => {
                                             <span>{progress.completedLessons?.length || 0} / {course.totalLessons || 0} lessons</span>
                                             <span className="font-bold">{progress.percentComplete || 0}%</span>
                                         </div>
-                                        <div className="w-full bg-white dark:bg-slate-950 dark:bg-slate-900 bg-opacity-30 rounded-full h-3">
+                                        <div className="w-full bg-white bg-opacity-30 rounded-full h-3">
                                             <div
-                                                className={`h-3 rounded-full transition-all duration-500 shadow-lg dark:shadow-slate-700 ${progress.isCompleted ? 'bg-green-500' : 'bg-yellow-500'
+                                                className={`h-3 rounded-full transition-all duration-500 shadow-lg ${progress.isCompleted ? 'bg-green-500' : 'bg-yellow-500'
                                                     }`}
                                                 style={{ width: `${progress.percentComplete || 0}%` }}
                                             />
@@ -220,7 +213,7 @@ const CourseView = () => {
 
                             {/* Certificate Section */}
                             {progress?.isCompleted && (
-                                <div className="p-6 bg-gradient-to-br from-green-50 to-blue-50 border-b-4 border-green-500">
+                                <div className="p-6 bg-gradient-to-br from-green-50 dark:from-green-900/20 to-blue-50 dark:to-blue-900/20 border-b-4 border-green-500">
                                     <Certificate
                                         courseId={id}
                                         courseTitle={course.title}
@@ -232,35 +225,35 @@ const CourseView = () => {
 
                             {/* Course Sections */}
                             <div className="max-h-[600px] overflow-y-auto">
-                                <div className="p-4 bg-gray-50 border-b border-gray-200">
-                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100">Course Content</h4>
+                                <div className="p-4 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                                    <h4 className="font-semibold text-gray-900 dark:text-white">Course Content</h4>
                                 </div>
                                 {sections.length > 0 ? (
                                     sections.map((section) => (
-                                        <div key={section._id} className="border-b border-gray-200">
+                                        <div key={section._id} className="border-b border-gray-200 dark:border-slate-800">
                                             {/* Section Header - Collapsible */}
                                             <button
                                                 onClick={() => toggleSection(section._id)}
-                                                className="w-full p-4 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between group"
+                                                className="w-full p-4 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition flex items-center justify-between group"
                                             >
-                                                <span className="font-semibold text-gray-900 dark:text-gray-100 text-left">
+                                                <span className="font-semibold text-gray-900 dark:text-white text-left">
                                                     {section.title}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-xs text-gray-500 dark:text-slate-400">
                                                         {section.lessons?.length || 0} lessons
                                                     </span>
                                                     {expandedSections[section._id] ? (
-                                                        <FiChevronUp className="text-gray-600 group-hover:text-primary-600 transition" />
+                                                        <FiChevronUp className="text-gray-600 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition" />
                                                     ) : (
-                                                        <FiChevronDown className="text-gray-600 group-hover:text-primary-600 transition" />
+                                                        <FiChevronDown className="text-gray-600 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition" />
                                                     )}
                                                 </div>
                                             </button>
 
                                             {/* Lessons List - Collapsible */}
                                             {expandedSections[section._id] && (
-                                                <div className="bg-white dark:bg-slate-950 dark:bg-slate-900">
+                                                <div className="bg-white dark:bg-slate-900">
                                                     {section.lessons?.map((lesson) => {
                                                         const isCompleted = isLessonCompleted(lesson._id);
                                                         const isCurrent = currentLesson?._id === lesson._id;
@@ -273,8 +266,8 @@ const CourseView = () => {
                                                                     sectionId: section._id,
                                                                     sectionTitle: section.title
                                                                 })}
-                                                                className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition border-l-4 ${isCurrent
-                                                                    ? 'bg-primary-50 border-primary-600'
+                                                                className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition border-l-4 ${isCurrent
+                                                                    ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-600'
                                                                     : 'border-transparent'
                                                                     }`}
                                                             >
@@ -284,17 +277,17 @@ const CourseView = () => {
                                                                             <FiCheckCircle className="text-white" size={16} />
                                                                         </div>
                                                                     ) : (
-                                                                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-slate-600 dark:border-slate-700" />
+                                                                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-slate-600" />
                                                                     )}
                                                                 </div>
                                                                 <div className="flex-grow text-left">
                                                                     <p className={`text-sm ${isCurrent
-                                                                        ? 'font-semibold text-primary-600'
-                                                                        : 'text-gray-700'
+                                                                        ? 'font-semibold text-primary-600 dark:text-primary-400'
+                                                                        : 'text-gray-700 dark:text-slate-300'
                                                                         }`}>
                                                                         {lesson.title}
                                                                     </p>
-                                                                    <p className="text-xs text-gray-500">
+                                                                    <p className="text-xs text-gray-500 dark:text-slate-400">
                                                                         {Math.floor(lesson.videoDuration / 60)}:{String(lesson.videoDuration % 60).padStart(2, '0')} min
                                                                     </p>
                                                                 </div>
@@ -306,7 +299,7 @@ const CourseView = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="p-6 text-center text-gray-500">
+                                    <div className="p-6 text-center text-gray-500 dark:text-slate-400">
                                         No course content available
                                     </div>
                                 )}
@@ -325,7 +318,7 @@ const CourseView = () => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 
