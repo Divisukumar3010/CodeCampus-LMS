@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { courseAPI, adminAPI } from '../services/api';
 import { FiUpload, FiX, FiPlus, FiTrash2, FiSave, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useTheme } from '../hooks/useTheme'; // Import useTheme hook
 
 const CreateCourse = () => {
     const navigate = useNavigate();
+    const { isDarkMode } = useTheme(); // Get theme state
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [thumbnailPreview, setThumbnailPreview] = useState('');
@@ -99,7 +101,17 @@ const CreateCourse = () => {
             ...prev,
             sections: prev.sections.map((section, i) =>
                 i === sectionIndex
-                    ? { ...section, lessons: [...section.lessons, { title: '', description: '', video: null, videoPreview: null, isFree: false }] }
+                    ? {
+                        ...section,
+                        lessons: [...section.lessons, {
+                            title: '',
+                            description: '',
+                            video: null,
+                            videoPreview: null,
+                            isFree: false,
+                            resources: []
+                        }]
+                    }
                     : section
             )
         }));
@@ -141,6 +153,129 @@ const CreateCourse = () => {
             }
             updateLesson(sectionIndex, lessonIndex, 'video', file);
             updateLesson(sectionIndex, lessonIndex, 'videoPreview', URL.createObjectURL(file));
+        }
+    };
+
+    const addResource = (sectionIndex, lessonIndex) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: [...(lesson.resources || []), {
+                                        title: '',
+                                        file: null,
+                                        url: null
+                                    }]
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+    const removeResource = (sectionIndex, lessonIndex, resourceIdx) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: lesson.resources.filter((_, k) => k !== resourceIdx)
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+    const updateResourceTitle = (sectionIndex, lessonIndex, resourceIdx, value) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: lesson.resources.map((resource, k) =>
+                                        k === resourceIdx
+                                            ? { ...resource, title: value }
+                                            : resource
+                                    )
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+    const handleResourceChange = (sectionIndex, lessonIndex, e) => {
+        const files = Array.from(e.target.files);
+
+        const validFiles = files.filter(file => {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            const validTypes = ['application/pdf', 'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+
+            if (file.size > maxSize) {
+                toast.error(`${file.name} exceeds 50MB limit`);
+                return false;
+            }
+            if (!validTypes.includes(file.type)) {
+                toast.error(`${file.name} is not a supported format`);
+                return false;
+            }
+            return true;
+        });
+
+        if (validFiles.length > 0) {
+            setFormData(prev => ({
+                ...prev,
+                sections: prev.sections.map((section, i) =>
+                    i === sectionIndex
+                        ? {
+                            ...section,
+                            lessons: section.lessons.map((lesson, j) =>
+                                j === lessonIndex
+                                    ? {
+                                        ...lesson,
+                                        resources: [
+                                            ...(lesson.resources || []),
+                                            ...validFiles.map(file => ({
+                                                title: file.name.split('.')[0],
+                                                file: file,
+                                                url: null
+                                            }))
+                                        ]
+                                    }
+                                    : lesson
+                            )
+                        }
+                        : section
+                )
+            }));
         }
     };
 
@@ -222,7 +357,7 @@ const CreateCourse = () => {
                 submitData.append('tags', JSON.stringify(tagsArray));
             }
 
-            // Add sections WITH all required fields (order, videoUrl, videoDuration)
+            // Add sections WITH all required fields (order, videoUrl, videoDuration, resources)
             const sectionsData = formData.sections.map((section, sectionIndex) => ({
                 title: section.title,
                 description: section.description,
@@ -233,7 +368,12 @@ const CreateCourse = () => {
                     isFree: lesson.isFree,
                     order: lessonIndex + 1, // REQUIRED
                     videoDuration: 0, // Will be calculated or updated later
-                    videoUrl: '' // Will be set when video is uploaded
+                    videoUrl: '', // Will be set when video is uploaded
+                    resources: (lesson.resources || []).map(resource => ({
+                        title: resource.title || resource.file?.name.split('.')[0],
+                        url: resource.url || null,
+                        fileName: resource.file?.name || ''
+                    }))
                 }))
             }));
             submitData.append('sections', JSON.stringify(sectionsData));
@@ -245,6 +385,20 @@ const CreateCourse = () => {
                         const videoFieldName = `lesson_${sectionIndex}_${lessonIndex}`;
                         console.log('Adding video:', videoFieldName);
                         submitData.append(videoFieldName, lesson.video, lesson.video.name);
+                    }
+                });
+            });
+
+            // Add resource files to FormData
+            formData.sections.forEach((section, sectionIndex) => {
+                section.lessons.forEach((lesson, lessonIndex) => {
+                    if (lesson.resources && lesson.resources.length > 0) {
+                        lesson.resources.forEach((resource, resourceIdx) => {
+                            if (resource.file) {
+                                const docFieldName = `resource_${sectionIndex}_${lessonIndex}_${resourceIdx}`;
+                                submitData.append(docFieldName, resource.file, resource.file.name);
+                            }
+                        });
                     }
                 });
             });
@@ -265,66 +419,78 @@ const CreateCourse = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Create New Course</h1>
-                    <p className="text-gray-600">Fill in the details to create your course</p>
+                    <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create New Course</h1>
+                    <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Fill in the details to create your course</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Information */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Basic Information</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Basic Information</h2>
 
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Course Title *</label>
+                                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Course Title *</label>
                                 <input
                                     type="text"
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
                                     required
-                                    className="input-field w-full"
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                    } focus:outline-none focus:ring-2`}
                                     placeholder="e.g., Complete Web Development Bootcamp 2024"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Subtitle</label>
+                                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subtitle</label>
                                 <input
                                     type="text"
                                     name="subtitle"
                                     value={formData.subtitle}
                                     onChange={handleChange}
-                                    className="input-field w-full"
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                    } focus:outline-none focus:ring-2`}
                                     placeholder="Brief description of your course"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description *</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
                                     required
                                     rows={6}
-                                    className="input-field w-full"
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                    } focus:outline-none focus:ring-2`}
                                     placeholder="Detailed description of what students will learn..."
                                 />
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category *</label>
                                     <select
                                         name="category"
                                         value={formData.category}
                                         onChange={handleChange}
                                         required
-                                        className="input-field w-full"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="">Select a category</option>
                                         {categories.map(cat => (
@@ -334,12 +500,15 @@ const CreateCourse = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Level *</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Level *</label>
                                     <select
                                         name="level"
                                         value={formData.level}
                                         onChange={handleChange}
-                                        className="input-field w-full"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="beginner">Beginner</option>
                                         <option value="intermediate">Intermediate</option>
@@ -351,19 +520,22 @@ const CreateCourse = () => {
 
                             <div className="grid md:grid-cols-3 gap-6">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Language</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Language</label>
                                     <input
                                         type="text"
                                         name="language"
                                         value={formData.language}
                                         onChange={handleChange}
-                                        className="input-field w-full"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="English"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Price (INR) *</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Price (INR) *</label>
                                     <input
                                         type="number"
                                         name="price"
@@ -372,13 +544,16 @@ const CreateCourse = () => {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className="input-field w-full"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="99.99"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Discount Price (INR)</label>
+                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Discount Price (INR)</label>
                                     <input
                                         type="number"
                                         name="discountPrice"
@@ -386,7 +561,10 @@ const CreateCourse = () => {
                                         onChange={handleChange}
                                         min="0"
                                         step="0.01"
-                                        className="input-field w-full"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="49.99"
                                     />
                                 </div>
@@ -395,8 +573,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Thumbnail */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Course Thumbnail *</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Thumbnail *</h2>
 
                         {thumbnailPreview ? (
                             <div className="relative">
@@ -414,10 +592,13 @@ const CreateCourse = () => {
                                 </button>
                             </div>
                         ) : (
-                            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-500 transition bg-gray-50">
-                                <FiUpload className="text-5xl text-gray-400 mb-4" />
-                                <p className="text-gray-600 font-medium mb-2">Click to upload thumbnail</p>
-                                <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
+                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode 
+                                ? 'border-gray-600 hover:border-blue-500 bg-gray-700' 
+                                : 'border-gray-300 hover:border-blue-500 bg-gray-50'
+                            }`}>
+                                <FiUpload className={`text-5xl mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                                <p className={`font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Click to upload thumbnail</p>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>PNG, JPG up to 5MB</p>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -429,8 +610,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* What You'll Learn */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">What You'll Learn</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>What You'll Learn</h2>
                         <div className="space-y-3">
                             {formData.whatYouWillLearn.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -438,14 +619,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('whatYouWillLearn', index, e.target.value)}
-                                        className="input-field flex-grow"
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Build responsive websites with HTML, CSS, and JavaScript"
                                     />
                                     {formData.whatYouWillLearn.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('whatYouWillLearn', index)}
-                                            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
+                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                : 'text-red-600 hover:bg-red-50'
+                                            }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -455,7 +642,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('whatYouWillLearn')}
-                                className="flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
+                                    ? 'text-blue-400 hover:text-blue-300' 
+                                    : 'text-blue-600 hover:text-blue-700'
+                                }`}
                             >
                                 <FiPlus /> Add Learning Outcome
                             </button>
@@ -463,8 +653,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Requirements */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Requirements</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Requirements</h2>
                         <div className="space-y-3">
                             {formData.requirements.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -472,14 +662,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('requirements', index, e.target.value)}
-                                        className="input-field flex-grow"
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Basic computer skills"
                                     />
                                     {formData.requirements.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('requirements', index)}
-                                            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
+                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                : 'text-red-600 hover:bg-red-50'
+                                            }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -489,7 +685,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('requirements')}
-                                className="flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
+                                    ? 'text-blue-400 hover:text-blue-300' 
+                                    : 'text-blue-600 hover:text-blue-700'
+                                }`}
                             >
                                 <FiPlus /> Add Requirement
                             </button>
@@ -497,8 +696,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Target Audience */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Target Audience</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Target Audience</h2>
                         <div className="space-y-3">
                             {formData.targetAudience.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -506,14 +705,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('targetAudience', index, e.target.value)}
-                                        className="input-field flex-grow"
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                        } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Beginners who want to learn web development"
                                     />
                                     {formData.targetAudience.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('targetAudience', index)}
-                                            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
+                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                : 'text-red-600 hover:bg-red-50'
+                                            }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -523,7 +728,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('targetAudience')}
-                                className="flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
+                                    ? 'text-blue-400 hover:text-blue-300' 
+                                    : 'text-blue-600 hover:text-blue-700'
+                                }`}
                             >
                                 <FiPlus /> Add Target Audience
                             </button>
@@ -531,42 +739,48 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Tags */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Tags</h2>
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Tags</h2>
                         <input
                             type="text"
                             name="tags"
                             value={formData.tags}
                             onChange={handleChange}
-                            className="input-field w-full"
+                            className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                            } focus:outline-none focus:ring-2`}
                             placeholder="web development, html, css, javascript (comma separated)"
                         />
-                        <p className="text-sm text-gray-500 mt-2">Enter tags separated by commas</p>
+                        <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Enter tags separated by commas</p>
                     </div>
 
                     {/* Course Sections */}
-                    <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-xl shadow-sm p-6">
+                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Course Curriculum</h2>
+                            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Curriculum</h2>
                             <button
                                 type="button"
                                 onClick={addSection}
-                                className="flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isDarkMode 
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }`}
                             >
                                 <FiPlus /> Add Section
                             </button>
                         </div>
 
                         {formData.sections.length === 0 ? (
-                            <p className="text-gray-500 text-center py-8">No sections added yet. Click "Add Section" to start building your course curriculum.</p>
+                            <p className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>No sections added yet. Click "Add Section" to start building your course curriculum.</p>
                         ) : (
                             <div className="space-y-4">
                                 {formData.sections.map((section, sectionIndex) => (
-                                    <div key={sectionIndex} className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div key={sectionIndex} className={`border rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                                         {/* Section Header */}
                                         <div
                                             onClick={() => toggleSection(sectionIndex)}
-                                            className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-4 cursor-pointer flex justify-between items-center hover:opacity-90"
+                                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 cursor-pointer flex justify-between items-center hover:opacity-90"
                                         >
                                             <div>
                                                 <h3 className="font-bold text-lg">{section.title || `Section ${sectionIndex + 1}`}</h3>
@@ -577,26 +791,32 @@ const CreateCourse = () => {
 
                                         {/* Section Content */}
                                         {expandedSections[sectionIndex] && (
-                                            <div className="p-6 space-y-4 bg-gray-50">
+                                            <div className={`p-6 space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Section Title *</label>
+                                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Section Title *</label>
                                                     <input
                                                         type="text"
                                                         value={section.title}
                                                         onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)}
                                                         required
-                                                        className="input-field w-full"
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                        } focus:outline-none focus:ring-2`}
                                                         placeholder="e.g., Introduction to Web Development"
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Section Description</label>
+                                                    <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Section Description</label>
                                                     <textarea
                                                         value={section.description}
                                                         onChange={(e) => updateSection(sectionIndex, 'description', e.target.value)}
                                                         rows={3}
-                                                        className="input-field w-full"
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                        } focus:outline-none focus:ring-2`}
                                                         placeholder="Brief description of this section"
                                                     />
                                                 </div>
@@ -604,28 +824,37 @@ const CreateCourse = () => {
                                                 {/* Lessons */}
                                                 <div className="mt-6">
                                                     <div className="flex justify-between items-center mb-4">
-                                                        <h4 className="font-bold text-gray-900 dark:text-gray-100">Lessons</h4>
+                                                        <h4 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Lessons</h4>
                                                         <button
                                                             type="button"
                                                             onClick={() => addLesson(sectionIndex)}
-                                                            className="flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+                                                            className={`flex items-center gap-2 font-semibold ${isDarkMode 
+                                                                ? 'text-blue-400 hover:text-blue-300' 
+                                                                : 'text-blue-600 hover:text-blue-700'
+                                                            }`}
                                                         >
                                                             <FiPlus /> Add Lesson
                                                         </button>
                                                     </div>
 
                                                     {section.lessons.length === 0 ? (
-                                                        <p className="text-gray-500 text-center py-4">No lessons in this section yet.</p>
+                                                        <p className={`text-center py-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>No lessons in this section yet.</p>
                                                     ) : (
                                                         <div className="space-y-4">
                                                             {section.lessons.map((lesson, lessonIndex) => (
-                                                                <div key={lessonIndex} className="bg-white dark:bg-slate-950 dark:bg-slate-900 border border-gray-200 rounded-lg p-4">
+                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode 
+                                                                    ? 'bg-gray-800 border-gray-700' 
+                                                                    : 'bg-white border-gray-200'
+                                                                }`}>
                                                                     <div className="flex justify-between items-start mb-4">
-                                                                        <h5 className="font-semibold text-gray-900 dark:text-gray-100">Lesson {lessonIndex + 1}</h5>
+                                                                        <h5 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Lesson {lessonIndex + 1}</h5>
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => removeLesson(sectionIndex, lessonIndex)}
-                                                                            className="text-red-600 hover:bg-red-50 p-2 rounded"
+                                                                            className={`p-2 rounded ${isDarkMode 
+                                                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                                                : 'text-red-600 hover:bg-red-50'
+                                                                            }`}
                                                                         >
                                                                             <FiTrash2 />
                                                                         </button>
@@ -633,33 +862,47 @@ const CreateCourse = () => {
 
                                                                     <div className="space-y-3">
                                                                         <div>
-                                                                            <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Title *</label>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Title *</label>
                                                                             <input
                                                                                 type="text"
                                                                                 value={lesson.title}
                                                                                 onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'title', e.target.value)}
                                                                                 required
-                                                                                className="input-field w-full"
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                } focus:outline-none focus:ring-2`}
                                                                                 placeholder="e.g., Welcome to the Course"
                                                                             />
                                                                         </div>
 
                                                                         <div>
-                                                                            <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Description</label>
                                                                             <textarea
                                                                                 value={lesson.description}
                                                                                 onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'description', e.target.value)}
                                                                                 rows={2}
-                                                                                className="input-field w-full"
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                } focus:outline-none focus:ring-2`}
                                                                                 placeholder="Brief description of this lesson"
                                                                             />
                                                                         </div>
-
+                                                                        <div className="flex items-center">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={lesson.isFree}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'isFree', e.target.checked)}
+                                                                                className="w-4 h-4"
+                                                                            />
+                                                                            <label className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mark as free preview</label>
+                                                                        </div>
                                                                         <div>
-                                                                            <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Video (MP4, WebM)</label>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Video (MP4, WebM)</label>
                                                                             {lesson.videoPreview ? (
                                                                                 <div className="mb-3">
-                                                                                    <video controls className="w-full h-40 bg-black rounded-lg">
+                                                                                    <video controls controlsList="nodownload" className="w-full h-40 bg-black rounded-lg">
                                                                                         <source src={lesson.videoPreview} />
                                                                                     </video>
                                                                                 </div>
@@ -668,19 +911,75 @@ const CreateCourse = () => {
                                                                                 type="file"
                                                                                 accept="video/*"
                                                                                 onChange={(e) => handleVideoChange(sectionIndex, lessonIndex, e)}
-                                                                                className="input-field w-full"
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                } focus:outline-none focus:ring-2`}
                                                                             />
-                                                                            <p className="text-xs text-gray-500 mt-1">Max 500MB. Upload will happen when you create the course.</p>
+                                                                            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Max 500MB. Upload will happen when you create the course.</p>
                                                                         </div>
 
-                                                                        <div className="flex items-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                checked={lesson.isFree}
-                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'isFree', e.target.checked)}
-                                                                                className="w-4 h-4"
-                                                                            />
-                                                                            <label className="ml-2 text-sm text-gray-700">Mark as free preview</label>
+                                                                        {/* Resources/Documents */}
+                                                                        <div>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                                                Lesson Resources (Documents, PDF, etc.)
+                                                                            </label>
+
+                                                                            {lesson.resources && lesson.resources.length > 0 && (
+                                                                                <div className="mb-4 space-y-2">
+                                                                                    {lesson.resources.map((resource, resourceIdx) => (
+                                                                                        <div key={resourceIdx} className={`flex items-center justify-between p-3 rounded-lg border ${isDarkMode 
+                                                                                            ? 'bg-gray-800 border-gray-700' 
+                                                                                            : 'bg-gray-50 border-gray-200'
+                                                                                        }`}>
+                                                                                            <div className="flex-grow">
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    value={resource.title}
+                                                                                                    onChange={(e) => updateResourceTitle(sectionIndex, lessonIndex, resourceIdx, e.target.value)}
+                                                                                                    className={`w-full bg-transparent text-sm font-medium mb-1 border-none focus:outline-none ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                                                                                    placeholder="Enter resource title"
+                                                                                                />
+                                                                                                <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                                                    {resource.file?.name || 'No file selected'}
+                                                                                                    {resource.file && ` (${(resource.file.size / 1024 / 1024).toFixed(2)} MB)`}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                onClick={() => removeResource(sectionIndex, lessonIndex, resourceIdx)}
+                                                                                                className={`p-2 rounded transition ${isDarkMode 
+                                                                                                    ? 'text-red-400 hover:bg-red-900/30' 
+                                                                                                    : 'text-red-600 hover:bg-red-50'
+                                                                                                }`}
+                                                                                            >
+                                                                                                <FiTrash2 size={18} />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )}
+
+                                                                            <div className="flex gap-2">
+                                                                                <input
+                                                                                    type="file"
+                                                                                    multiple
+                                                                                    onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, e)}
+                                                                                    className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
+                                                                                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                    placeholder="Select documents"
+                                                                                />
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => addResource(sectionIndex, lessonIndex)}
+                                                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                                                                                >
+                                                                                    <FiPlus size={18} />
+                                                                                </button>
+                                                                            </div>
+                                                                            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX up to 50MB each</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -693,7 +992,10 @@ const CreateCourse = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => removeSection(sectionIndex)}
-                                                    className="mt-4 w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200 font-semibold transition"
+                                                    className={`mt-4 w-full px-4 py-2 rounded-lg border font-semibold transition ${isDarkMode 
+                                                        ? 'text-red-400 hover:bg-red-900/30 border-red-800' 
+                                                        : 'text-red-600 hover:bg-red-50 border-red-200'
+                                                    }`}
                                                 >
                                                     Delete Section
                                                 </button>
@@ -710,7 +1012,7 @@ const CreateCourse = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="btn-primary flex items-center gap-2 flex-1"
+                            className="flex items-center gap-2 flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <>
@@ -727,7 +1029,10 @@ const CreateCourse = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/dashboard/trainer')}
-                            className="btn-ghost"
+                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode 
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
                             disabled={isLoading}
                         >
                             Cancel

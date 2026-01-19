@@ -205,7 +205,6 @@ const CourseView = () => {
                                                     }`}
                                                 style={{ width: `${progress.percentComplete || 0}%` }}
                                             />
-
                                         </div>
                                     </div>
                                 )}

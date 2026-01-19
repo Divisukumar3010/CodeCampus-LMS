@@ -42,7 +42,7 @@ const CoursesTable = ({
         <div>
             {/* Header + Filters */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     {/* Search */}
@@ -52,7 +52,7 @@ const CoursesTable = ({
                             placeholder="Search by course or trainer..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-64"
+                            className="px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-64 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
                         />
                     )}
 
@@ -61,7 +61,7 @@ const CoursesTable = ({
                         <select
                             value={selectedTrainer}
                             onChange={(e) => setSelectedTrainer(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 dark:border-slate-600 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-56"
+                            className="px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none w-full sm:w-56 bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
                         >
                             <option value="all">All Trainers</option>
                             {trainers.map(trainer => (
@@ -77,48 +77,48 @@ const CoursesTable = ({
             {/* Empty */}
             {!filteredCourses.length ? (
                 <div className="text-center py-12">
-                    <FiBook className="text-5xl text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg">No courses found</p>
+                    <FiBook className="text-5xl text-gray-300 dark:text-slate-700 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-slate-400 text-lg">No courses found</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto rounded-lg border">
+                <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-slate-800">
                     <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-800">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">
                                     Course
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">
                                     Enrollments
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">
                                     Revenue
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">
                                     Rating
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
                             {filteredCourses.map(course => (
-                                <tr key={course._id} className="hover:bg-gray-50 transition">
+                                <tr key={course._id} className="bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
                                     <td className="px-6 py-4">
-                                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
                                             {course.title}
                                         </p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-500 dark:text-slate-400">
                                             {course.trainer?.name || 'Unknown'}
                                         </p>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-4 text-gray-900 dark:text-white font-semibold">
                                         {course.enrollmentCount || 0}
                                     </td>
-                                    <td className="px-6 py-4 text-green-600 font-semibold">
+                                    <td className="px-6 py-4 text-green-600 dark:text-green-400 font-semibold">
                                         ₹{(course.revenue || 0).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="font-semibold">
+                                        <span className="font-semibold text-gray-900 dark:text-white">
                                             {(course.averageRating || 0).toFixed(1)}
                                         </span>
                                         <span className="text-yellow-500 ml-1">★</span>
