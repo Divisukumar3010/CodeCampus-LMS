@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiMenu, FiX, FiUser, FiLogOut, FiSettings, FiBook } from 'react-icons/fi';
 import ThemeToggle from '../ThemeToggle';
+import OnlineCompiler from '../../pages/OnlineCompiler';
 
 const Navbar = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -48,6 +49,12 @@ const Navbar = () => {
                             className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
                         >
                             Courses
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+                        </Link>
+                        <Link to="/online-compiler"
+                            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
+                        >
+                            Online Compiler
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                         </Link>
 

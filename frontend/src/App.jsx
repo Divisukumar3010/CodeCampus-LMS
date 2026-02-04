@@ -22,6 +22,7 @@ import TrainerDashboard from './components/dashboard/TrainerDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import MyCourses from './pages/MyCourses';
+import OnlineCompiler from './pages/OnlineCompiler';
 
 function AppContent() {
   const { isDarkMode } = useTheme();
@@ -48,6 +49,8 @@ function AppContent() {
               <Route path="/register" element={<Register />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseDetails />} />
+              <Route path="/online-compiler" element={<OnlineCompiler />} />  
+              
 
               {/* Protected Routes */}
               <Route
