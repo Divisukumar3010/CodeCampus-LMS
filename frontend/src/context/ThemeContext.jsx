@@ -2,21 +2,24 @@ import { createContext, useState, useEffect } from 'react';
 
 export const ThemeContext = createContext();
 
+// Function to get initial theme
+const getInitialTheme = () => {
+    if (typeof window === 'undefined') return false;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        return savedTheme === 'dark';
+    }
+
+    // Check system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
 export const ThemeProvider = ({ children }) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // Initialize from localStorage immediately to prevent light flash
+    const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
 
-    // Load saved theme from localStorage
-    useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            setIsDarkMode(savedTheme === 'dark');
-        } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setIsDarkMode(prefersDark);
-        }
-    }, []);
-
-    // Update HTML element and localStorage
+    // Update HTML element and localStorage when theme changes
     useEffect(() => {
         const theme = isDarkMode ? 'dark' : 'light';
         localStorage.setItem('theme', theme);

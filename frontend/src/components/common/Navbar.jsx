@@ -18,41 +18,41 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="sticky top-5 z-50 flex justify-center">
+        <nav className="sticky top-3 sm:top-4 md:top-5 z-50 flex justify-center px-2 sm:px-3 md:px-4">
             {/* Glass Pill Container */}
-            <div className="w-[98%] max-w-[95%] rounded-full bg-white/40 dark:bg-gray-800/50 backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+            <div className="w-full sm:w-[98%] md:w-[98%] max-w-[95%] rounded-full bg-white/40 dark:bg-gray-800/50 backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
 
-                <div className="flex justify-between items-center h-20 px-8">
+                <div className="flex justify-between items-center h-16 sm:h-18 md:h-20 px-4 sm:px-6 md:px-8">
 
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-3 group">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                    <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform">
                             <img
                                 src="/CodeCampus.png"
                                 alt="CodeCampus"
-                                className="w-12 h-12 object-contain"
+                                className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain"
                             />
                         </div>
 
                         <div>
-                            <span className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-lg sm:text-xl md:text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                 CodeCampus
                             </span>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Learn Without Limits</p>
+                            <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 font-medium">Learn Without Limits</p>
                         </div>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
+                    <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
                         <Link
                             to="/courses"
-                            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
+                            className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
                         >
                             Courses
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                         </Link>
                         <Link to="/online-compiler"
-                            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
+                            className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
                         >
                             Online Compiler
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
@@ -61,7 +61,7 @@ const Navbar = () => {
                         {isAuthenticated && user?.role === 'student' && (
                             <Link
                                 to="/my-courses"
-                                className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
+                                className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
                             >
                                 My Courses
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
@@ -70,7 +70,7 @@ const Navbar = () => {
                         {isAuthenticated && (
                             <Link
                                 to="/dashboard"
-                                className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
+                                className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
                             >
                                 Dashboard
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
@@ -79,40 +79,40 @@ const Navbar = () => {
                     </div>
 
                     {/* Right side items (Auth/Profile + ThemeToggle) */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
                         {/* Theme Toggle - Visible on all screen sizes */}
-                        <div className="hidden md:block">
+                        <div className="hidden sm:block">
                             <ThemeToggle />
                         </div>
 
                         {/* Auth / Profile - Desktop */}
-                        <div className="hidden md:flex items-center space-x-4">
+                        <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
                             {isAuthenticated ? (
                                 <div className="relative">
                                     <button
                                         onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                                        className="flex items-center space-x-3 bg-white dark:bg-slate-900/50 backdrop-blur-md px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-slate-900/70 transition-all border border-white/30 dark:border-slate-700/30 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="flex items-center space-x-2 lg:space-x-3 bg-white dark:bg-slate-900/50 backdrop-blur-md px-3 lg:px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-slate-900/70 transition-all border border-white/30 dark:border-slate-700/30 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         {user?.avatar?.url ? (
                                             <img
                                                 src={user.avatar.url}
                                                 alt={user.name}
-                                                className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow"
+                                                className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow"
                                                 onError={(e) => {
                                                     e.target.onerror = null;
                                                     e.target.src = '/CodeCampus.png';
                                                 }}
                                             />
                                         ) : (
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                                            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm lg:text-base">
                                                 {user?.name?.charAt(0).toUpperCase()}
                                             </div>
                                         )}
-                                        <div className="text-left">
+                                        <div className="text-left hidden xl:block">
                                             <p className="font-bold text-gray-900 dark:text-gray-100 text-sm">{user?.name}</p>
                                             <p className="text-xs text-gray-700 dark:text-gray-400 capitalize">{user?.role}</p>
                                         </div>
-                                        <svg className="w-4 h-4 text-gray-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-3 h-3 lg:w-4 lg:h-4 text-gray-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
@@ -123,10 +123,10 @@ const Navbar = () => {
                                                 className="fixed inset-0 z-10"
                                                 onClick={() => setProfileMenuOpen(false)}
                                             />
-                                            <div className="absolute right-0 mt-4 w-64 bg-white dark:bg-slate-900/70 backdrop-blur-xl rounded-2xl shadow-2xl dark:shadow-slate-800 py-2 border border-white/30 dark:border-slate-700/30 z-20">
+                                            <div className="absolute right-0 mt-4 w-56 lg:w-64 bg-white dark:bg-slate-900/70 backdrop-blur-xl rounded-2xl shadow-2xl dark:shadow-slate-800 py-2 border border-white/30 dark:border-slate-700/30 z-20">
                                                 <div className="px-4 py-3 border-b border-white/30 dark:border-slate-700/30">
-                                                    <p className="font-bold text-gray-900 dark:text-gray-100">{user?.name}</p>
-                                                    <p className="text-sm text-gray-700 dark:text-gray-400">{user?.email}</p>
+                                                    <p className="font-bold text-gray-900 dark:text-gray-100 text-sm">{user?.name}</p>
+                                                    <p className="text-xs text-gray-700 dark:text-gray-400 truncate">{user?.email}</p>
                                                 </div>
 
                                                 <Link
@@ -134,16 +134,16 @@ const Navbar = () => {
                                                     className="flex items-center space-x-3 px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
                                                     onClick={() => setProfileMenuOpen(false)}
                                                 >
-                                                    <FiSettings className="text-lg" />
-                                                    <span className="font-medium">Dashboard</span>
+                                                    <FiSettings className="text-base lg:text-lg" />
+                                                    <span className="font-medium text-sm">Dashboard</span>
                                                 </Link>
 
                                                 <button
                                                     onClick={handleLogout}
                                                     className="flex items-center space-x-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 w-full text-left transition-colors"
                                                 >
-                                                    <FiLogOut className="text-lg" />
-                                                    <span className="font-medium">Logout</span>
+                                                    <FiLogOut className="text-base lg:text-lg" />
+                                                    <span className="font-medium text-sm">Logout</span>
                                                 </button>
                                             </div>
                                         </>
@@ -153,13 +153,13 @@ const Navbar = () => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors"
+                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors"
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-6 py-3 rounded-full transition-all shadow-lg dark:shadow-purple-500/20 hover:scale-105"
+                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-4 lg:px-6 py-2 lg:py-3 text-sm lg:text-base rounded-full transition-all shadow-lg dark:shadow-purple-500/20 hover:scale-105"
                                     >
                                         Get Started
                                     </Link>
@@ -168,61 +168,145 @@ const Navbar = () => {
                         </div>
 
                         {/* Mobile Menu Button - includes ThemeToggle for mobile */}
-                        <div className="md:hidden flex items-center space-x-2">
-                            <ThemeToggle />
+                        <div className="lg:hidden flex items-center space-x-2">
+                            <div className="sm:hidden">
+                                <ThemeToggle />
+                            </div>
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
                             >
                                 {mobileMenuOpen ? (
-                                    <FiX className="text-2xl text-gray-800 dark:text-gray-200" />
+                                    <FiX className="text-xl sm:text-2xl text-gray-800 dark:text-gray-200" />
                                 ) : (
-                                    <FiMenu className="text-2xl text-gray-800 dark:text-gray-200" />
+                                    <FiMenu className="text-xl sm:text-2xl text-gray-800 dark:text-gray-200" />
                                 )}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu - Appears Below Navbar */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden bg-white dark:bg-slate-900/70 backdrop-blur-xl border-t border-white/30 dark:border-slate-700/30 rounded-b-3xl shadow-lg dark:shadow-slate-800">
-                        <div className="px-8 py-6 space-y-4">
-                            <Link to="/courses" className="block font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
-                                Courses
-                            </Link>
-
-                            {isAuthenticated && user?.role === 'student' && (
-                                <Link to="/my-courses" className="block font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
-                                    My Courses
-                                </Link>
-                            )}
-
-                            {isAuthenticated ? (
-                                <>
-                                    <Link to="/dashboard" className="block font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
-                                        Dashboard
-                                    </Link>
-
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold py-3 rounded-xl hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
+                    <>
+                        {/* Backdrop - Excludes Navbar from blur */}
+                        <div 
+                            className="fixed left-0 right-0 bottom-0 bg-black/40 z-40 lg:hidden"
+                            style={{ top: 'calc(100% + 1rem)' }}
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
+                        
+                        {/* Dropdown Menu - Below Navbar */}
+                        <div className="absolute left-2 right-2 sm:left-3 sm:right-3 top-full mt-3 z-50 lg:hidden">
+                            <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
+                                {/* Menu Items */}
+                                <div className="px-4 sm:px-6 py-4 space-y-2 border-b border-gray-200 dark:border-slate-700/50">
+                                    <Link 
+                                        to="/courses" 
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-all font-semibold"
+                                        onClick={() => setMobileMenuOpen(false)}
                                     >
-                                        Logout
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <Link to="/login" className="block text-center border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
-                                        Login
+                                        <FiBook className="text-lg text-blue-400" />
+                                        <span>Courses</span>
                                     </Link>
-                                    <Link to="/register" className="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:scale-105 transition-transform">
-                                        Get Started
+
+                                    <Link 
+                                        to="/online-compiler" 
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-all font-semibold"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                        </svg>
+                                        <span>Online Compiler</span>
                                     </Link>
-                                </>
-                            )}
+
+                                    {isAuthenticated && user?.role === 'student' && (
+                                        <Link 
+                                            to="/my-courses" 
+                                            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-all font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            <FiBook className="text-lg text-green-400" />
+                                            <span>My Courses</span>
+                                        </Link>
+                                    )}
+
+                                    {isAuthenticated && (
+                                        <Link 
+                                            to="/dashboard" 
+                                            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-all font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            <FiSettings className="text-lg text-orange-400" />
+                                            <span>Dashboard</span>
+                                        </Link>
+                                    )}
+                                </div>
+
+                                {/* Auth Section */}
+                                <div className="px-4 sm:px-6 py-4">
+                                    {isAuthenticated ? (
+                                        <div className="space-y-3">
+                                            {/* User Info Card */}
+                                            <div className="bg-gray-100 dark:bg-slate-800/50 rounded-lg p-3 border border-gray-300 dark:border-slate-700/50">
+                                                <div className="flex items-center space-x-3">
+                                                    {user?.avatar?.url ? (
+                                                        <img
+                                                            src={user.avatar.url}
+                                                            alt={user.name}
+                                                            className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                e.target.src = '/CodeCampus.png';
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                                                            {user?.name?.charAt(0).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{user?.name}</p>
+                                                        <p className="text-xs text-gray-600 dark:text-gray-400 capitalize truncate">{user?.role}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Logout Button */}
+                                            <button
+                                                onClick={() => {
+                                                    handleLogout();
+                                                    setMobileMenuOpen(false);
+                                                }}
+                                                className="w-full flex items-center justify-center space-x-2 bg-red-100 dark:bg-red-600/20 text-red-600 dark:text-red-400 font-semibold py-3 rounded-lg hover:bg-red-200 dark:hover:bg-red-600/30 transition-colors border border-red-300 dark:border-red-500/30"
+                                            >
+                                                <FiLogOut className="text-base" />
+                                                <span>Logout</span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <Link 
+                                                to="/login" 
+                                                className="block text-center border-2 border-blue-500/50 text-blue-600 dark:text-blue-400 py-3 font-bold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors text-sm"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Login
+                                            </Link>
+                                            <Link 
+                                                to="/register" 
+                                                className="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 font-bold rounded-lg hover:scale-[1.02] transition-transform shadow-lg shadow-blue-500/20 text-sm"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Get Started
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
             </div>
         </nav>

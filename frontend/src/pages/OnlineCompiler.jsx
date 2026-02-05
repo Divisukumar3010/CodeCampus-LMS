@@ -13,10 +13,12 @@ const OnlineCompiler = () => {
     const [loading, setLoading] = useState(false);
     const [editorTheme, setEditorTheme] = useState('vs-dark');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('output');
+    const [htmlPreview, setHtmlPreview] = useState('');
+    
     const editorRef = useRef(null);
+    const iframeRef = useRef(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
     // Connect to your theme context
     const { isDarkMode } = useContext(ThemeContext);
@@ -26,15 +28,24 @@ const OnlineCompiler = () => {
         setEditorTheme(isDarkMode ? 'vs-dark' : 'light');
     }, [isDarkMode]);
 
+    // Handle HTML/CSS/JS preview update with debounce
+    useEffect(() => {
+        if (language === 'html') {
+            const timer = setTimeout(() => {
+                setHtmlPreview(code);
+            }, 500);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [code, language]);
+
     const languages = [
         { id: 'javascript', name: 'JavaScript' },
         { id: 'python', name: 'Python (3.10.0)' },
         { id: 'java', name: 'Java' },
         { id: 'c', name: 'C' },
         { id: 'cpp', name: 'C++' },
-        { id: 'rust', name: 'Rust' },
-        { id: 'csharp', name: 'C#' },
-        { id: 'html', name: 'HTML' },
+        { id: 'html', name: 'HTML/CSS/JS' },
     ];
 
     const templates = {
@@ -56,22 +67,51 @@ int main() {
     cout << "Hello, World!" << endl;
     return 0;
 }`,
-        rust: `fn main() {
-    println!("Hello, World!");
-}`,
-        csharp: `using System;
-class Program {
-    static void Main() {
-        Console.WriteLine("Hello, World!");
-    }
-}`,
         html: `<!DOCTYPE html>
 <html>
 <head>
     <title>Hello</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin: 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
+    <div class="container">
+        <h1>Hello, World!</h1>
+        <button onclick="alert('Welcome to CodeCampus!')">Click Me</button>
+    </div>
 </body>
 </html>`,
     };
@@ -96,9 +136,15 @@ class Program {
         setLoading(true);
         setOutput('');
         setError('');
-        setActiveTab('output');
 
         try {
+            // For HTML, show preview directly without API call
+            if (language === 'html') {
+                setHtmlPreview(code);
+                setLoading(false);
+                return;
+            }
+
             const response = await axios.post(`${API_URL}/compiler/execute`, {
                 code,
                 language,
@@ -120,7 +166,7 @@ class Program {
     const handleOpenFile = () => {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.js,.py,.java,.c,.cpp,.rs,.cs,.html';
+        input.accept = '.js,.py,.java,.c,.cpp,.html';
         input.onchange = (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -139,8 +185,6 @@ class Program {
             java: 'java',
             c: 'c',
             cpp: 'cpp',
-            rust: 'rs',
-            csharp: 'cs',
             html: 'html',
         };
         const element = document.createElement('a');
@@ -223,10 +267,10 @@ class Program {
                                                 key={lang.id}
                                                 onClick={() => handleLanguageChange(lang.id)}
                                                 className={`w-full text-left px-5 py-2.5 transition-colors ${language === lang.id
-                                                        ? 'bg-purple-600/30 text-purple-400'
-                                                        : isDarkMode
-                                                            ? 'hover:bg-gray-700'
-                                                            : 'hover:bg-gray-100'
+                                                    ? 'bg-purple-600/30 text-purple-400'
+                                                    : isDarkMode
+                                                        ? 'hover:bg-gray-700'
+                                                        : 'hover:bg-gray-100'
                                                     }`}
                                             >
                                                 {lang.name}
@@ -277,44 +321,57 @@ class Program {
                         />
                     </div>
 
-                    {/* Input/Output Panel */}
-                    <div className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-300'} rounded-lg overflow-hidden border flex flex-col`}>
-                        {/* Tabs */}
-                        <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'} border-b flex`}>
-                            <button
-                                onClick={() => setActiveTab('input')}
-                                className={`px-6 py-2.5 font-medium transition-colors border-b-2 ${activeTab === 'input'
-                                        ? `border-purple-500 ${isDarkMode ? 'text-white bg-gray-900' : 'text-gray-900 bg-white'}`
-                                        : `border-transparent ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'}`
-                                    }`}
-                            >
-                                Input
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('output')}
-                                className={`px-6 py-2.5 font-medium transition-colors border-b-2 ${activeTab === 'output'
-                                        ? `border-purple-500 ${isDarkMode ? 'text-white bg-gray-900' : 'text-gray-900 bg-white'}`
-                                        : `border-transparent ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'}`
-                                    }`}
-                            >
-                                Output
-                            </button>
+                    {/* Right Panel */}
+                    {language === 'html' ? (
+                        // HTML Preview Panel
+                        <div className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-300'} rounded-lg overflow-hidden border flex flex-col`}>
+                            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'} px-4 py-2.5 border-b`}>
+                                <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-medium`}>Live Preview</span>
+                            </div>
+                            <div className="flex-1 overflow-hidden">
+                                {loading ? (
+                                    <div className={`flex items-center justify-center h-full ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                        Rendering...
+                                    </div>
+                                ) : (
+                                    <iframe
+                                        ref={iframeRef}
+                                        srcDoc={htmlPreview}
+                                        style={{ width: '100%', height: '100%', border: 'none', minHeight: '600px' }}
+                                        title="HTML Preview"
+                                        sandbox="allow-scripts allow-same-origin allow-modals"
+                                    />
+                                )}
+                            </div>
                         </div>
-
-                        {/* Content Area */}
-                        <div className="flex-1 overflow-hidden">
-                            {activeTab === 'input' ? (
+                    ) : (
+                        // Input/Output Stack for other languages
+                        <div className="flex flex-col gap-6">
+                            {/* Input Panel */}
+                            <div className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-300'} rounded-lg overflow-hidden border flex flex-col`}>
+                                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'} px-4 py-2.5 border-b`}>
+                                    <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-medium`}>Input</span>
+                                </div>
                                 <textarea
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder="Enter input here (if your program requires it)..."
-                                    className={`w-full h-full p-4 ${isDarkMode ? 'bg-gray-900 text-white placeholder:text-gray-500' : 'bg-white text-gray-900 placeholder:text-gray-400'} border-0 focus:outline-none font-mono text-sm resize-none`}
-                                    style={{ minHeight: '600px' }}
+                                    className={`flex-1 p-4 ${isDarkMode ? 'bg-gray-900 text-white placeholder:text-gray-500' : 'bg-white text-gray-900 placeholder:text-gray-400'} border-0 focus:outline-none font-mono text-sm resize-none`}
+                                    style={{ minHeight: '200px' }}
                                 />
-                            ) : (
-                                <div className="p-4 font-mono text-sm h-full overflow-auto" style={{ minHeight: '600px' }}>
+                            </div>
+
+                            {/* Output Panel */}
+                            <div className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-300'} rounded-lg overflow-hidden border flex flex-col`}>
+                                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'} px-4 py-2.5 border-b`}>
+                                    <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-medium`}>Output</span>
+                                </div>
+                                <div className="flex-1 overflow-auto p-4 font-mono text-sm" style={{ minHeight: '200px' }}>
                                     {loading ? (
-                                        <div className="text-blue-400">Executing code...</div>
+                                        <div className="text-blue-400">
+                                            <span className="inline-block">Executing code</span>
+                                            <span className="inline-block animate-pulse">...</span>
+                                        </div>
                                     ) : error ? (
                                         <div className="text-red-400">
                                             <pre className="whitespace-pre-wrap break-words">{error}</pre>
@@ -324,12 +381,14 @@ class Program {
                                             <pre className="whitespace-pre-wrap break-words">{output}</pre>
                                         </div>
                                     ) : (
-                                        <div className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>Click "Run" to see output</div>
+                                        <div className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
+                                            Click "Run" to see output
+                                        </div>
                                     )}
                                 </div>
-                            )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
