@@ -2,8 +2,23 @@ const express = require('express');
 const Progress = require('../models/Progress');
 const Course = require('../models/Course');
 const { protect, authorize } = require('../middleware/auth');
+const { uploadSingle } = require('../middleware/uploadMiddleware');
+const {
+    getUserProfile,
+    getUserPublicProfile,
+    updateUserProfile,
+    deleteAvatar,
+    searchUsers
+} = require('../controllers/profileController');
 
 const router = express.Router();
+
+// Profile routes
+router.get('/profile', protect, getUserProfile);
+router.put('/profile/update', protect, uploadSingle('avatar'), updateUserProfile);
+router.delete('/profile/avatar', protect, deleteAvatar);
+router.get('/search', protect, searchUsers);
+router.get('/:userId/profile', getUserPublicProfile);
 
 // Get user's enrolled courses
 router.get('/enrolled-courses', protect, async (req, res, next) => {

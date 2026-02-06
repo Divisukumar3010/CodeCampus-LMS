@@ -32,11 +32,6 @@ function ProfileViewWrapper() {
   return <ProfileView user={user} />;
 }
 
-function EditProfileWrapper() {
-  const { user, updateUser } = useAuth();
-  return <EditProfile user={user} onSave={updateUser} />;
-}
-
 function AppContent() {
   const { isDarkMode } = useTheme();
 
@@ -75,7 +70,7 @@ function AppContent() {
                 path="/profile/edit"
                 element={
                   <ProtectedRoute>
-                    <EditProfileWrapper />
+                    <EditProfile />
                   </ProtectedRoute>
                 }
               />

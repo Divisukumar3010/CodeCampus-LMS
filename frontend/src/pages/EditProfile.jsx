@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiCamera, FiTrash2, FiPlus } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
+import profileService from '../services/profileService';
+import toast from 'react-hot-toast';
 
-const EditProfile = ({ user, onSave }) => {
+const EditProfile = () => {
+    const { user, checkAuth } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -130,20 +134,23 @@ const EditProfile = ({ user, onSave }) => {
                     submitData.append(key, formData[key]);
                 } else if (key === 'socialMedia' || key === 'skills' || key === 'education' || key === 'experience') {
                     submitData.append(key, JSON.stringify(formData[key]));
-                } else {
+                } else if (key !== 'avatar') {
                     submitData.append(key, formData[key]);
                 }
             });
 
-            // Call parent component's onSave function
-            if (onSave) {
-                await onSave(submitData);
-            }
+            await profileService.updateProfile(submitData);
+
+            // Refresh user data in AuthContext
+            await checkAuth();
 
             setSuccess('Profile updated successfully!');
+            toast.success('Profile updated successfully!');
             setTimeout(() => navigate('/profile'), 2000);
         } catch (err) {
-            setError(err.message || 'Failed to update profile');
+            const message = err.response?.data?.message || err.message || 'Failed to update profile';
+            setError(message);
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -345,7 +352,7 @@ const EditProfile = ({ user, onSave }) => {
                                     type="text"
                                     value={newSkill}
                                     onChange={(e) => setNewSkill(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && addSkill()}
+                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                                     placeholder="Add a skill..."
                                     className="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
