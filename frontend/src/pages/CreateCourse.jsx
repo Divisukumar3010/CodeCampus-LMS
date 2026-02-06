@@ -419,7 +419,7 @@ const CreateCourse = () => {
     };
 
     return (
-        <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create New Course</h1>
@@ -440,10 +440,10 @@ const CreateCourse = () => {
                                     value={formData.title}
                                     onChange={handleChange}
                                     required
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
+                                        } focus:outline-none focus:ring-2`}
                                     placeholder="e.g., Complete Web Development Bootcamp 2024"
                                 />
                             </div>
@@ -455,10 +455,10 @@ const CreateCourse = () => {
                                     name="subtitle"
                                     value={formData.subtitle}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
+                                        } focus:outline-none focus:ring-2`}
                                     placeholder="Brief description of your course"
                                 />
                             </div>
@@ -471,10 +471,10 @@ const CreateCourse = () => {
                                     onChange={handleChange}
                                     required
                                     rows={6}
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
+                                        } focus:outline-none focus:ring-2`}
                                     placeholder="Detailed description of what students will learn..."
                                 />
                             </div>
@@ -487,10 +487,10 @@ const CreateCourse = () => {
                                         value={formData.category}
                                         onChange={handleChange}
                                         required
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="">Select a category</option>
                                         {categories.map(cat => (
@@ -505,10 +505,10 @@ const CreateCourse = () => {
                                         name="level"
                                         value={formData.level}
                                         onChange={handleChange}
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="beginner">Beginner</option>
                                         <option value="intermediate">Intermediate</option>
@@ -526,10 +526,10 @@ const CreateCourse = () => {
                                         name="language"
                                         value={formData.language}
                                         onChange={handleChange}
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="English"
                                     />
                                 </div>
@@ -544,10 +544,10 @@ const CreateCourse = () => {
                                         required
                                         min="0"
                                         step="0.01"
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="99.99"
                                     />
                                 </div>
@@ -561,10 +561,10 @@ const CreateCourse = () => {
                                         onChange={handleChange}
                                         min="0"
                                         step="0.01"
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="49.99"
                                     />
                                 </div>
@@ -592,10 +592,10 @@ const CreateCourse = () => {
                                 </button>
                             </div>
                         ) : (
-                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode 
-                                ? 'border-gray-600 hover:border-blue-500 bg-gray-700' 
+                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode
+                                ? 'border-gray-600 hover:border-blue-500 bg-gray-700'
                                 : 'border-gray-300 hover:border-blue-500 bg-gray-50'
-                            }`}>
+                                }`}>
                                 <FiUpload className={`text-5xl mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
                                 <p className={`font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Click to upload thumbnail</p>
                                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>PNG, JPG up to 5MB</p>
@@ -619,20 +619,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('whatYouWillLearn', index, e.target.value)}
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Build responsive websites with HTML, CSS, and JavaScript"
                                     />
                                     {formData.whatYouWillLearn.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('whatYouWillLearn', index)}
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -642,10 +642,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('whatYouWillLearn')}
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Learning Outcome
                             </button>
@@ -662,20 +662,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('requirements', index, e.target.value)}
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Basic computer skills"
                                     />
                                     {formData.requirements.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('requirements', index)}
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -685,10 +685,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('requirements')}
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Requirement
                             </button>
@@ -705,20 +705,20 @@ const CreateCourse = () => {
                                         type="text"
                                         value={item}
                                         onChange={(e) => handleArrayChange('targetAudience', index, e.target.value)}
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                         placeholder="e.g., Beginners who want to learn web development"
                                     />
                                     {formData.targetAudience.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeArrayItem('targetAudience', index)}
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
@@ -728,10 +728,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={() => addArrayItem('targetAudience')}
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Target Audience
                             </button>
@@ -746,10 +746,10 @@ const CreateCourse = () => {
                             name="tags"
                             value={formData.tags}
                             onChange={handleChange}
-                            className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                            className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                            } focus:outline-none focus:ring-2`}
+                                } focus:outline-none focus:ring-2`}
                             placeholder="web development, html, css, javascript (comma separated)"
                         />
                         <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Enter tags separated by commas</p>
@@ -762,10 +762,10 @@ const CreateCourse = () => {
                             <button
                                 type="button"
                                 onClick={addSection}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isDarkMode 
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isDarkMode
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
                                     : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Section
                             </button>
@@ -799,10 +799,10 @@ const CreateCourse = () => {
                                                         value={section.title}
                                                         onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)}
                                                         required
-                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                        } focus:outline-none focus:ring-2`}
+                                                            } focus:outline-none focus:ring-2`}
                                                         placeholder="e.g., Introduction to Web Development"
                                                     />
                                                 </div>
@@ -813,10 +813,10 @@ const CreateCourse = () => {
                                                         value={section.description}
                                                         onChange={(e) => updateSection(sectionIndex, 'description', e.target.value)}
                                                         rows={3}
-                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                        } focus:outline-none focus:ring-2`}
+                                                            } focus:outline-none focus:ring-2`}
                                                         placeholder="Brief description of this section"
                                                     />
                                                 </div>
@@ -828,10 +828,10 @@ const CreateCourse = () => {
                                                         <button
                                                             type="button"
                                                             onClick={() => addLesson(sectionIndex)}
-                                                            className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                                                ? 'text-blue-400 hover:text-blue-300' 
+                                                            className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                                                ? 'text-blue-400 hover:text-blue-300'
                                                                 : 'text-blue-600 hover:text-blue-700'
-                                                            }`}
+                                                                }`}
                                                         >
                                                             <FiPlus /> Add Lesson
                                                         </button>
@@ -842,19 +842,19 @@ const CreateCourse = () => {
                                                     ) : (
                                                         <div className="space-y-4">
                                                             {section.lessons.map((lesson, lessonIndex) => (
-                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode 
-                                                                    ? 'bg-gray-800 border-gray-700' 
+                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode
+                                                                    ? 'bg-gray-800 border-gray-700'
                                                                     : 'bg-white border-gray-200'
-                                                                }`}>
+                                                                    }`}>
                                                                     <div className="flex justify-between items-start mb-4">
                                                                         <h5 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Lesson {lessonIndex + 1}</h5>
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => removeLesson(sectionIndex, lessonIndex)}
-                                                                            className={`p-2 rounded ${isDarkMode 
-                                                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                                            className={`p-2 rounded ${isDarkMode
+                                                                                ? 'text-red-400 hover:bg-red-900/30'
                                                                                 : 'text-red-600 hover:bg-red-50'
-                                                                            }`}
+                                                                                }`}
                                                                         >
                                                                             <FiTrash2 />
                                                                         </button>
@@ -868,10 +868,10 @@ const CreateCourse = () => {
                                                                                 value={lesson.title}
                                                                                 onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'title', e.target.value)}
                                                                                 required
-                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                } focus:outline-none focus:ring-2`}
+                                                                                    } focus:outline-none focus:ring-2`}
                                                                                 placeholder="e.g., Welcome to the Course"
                                                                             />
                                                                         </div>
@@ -882,10 +882,10 @@ const CreateCourse = () => {
                                                                                 value={lesson.description}
                                                                                 onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'description', e.target.value)}
                                                                                 rows={2}
-                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                } focus:outline-none focus:ring-2`}
+                                                                                    } focus:outline-none focus:ring-2`}
                                                                                 placeholder="Brief description of this lesson"
                                                                             />
                                                                         </div>
@@ -911,10 +911,10 @@ const CreateCourse = () => {
                                                                                 type="file"
                                                                                 accept="video/*"
                                                                                 onChange={(e) => handleVideoChange(sectionIndex, lessonIndex, e)}
-                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                } focus:outline-none focus:ring-2`}
+                                                                                    } focus:outline-none focus:ring-2`}
                                                                             />
                                                                             <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Max 500MB. Upload will happen when you create the course.</p>
                                                                         </div>
@@ -928,10 +928,10 @@ const CreateCourse = () => {
                                                                             {lesson.resources && lesson.resources.length > 0 && (
                                                                                 <div className="mb-4 space-y-2">
                                                                                     {lesson.resources.map((resource, resourceIdx) => (
-                                                                                        <div key={resourceIdx} className={`flex items-center justify-between p-3 rounded-lg border ${isDarkMode 
-                                                                                            ? 'bg-gray-800 border-gray-700' 
+                                                                                        <div key={resourceIdx} className={`flex items-center justify-between p-3 rounded-lg border ${isDarkMode
+                                                                                            ? 'bg-gray-800 border-gray-700'
                                                                                             : 'bg-gray-50 border-gray-200'
-                                                                                        }`}>
+                                                                                            }`}>
                                                                                             <div className="flex-grow">
                                                                                                 <input
                                                                                                     type="text"
@@ -948,10 +948,10 @@ const CreateCourse = () => {
                                                                                             <button
                                                                                                 type="button"
                                                                                                 onClick={() => removeResource(sectionIndex, lessonIndex, resourceIdx)}
-                                                                                                className={`p-2 rounded transition ${isDarkMode 
-                                                                                                    ? 'text-red-400 hover:bg-red-900/30' 
+                                                                                                className={`p-2 rounded transition ${isDarkMode
+                                                                                                    ? 'text-red-400 hover:bg-red-900/30'
                                                                                                     : 'text-red-600 hover:bg-red-50'
-                                                                                                }`}
+                                                                                                    }`}
                                                                                             >
                                                                                                 <FiTrash2 size={18} />
                                                                                             </button>
@@ -965,10 +965,10 @@ const CreateCourse = () => {
                                                                                     type="file"
                                                                                     multiple
                                                                                     onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, e)}
-                                                                                    className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                                    className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                        } focus:outline-none focus:ring-2`}
                                                                                     placeholder="Select documents"
                                                                                 />
                                                                                 <button
@@ -992,10 +992,10 @@ const CreateCourse = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => removeSection(sectionIndex)}
-                                                    className={`mt-4 w-full px-4 py-2 rounded-lg border font-semibold transition ${isDarkMode 
-                                                        ? 'text-red-400 hover:bg-red-900/30 border-red-800' 
+                                                    className={`mt-4 w-full px-4 py-2 rounded-lg border font-semibold transition ${isDarkMode
+                                                        ? 'text-red-400 hover:bg-red-900/30 border-red-800'
                                                         : 'text-red-600 hover:bg-red-50 border-red-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     Delete Section
                                                 </button>
@@ -1029,10 +1029,10 @@ const CreateCourse = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/dashboard/trainer')}
-                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode 
-                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
                             disabled={isLoading}
                         >
                             Cancel

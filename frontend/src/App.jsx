@@ -23,6 +23,19 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import MyCourses from './pages/MyCourses';
 import OnlineCompiler from './pages/OnlineCompiler';
+import ProfileView from './pages/ProfileView';
+import EditProfile from './pages/EditProfile';
+import { useAuth } from './context/AuthContext';
+
+function ProfileViewWrapper() {
+  const { user } = useAuth();
+  return <ProfileView user={user} />;
+}
+
+function EditProfileWrapper() {
+  const { user, updateUser } = useAuth();
+  return <EditProfile user={user} onSave={updateUser} />;
+}
 
 function AppContent() {
   const { isDarkMode } = useTheme();
@@ -32,15 +45,15 @@ function AppContent() {
       <Router>
         {/* Main container with proper dark mode styling */}
         <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDarkMode
-            ? 'bg-slate-950 text-white'
-            : 'bg-white text-gray-900'
+          ? 'bg-slate-950 text-white'
+          : 'bg-white text-gray-900'
           }`}>
           <Navbar />
 
           {/* Main content area */}
           <main className={`flex-grow transition-colors duration-300 ${isDarkMode
-              ? 'bg-slate-950'
-              : 'bg-white'
+            ? 'bg-slate-950'
+            : 'bg-white'
             }`}>
             <Routes>
               {/* Public Routes */}
@@ -49,8 +62,24 @@ function AppContent() {
               <Route path="/register" element={<Register />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseDetails />} />
-              <Route path="/online-compiler" element={<OnlineCompiler />} />  
-              
+              <Route path="/online-compiler" element={<OnlineCompiler />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfileViewWrapper />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile/edit"
+                element={
+                  <ProtectedRoute>
+                    <EditProfileWrapper />
+                  </ProtectedRoute>
+                }
+              />
+
 
               {/* Protected Routes */}
               <Route
