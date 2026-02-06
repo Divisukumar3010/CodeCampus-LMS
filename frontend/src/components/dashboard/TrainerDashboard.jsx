@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { userAPI } from '../../services/api';
-import { FiBook, FiUsers, FiDollarSign, FiStar, FiPlus, FiEdit, FiEye } from 'react-icons/fi';
+import { FiBook, FiUsers, FiDollarSign, FiStar, FiPlus, FiEdit, FiEye, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const TrainerDashboard = () => {
@@ -61,9 +61,17 @@ const TrainerDashboard = () => {
                         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Trainer Dashboard</h1>
                         <p className="text-gray-600 dark:text-slate-400">Manage your courses and track performance</p>
                     </div>
-                    <Link to="/create-course" className="btn-primary flex items-center gap-2 shadow-lg dark:shadow-slate-700 hover:shadow-xl">
-                        <FiPlus size={20} /> Create New Course
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
+                            <FiUser size={16} /> View Profile
+                        </Link>
+                        <Link to="/profile/edit" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
+                            <FiEdit size={16} /> Edit Profile
+                        </Link>
+                        <Link to="/create-course" className="btn-primary flex items-center gap-2 shadow-lg dark:shadow-slate-700 hover:shadow-xl">
+                            <FiPlus size={20} /> Create New Course
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}
