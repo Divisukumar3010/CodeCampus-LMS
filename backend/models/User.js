@@ -39,6 +39,31 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Bio cannot exceed 500 characters']
     },
+    phone: {
+        type: String,
+        trim: true
+    },
+    socialMedia: {
+        facebook: { type: String, trim: true },
+        twitter: { type: String, trim: true },
+        linkedin: { type: String, trim: true },
+        instagram: { type: String, trim: true }
+    },
+    skills: [{
+        type: String,
+        trim: true
+    }],
+    education: [{
+        degree: { type: String, trim: true },
+        institution: { type: String, trim: true },
+        year: { type: String, trim: true }
+    }],
+    experience: [{
+        title: { type: String, trim: true },
+        company: { type: String, trim: true },
+        duration: { type: String, trim: true },
+        description: { type: String, trim: true }
+    }],
     expertise: [{
         type: String
     }],
