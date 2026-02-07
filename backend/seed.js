@@ -64,6 +64,13 @@ const categories = [
         description: 'Professional photography and videography',
         isActive: true
     },
+    {
+        name: 'Databases',
+        slug: 'databases',
+        icon: '🗄️',
+        description: 'Learn database design, SQL, NoSQL and data management',
+        isActive: true
+    },
 ];
 
 const seedDatabase = async () => {

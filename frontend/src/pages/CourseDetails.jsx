@@ -3,9 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { courseAPI, orderAPI, reviewAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../hooks/useTheme'; // Import useTheme hook
-import { FiStar, FiUsers, FiClock, FiBook, FiCheckCircle, FiPlay, FiLock, FiAward, FiGlobe } from 'react-icons/fi';
+import { FiStar, FiUsers, FiClock, FiBook, FiCheckCircle, FiPlay, FiLock, FiAward, FiGlobe, FiX } from 'react-icons/fi';
 import { loadStripe } from '@stripe/stripe-js';
 import CourseDetails from '../components/course/CourseDetails';
+import VideoPlayer from '../components/course/VideoPlayer';
 import toast from 'react-hot-toast';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -21,6 +22,7 @@ const CourseDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState(false);
     const [error, setError] = useState(null);
+    const [previewLesson, setPreviewLesson] = useState(null);
 
     useEffect(() => {
         if (id) {
@@ -324,7 +326,7 @@ const CourseDetailsPage = () => {
                             {/* Course Content */}
                             <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                                 <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Content</h2>
-                                <CourseDetails course={course} />
+                                <CourseDetails course={course} onPreviewClick={(lesson) => setPreviewLesson(lesson)} />
                             </div>
 
                             {/* Requirements */}
@@ -458,6 +460,43 @@ const CourseDetailsPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Video Preview Modal */}
+            {previewLesson && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+                    onClick={() => setPreviewLesson(null)}
+                >
+                    <div
+                        className={`relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header */}
+                        <div className={`flex items-center justify-between px-4 sm:px-6 py-3 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+                            <div className="flex items-center gap-2 min-w-0">
+                                <FiPlay className="text-primary-600 flex-shrink-0" />
+                                <h3 className={`font-semibold truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {previewLesson.title}
+                                </h3>
+                                <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full flex-shrink-0">
+                                    Free Preview
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => setPreviewLesson(null)}
+                                className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                            >
+                                <FiX size={20} />
+                            </button>
+                        </div>
+
+                        {/* Video Player */}
+                        <div className="aspect-video bg-black">
+                            <VideoPlayer url={previewLesson.videoUrl} />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

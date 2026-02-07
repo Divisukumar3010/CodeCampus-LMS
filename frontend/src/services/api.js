@@ -136,4 +136,18 @@ export const adminAPI = {
     getCategories: () => api.get('/admin/categories'),
 };
 
+// Exam APIs
+export const examAPI = {
+    getExam: (courseId) => api.get(`/exams/${courseId}`),
+    createExam: (courseId, data) => api.post(`/exams/${courseId}`, data),
+    updateExam: (courseId, data) => api.put(`/exams/${courseId}`, data),
+    deleteExam: (courseId) => api.delete(`/exams/${courseId}`),
+    startAttempt: (courseId) => api.post(`/exams/${courseId}/start`),
+    submitAttempt: (courseId, attemptId, data) =>
+        api.post(`/exams/${courseId}/submit/${attemptId}`, data),
+    getAttempts: (courseId) => api.get(`/exams/${courseId}/attempts`),
+    getAttemptResult: (courseId, attemptId) =>
+        api.get(`/exams/${courseId}/attempts/${attemptId}`),
+};
+
 export default api;

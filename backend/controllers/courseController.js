@@ -40,6 +40,17 @@ const normalizeYouTubeUrl = (value) => {
     return id ? `https://www.youtube.com/watch?v=${id}` : null;
 };
 
+const getResourceType = (filename) => {
+    if (!filename) return 'other';
+    const ext = filename.toLowerCase().split('.').pop();
+    if (['pdf'].includes(ext)) return 'pdf';
+    if (['doc', 'docx'].includes(ext)) return 'doc';
+    if (['ppt', 'pptx'].includes(ext)) return 'other';
+    if (['xls', 'xlsx'].includes(ext)) return 'other';
+    if (['mp4', 'webm', 'avi'].includes(ext)) return 'video';
+    return 'other';
+};
+
 // @desc    Get all courses with filters and pagination
 // @route   GET /api/courses
 // @access  Public
@@ -315,6 +326,30 @@ exports.createCourse = async (req, res, next) => {
                     });
                 }
 
+                // Process resource files for this lesson
+                const lessonResources = [];
+                if (Array.isArray(req.files)) {
+                    const resourceFiles = req.files.filter(f =>
+                        f.fieldname.startsWith(`resource_${sectionIndex}_${lessonIndex}_`)
+                    );
+
+                    for (const resourceFile of resourceFiles) {
+                        try {
+                            const result = await uploadDocument(resourceFile.buffer, 'lms/resources');
+                            const resourceIdx = parseInt(resourceFile.fieldname.split('_')[3]);
+                            const metadata = lesson.resources?.[resourceIdx] || {};
+                            lessonResources.push({
+                                title: metadata.title || resourceFile.originalname.split('.')[0],
+                                url: result.secure_url,
+                                fileSize: resourceFile.size,
+                                type: getResourceType(resourceFile.originalname)
+                            });
+                        } catch (uploadErr) {
+                            console.error('Error uploading resource:', uploadErr);
+                        }
+                    }
+                }
+
                 processedLessons.push({
                     title: lesson.title || `Lesson ${lessonIndex + 1}`,
                     description: lesson.description || '',
@@ -323,7 +358,7 @@ exports.createCourse = async (req, res, next) => {
                     videoDuration: Number.isFinite(Number(lesson.videoDuration)) ? Number(lesson.videoDuration) : 0,
                     isFree: lesson.isFree || false,
                     order: lessonIndex + 1,
-                    resources: []
+                    resources: lessonResources
                 });
             }
 
@@ -469,14 +504,16 @@ exports.updateCourse = async (req, res, next) => {
 
         // Ensure all sections and lessons have required fields
         if (req.body.sections && Array.isArray(req.body.sections)) {
-            req.body.sections.forEach((section, sectionIndex) => {
+            for (let sectionIndex = 0; sectionIndex < req.body.sections.length; sectionIndex++) {
+                const section = req.body.sections[sectionIndex];
                 // Section MUST have order
                 if (!section.order) {
                     section.order = sectionIndex + 1;
                 }
 
                 if (section.lessons && Array.isArray(section.lessons)) {
-                    section.lessons.forEach((lesson, lessonIndex) => {
+                    for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
+                        const lesson = section.lessons[lessonIndex];
                         // Lesson MUST have order
                         if (!lesson.order) {
                             lesson.order = lessonIndex + 1;
@@ -493,9 +530,39 @@ exports.updateCourse = async (req, res, next) => {
 
                         lesson.videoUrl = normalizedVideoUrl;
                         lesson.videoPublicId = null;
-                    });
+
+                        // Process new resource files for this lesson
+                        if (Array.isArray(req.files)) {
+                            const resourceFiles = req.files.filter(f =>
+                                f.fieldname.startsWith(`resource_${sectionIndex}_${lessonIndex}_`)
+                            );
+
+                            if (resourceFiles.length > 0) {
+                                // Keep existing resources that have URLs (already uploaded)
+                                const existingResources = (lesson.resources || []).filter(r => r.url && !r.file);
+
+                                for (const resourceFile of resourceFiles) {
+                                    try {
+                                        const result = await uploadDocument(resourceFile.buffer, 'lms/resources');
+                                        const resourceIdx = parseInt(resourceFile.fieldname.split('_')[3]);
+                                        const metadata = lesson.resources?.[resourceIdx] || {};
+                                        existingResources.push({
+                                            title: metadata.title || resourceFile.originalname.split('.')[0],
+                                            url: result.secure_url,
+                                            fileSize: resourceFile.size,
+                                            type: getResourceType(resourceFile.originalname)
+                                        });
+                                    } catch (uploadErr) {
+                                        console.error('Error uploading resource:', uploadErr);
+                                    }
+                                }
+
+                                lesson.resources = existingResources;
+                            }
+                        }
+                    }
                 }
-            });
+            }
         }
 
         // Update the course - completely replace sections array

@@ -25,6 +25,7 @@ import MyCourses from './pages/MyCourses';
 import OnlineCompiler from './pages/OnlineCompiler';
 import ProfileView from './pages/ProfileView';
 import EditProfile from './pages/EditProfile';
+import ExamPage from './pages/ExamPage';
 import { useAuth } from './context/AuthContext';
 
 function ProfileViewWrapper() {
@@ -109,6 +110,15 @@ function AppContent() {
                 element={
                   <ProtectedRoute>
                     <CourseView />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/course/:id/exam"
+                element={
+                  <ProtectedRoute>
+                    <ExamPage />
                   </ProtectedRoute>
                 }
               />

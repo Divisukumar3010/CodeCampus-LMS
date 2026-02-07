@@ -80,6 +80,28 @@ const progressSchema = new mongoose.Schema(
             certificateUrl: {
                 type: String
             }
+        },
+
+        // Exam completion tracking
+        exam: {
+            hasPassed: {
+                type: Boolean,
+                default: false
+            },
+            bestScore: {
+                type: Number,
+                default: 0
+            },
+            totalAttempts: {
+                type: Number,
+                default: 0
+            },
+            passedAt: {
+                type: Date
+            },
+            lastAttemptAt: {
+                type: Date
+            }
         }
     },
     {
