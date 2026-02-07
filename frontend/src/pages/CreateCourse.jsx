@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { courseAPI, adminAPI } from '../services/api';
+import { courseAPI, adminAPI, examAPI } from '../services/api';
 import { FiUpload, FiX, FiPlus, FiTrash2, FiSave, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useTheme } from '../hooks/useTheme'; // Import useTheme hook
+import QuestionBuilder from '../components/exam/QuestionBuilder';
 
 const extractYouTubeId = (value) => {
     if (!value || typeof value !== 'string') return null;
@@ -40,6 +41,64 @@ const getYouTubeThumbnail = (value) => {
     return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
 };
 
+const loadYouTubeApi = () => {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    if (window.__ytApiPromise) return window.__ytApiPromise;
+    window.__ytApiPromise = new Promise((resolve) => {
+        if (document.getElementById('youtube-iframe-api')) {
+            const check = setInterval(() => {
+                if (window.YT && window.YT.Player) { clearInterval(check); resolve(); }
+            }, 100);
+            return;
+        }
+        const tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        window.onYouTubeIframeAPIReady = () => resolve();
+        document.body.appendChild(tag);
+    });
+    return window.__ytApiPromise;
+};
+
+const fetchVideoDuration = (videoId) => {
+    return new Promise((resolve) => {
+        loadYouTubeApi().then(() => {
+            const container = document.createElement('div');
+            container.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:1px;height:1px';
+            document.body.appendChild(container);
+            let resolved = false;
+            const player = new window.YT.Player(container, {
+                videoId,
+                playerVars: { autoplay: 0 },
+                events: {
+                    onReady: (event) => {
+                        if (resolved) return;
+                        resolved = true;
+                        const duration = Math.round(event.target.getDuration());
+                        try { player.destroy(); } catch {}
+                        try { container.remove(); } catch {}
+                        resolve(duration > 0 ? duration : 0);
+                    },
+                    onError: () => {
+                        if (resolved) return;
+                        resolved = true;
+                        try { player.destroy(); } catch {}
+                        try { container.remove(); } catch {}
+                        resolve(0);
+                    }
+                }
+            });
+            setTimeout(() => {
+                if (resolved) return;
+                resolved = true;
+                try { player.destroy(); } catch {}
+                try { container.remove(); } catch {}
+                resolve(0);
+            }, 10000);
+        });
+    });
+};
+
 const CreateCourse = () => {
     const navigate = useNavigate();
     const { isDarkMode } = useTheme(); // Get theme state
@@ -47,6 +106,15 @@ const CreateCourse = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [thumbnailPreview, setThumbnailPreview] = useState('');
     const [expandedSections, setExpandedSections] = useState({});
+    const [fetchingDuration, setFetchingDuration] = useState(null);    const [enableExam, setEnableExam] = useState(false);
+    const [examData, setExamData] = useState({
+        title: '',
+        description: '',
+        passingScore: 60,
+        duration: 30,
+        maxAttempts: 3,
+    });
+    const [examQuestions, setExamQuestions] = useState([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -65,6 +133,116 @@ const CreateCourse = () => {
     });
 
     const [thumbnail, setThumbnail] = useState(null);
+    const [hasDraft, setHasDraft] = useState(false);
+    const saveTimeoutRef = useRef(null);
+
+    const DRAFT_KEY = 'createCourse_draft';
+
+    // Restore draft from localStorage on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (saved) {
+                const draft = JSON.parse(saved);
+                if (draft.formData) {
+                    // Strip out any file references that can't be serialized
+                    const restoredFormData = {
+                        ...draft.formData,
+                        sections: (draft.formData.sections || []).map(section => ({
+                            ...section,
+                            lessons: (section.lessons || []).map(lesson => ({
+                                ...lesson,
+                                resources: (lesson.resources || []).map(r => ({
+                                    title: r.title || '',
+                                    file: null,
+                                    url: r.url || null
+                                }))
+                            }))
+                        }))
+                    };
+                    setFormData(restoredFormData);
+                }
+                if (draft.enableExam !== undefined) setEnableExam(draft.enableExam);
+                if (draft.examData) setExamData(draft.examData);
+                if (draft.examQuestions) setExamQuestions(draft.examQuestions);
+                setHasDraft(true);
+                toast.success('Draft restored from your last session');
+            }
+        } catch {
+            localStorage.removeItem(DRAFT_KEY);
+        }
+    }, []);
+
+    // Auto-save draft to localStorage (debounced)
+    const saveDraft = useCallback(() => {
+        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = setTimeout(() => {
+            try {
+                // Strip file objects before saving (they can't be serialized)
+                const saveable = {
+                    formData: {
+                        ...formData,
+                        sections: formData.sections.map(section => ({
+                            ...section,
+                            lessons: section.lessons.map(lesson => ({
+                                ...lesson,
+                                resources: (lesson.resources || []).map(r => ({
+                                    title: r.title || '',
+                                    url: r.url || null
+                                }))
+                            }))
+                        }))
+                    },
+                    enableExam,
+                    examData,
+                    examQuestions,
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(saveable));
+                setHasDraft(true);
+            } catch {
+                // localStorage full or unavailable
+            }
+        }, 1000);
+    }, [formData, enableExam, examData, examQuestions]);
+
+    // Trigger auto-save when form data changes
+    useEffect(() => {
+        // Don't save on initial mount (before user interaction)
+        const hasContent = formData.title || formData.description || formData.sections.length > 0;
+        if (hasContent) {
+            saveDraft();
+        }
+        return () => {
+            if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+        };
+    }, [formData, enableExam, examData, examQuestions, saveDraft]);
+
+    const clearDraft = () => {
+        localStorage.removeItem(DRAFT_KEY);
+        setHasDraft(false);
+        setFormData({
+            title: '',
+            subtitle: '',
+            description: '',
+            category: '',
+            level: 'beginner',
+            language: 'English',
+            price: '',
+            discountPrice: '',
+            whatYouWillLearn: [''],
+            requirements: [''],
+            targetAudience: [''],
+            tags: '',
+            sections: [],
+        });
+        setThumbnail(null);
+        setThumbnailPreview('');
+        setEnableExam(false);
+        setExamData({ title: '', description: '', passingScore: 60, duration: 30, maxAttempts: 3 });
+        setExamQuestions([]);
+        toast.success('Draft cleared');
+    };
 
     useEffect(() => {
         fetchCategories();
@@ -302,6 +480,23 @@ const CreateCourse = () => {
         }
     };
 
+    const handleVideoUrlBlur = async (sectionIndex, lessonIndex, videoUrl) => {
+        const videoId = extractYouTubeId(videoUrl);
+        if (!videoId) return;
+        const key = `${sectionIndex}_${lessonIndex}`;
+        setFetchingDuration(key);
+        try {
+            const duration = await fetchVideoDuration(videoId);
+            if (duration > 0) {
+                updateLesson(sectionIndex, lessonIndex, 'videoDuration', duration);
+            }
+        } catch {
+            // Silently fail
+        } finally {
+            setFetchingDuration(null);
+        }
+    };
+
     const handleThumbnailChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -430,7 +625,25 @@ const CreateCourse = () => {
             const response = await courseAPI.create(submitData);
 
             if (response.data.success) {
-                toast.success('Course created successfully!');
+                // Create exam if enabled and has questions
+                if (enableExam && examQuestions.length > 0) {
+                    try {
+                        await examAPI.createExam(response.data.course._id, {
+                            title: examData.title || `${formData.title} - Final Exam`,
+                            description: examData.description,
+                            questions: examQuestions,
+                            passingScore: examData.passingScore,
+                            duration: examData.duration,
+                            maxAttempts: examData.maxAttempts,
+                        });
+                        toast.success('Course and exam created successfully!');
+                    } catch (examError) {
+                        console.error('Error creating exam:', examError);
+                        toast.success('Course created! But exam creation failed - you can add it later via Edit Course.');
+                    }
+                } else {
+                    toast.success('Course created successfully!');
+                }
                 navigate('/dashboard/trainer');
             }
         } catch (error) {
@@ -438,6 +651,7 @@ const CreateCourse = () => {
             toast.error(error.response?.data?.message || 'Failed to create course');
         } finally {
             setIsLoading(false);
+            localStorage.removeItem(DRAFT_KEY);
         }
     };
 
@@ -448,6 +662,19 @@ const CreateCourse = () => {
                     <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create New Course</h1>
                     <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Fill in the details to create your course</p>
                 </div>
+
+                {hasDraft && (
+                    <div className={`mb-4 flex items-center justify-between px-4 py-3 rounded-lg border ${isDarkMode ? 'bg-blue-900/20 border-blue-800 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+                        <span className="text-sm font-medium">Draft restored from your previous session. Files (thumbnail, resources) need to be re-uploaded.</span>
+                        <button
+                            type="button"
+                            onClick={clearDraft}
+                            className={`text-sm font-semibold px-3 py-1 rounded-md transition ${isDarkMode ? 'hover:bg-blue-900/40 text-blue-400' : 'hover:bg-blue-100 text-blue-600'}`}
+                        >
+                            Clear Draft
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                     {/* Basic Information */}
@@ -927,6 +1154,7 @@ const CreateCourse = () => {
                                                                                 type="url"
                                                                                 value={lesson.videoUrl}
                                                                                 onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'videoUrl', e.target.value)}
+                                                                                onBlur={(e) => handleVideoUrlBlur(sectionIndex, lessonIndex, e.target.value)}
                                                                                 required
                                                                                 className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
                                                                                     ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
@@ -946,7 +1174,17 @@ const CreateCourse = () => {
                                                                         </div>
 
                                                                         <div>
-                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Video Duration (seconds)</label>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                                                Video Duration (seconds)
+                                                                                {fetchingDuration === `${sectionIndex}_${lessonIndex}` && (
+                                                                                    <span className="ml-2 text-xs text-blue-500">Detecting...</span>
+                                                                                )}
+                                                                                {!fetchingDuration && lesson.videoDuration > 0 && (
+                                                                                    <span className="ml-2 text-xs text-green-600 dark:text-green-400">
+                                                                                        ({Math.floor(lesson.videoDuration / 60)}:{String(lesson.videoDuration % 60).padStart(2, '0')})
+                                                                                    </span>
+                                                                                )}
+                                                                            </label>
                                                                             <input
                                                                                 type="number"
                                                                                 min="0"
@@ -956,7 +1194,7 @@ const CreateCourse = () => {
                                                                                     ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
                                                                                     } focus:outline-none focus:ring-2`}
-                                                                                placeholder="e.g., 420"
+                                                                                placeholder="Auto-detected from YouTube URL"
                                                                             />
                                                                         </div>
 
@@ -1045,6 +1283,37 @@ const CreateCourse = () => {
                                     </div>
                                 ))}
                             </div>
+                        )}
+                    </div>
+
+                    {/* Course Exam (Optional) */}
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <div className="flex items-center justify-between mb-4 sm:mb-6">
+                            <div>
+                                <h2 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Exam</h2>
+                                <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    Add an MCQ exam that students must pass to get their certificate
+                                </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={enableExam}
+                                    onChange={(e) => setEnableExam(e.target.checked)}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-blue-600" />
+                            </label>
+                        </div>
+
+                        {enableExam && (
+                            <QuestionBuilder
+                                questions={examQuestions}
+                                examSettings={examData}
+                                onQuestionsChange={setExamQuestions}
+                                onSettingsChange={setExamData}
+                                isDarkMode={isDarkMode}
+                            />
                         )}
                     </div>
 

@@ -1,5 +1,6 @@
 const Progress = require('../models/Progress');
 const Course = require('../models/Course');
+const Exam = require('../models/Exam');
 const User = require('../models/User');
 const { generateCertificate } = require('../utils/certificateGenerator');
 const crypto = require('crypto');
@@ -42,6 +43,16 @@ exports.generateCourseCertificate = async (req, res, next) => {
             });
         }
 
+        // Check if exam exists and if student has passed
+        const exam = await Exam.findOne({ course: courseId });
+        if (exam) {
+            if (!progress.exam || !progress.exam.hasPassed) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'You must pass the course exam to receive a certificate'
+                });
+            }
+        }
 
         // Check if certificate already generated
         if (progress.certificate.isGenerated) {

@@ -91,6 +91,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
 app.use('/api/compiler', require('./routes/compilerRoutes'));
+app.use('/api/exams', require('./routes/examRoutes'));
 
 // Favicon handler (to prevent 404 errors)
 app.get('/favicon.ico', (req, res) => res.status(204).end());

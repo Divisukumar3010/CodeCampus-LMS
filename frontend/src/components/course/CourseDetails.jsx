@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { FiClock, FiBook, FiStar, FiPlay } from 'react-icons/fi';
+import { FiClock, FiBook, FiStar, FiPlay, FiLock } from 'react-icons/fi';
 
-const CourseDetails = ({ course }) => {
+const CourseDetails = ({ course, onPreviewClick }) => {
     const [expandedSection, setExpandedSection] = useState(null);
 
     const formatDuration = (seconds) => {
@@ -82,29 +82,38 @@ const CourseDetails = ({ course }) => {
                                 {/* Lessons */}
                                 {isOpen && (
                                     <div className="px-4 sm:px-6 pb-4 bg-gray-50 dark:bg-slate-800/60">
-                                        {section.lessons?.map((lesson, lessonIndex) => (
+                                        {section.lessons?.map((lesson, lessonIndex) => {
+                                            const isFreePreview = lesson.isFree && lesson.videoUrl;
+                                            return (
                                             <div
                                                 key={lesson._id || lessonIndex}
-                                                className="
+                                                onClick={isFreePreview ? () => onPreviewClick?.(lesson) : undefined}
+                                                className={`
                                                     flex items-center justify-between py-3
                                                     border-t border-gray-200 dark:border-slate-700
                                                     first:border-0
-                                                "
+                                                    ${isFreePreview ? 'cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg px-2 -mx-2 transition-colors' : ''}
+                                                `}
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div
-                                                        className="
+                                                        className={`
                                                             w-8 h-8 rounded-full
-                                                            bg-white dark:bg-slate-800
-                                                            border border-gray-300 dark:border-slate-600
                                                             flex items-center justify-center
-                                                        "
+                                                            ${isFreePreview
+                                                                ? 'bg-primary-100 dark:bg-primary-900/40 border border-primary-300 dark:border-primary-700'
+                                                                : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600'
+                                                            }
+                                                        `}
                                                     >
-                                                        <FiPlay className="text-primary-600 dark:text-primary-400 text-sm" />
+                                                        {isFreePreview
+                                                            ? <FiPlay className="text-primary-600 dark:text-primary-400 text-sm" />
+                                                            : <FiLock className="text-gray-400 dark:text-gray-500 text-sm" />
+                                                        }
                                                     </div>
 
                                                     <div>
-                                                        <p className="text-gray-900 dark:text-gray-100 font-medium">
+                                                        <p className={`font-medium ${isFreePreview ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-gray-100'}`}>
                                                             {lesson.title}
                                                         </p>
 
@@ -126,7 +135,8 @@ const CourseDetails = ({ course }) => {
                                                     {String((lesson.videoDuration || 0) % 60).padStart(2, '0')}
                                                 </span>
                                             </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

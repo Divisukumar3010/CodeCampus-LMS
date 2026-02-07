@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { courseAPI, userAPI } from '../services/api';
+import { courseAPI, userAPI, examAPI } from '../services/api';
 import VideoPlayer from '../components/course/VideoPlayer';
 import { FiCheckCircle, FiLock, FiDownload, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Certificate from '../components/Certificate';
 import RatingForm from '../components/course/RatingForm';
+import ExamSection from '../components/exam/ExamSection';
 
 const CourseView = () => {
     const { id } = useParams();
@@ -14,6 +15,7 @@ const CourseView = () => {
     const [currentLesson, setCurrentLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedSections, setExpandedSections] = useState({});
+    const [exam, setExam] = useState(null);
 
     useEffect(() => {
         fetchCourseAndProgress();
@@ -39,6 +41,15 @@ const CourseView = () => {
 
             setCourse(courseRes.data.course);
             setProgress(progressRes.data.progress);
+
+            // Fetch exam data
+            try {
+                const examRes = await examAPI.getExam(id);
+                setExam(examRes.data.exam);
+            } catch {
+                // No exam for this course
+                setExam(null);
+            }
 
             // Set initial lesson - with safety checks
             const sections = courseRes.data.course?.sections || [];
@@ -225,14 +236,26 @@ const CourseView = () => {
                                 )}
                             </div>
 
-                            {/* Certificate Section */}
-                            {progress?.isCompleted && (
+                            {/* Exam Section - shown when exam exists */}
+                            {exam && (
+                                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-700">
+                                    <ExamSection
+                                        courseId={id}
+                                        progress={progress}
+                                        isCompleted={progress?.isCompleted}
+                                        exam={exam}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Certificate Section - show when no exam and lessons complete, or exam passed */}
+                            {((!exam && progress?.isCompleted) || progress?.exam?.hasPassed) && (
                                 <div className="p-4 sm:p-6 bg-gradient-to-br from-green-50 dark:from-green-900/20 to-blue-50 dark:to-blue-900/20 border-b-4 border-green-500">
                                     <Certificate
                                         courseId={id}
                                         courseTitle={course.title}
                                         progress={progress}
-                                        isCompleted={progress.isCompleted}
+                                        isCompleted={!exam ? progress?.isCompleted : progress?.exam?.hasPassed}
                                     />
                                 </div>
                             )}
