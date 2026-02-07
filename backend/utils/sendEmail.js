@@ -68,7 +68,7 @@ const sendWelcomeEmail = async (user) => {
               <li>Build your teaching career</li>
             `}
           </ul>
-          <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Go to Dashboard</a>
+          <a href="${(process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()}/dashboard" class="button">Go to Dashboard</a>
           <p>If you have any questions, feel free to reach out to our support team.</p>
           <p>Happy Learning!</p>
           <p><strong>The CodeCampus Team</strong></p>
@@ -116,7 +116,7 @@ const sendEnrollmentEmail = async (user, course) => {
             <p><strong>Instructor:</strong> ${course.trainer.name}</p>
             <p><strong>Lessons:</strong> ${course.totalLessons}</p>
           </div>
-          <a href="${process.env.FRONTEND_URL}/course/view/${course._id}" class="button">Start Learning Now</a>
+          <a href="${(process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()}/course/view/${course._id}" class="button">Start Learning Now</a>
           <p>Your learning journey begins now. Take your time, practice, and don't hesitate to ask questions!</p>
           <p>Good luck!</p>
           <p><strong>The CodeCampus Team</strong></p>

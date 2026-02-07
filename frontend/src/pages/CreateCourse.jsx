@@ -5,6 +5,41 @@ import { FiUpload, FiX, FiPlus, FiTrash2, FiSave, FiChevronDown, FiChevronUp } f
 import toast from 'react-hot-toast';
 import { useTheme } from '../hooks/useTheme'; // Import useTheme hook
 
+const extractYouTubeId = (value) => {
+    if (!value || typeof value !== 'string') return null;
+
+    try {
+        const url = new URL(value);
+        const host = url.hostname.replace('www.', '');
+
+        if (host === 'youtu.be') {
+            return url.pathname.split('/')[1] || null;
+        }
+
+        if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+            if (url.pathname === '/watch') {
+                return url.searchParams.get('v');
+            }
+            if (url.pathname.startsWith('/embed/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+            if (url.pathname.startsWith('/shorts/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+        }
+    } catch (error) {
+        // Fall through to regex match.
+    }
+
+    const match = value.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return match ? match[1] : null;
+};
+
+const getYouTubeThumbnail = (value) => {
+    const id = extractYouTubeId(value);
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+};
+
 const CreateCourse = () => {
     const navigate = useNavigate();
     const { isDarkMode } = useTheme(); // Get theme state
@@ -106,8 +141,8 @@ const CreateCourse = () => {
                         lessons: [...section.lessons, {
                             title: '',
                             description: '',
-                            video: null,
-                            videoPreview: null,
+                            videoUrl: '',
+                            videoDuration: '',
                             isFree: false,
                             resources: []
                         }]
@@ -142,18 +177,6 @@ const CreateCourse = () => {
                     : section
             )
         }));
-    };
-
-    const handleVideoChange = (sectionIndex, lessonIndex, e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 500 * 1024 * 1024) {
-                toast.error('Video size should be less than 500MB');
-                return;
-            }
-            updateLesson(sectionIndex, lessonIndex, 'video', file);
-            updateLesson(sectionIndex, lessonIndex, 'videoPreview', URL.createObjectURL(file));
-        }
     };
 
     const addResource = (sectionIndex, lessonIndex) => {
@@ -321,6 +344,17 @@ const CreateCourse = () => {
             return;
         }
 
+        for (let sectionIndex = 0; sectionIndex < formData.sections.length; sectionIndex++) {
+            const section = formData.sections[sectionIndex];
+            for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
+                const lesson = section.lessons[lessonIndex];
+                if (!lesson.videoUrl || !extractYouTubeId(lesson.videoUrl)) {
+                    toast.error(`Section ${sectionIndex + 1}, Lesson ${lessonIndex + 1} needs a valid YouTube URL`);
+                    return;
+                }
+            }
+        }
+
         setIsLoading(true);
 
         try {
@@ -367,8 +401,8 @@ const CreateCourse = () => {
                     description: lesson.description,
                     isFree: lesson.isFree,
                     order: lessonIndex + 1, // REQUIRED
-                    videoDuration: 0, // Will be calculated or updated later
-                    videoUrl: '', // Will be set when video is uploaded
+                    videoDuration: Number(lesson.videoDuration) || 0,
+                    videoUrl: lesson.videoUrl || '',
                     resources: (lesson.resources || []).map(resource => ({
                         title: resource.title || resource.file?.name.split('.')[0],
                         url: resource.url || null,
@@ -377,17 +411,6 @@ const CreateCourse = () => {
                 }))
             }));
             submitData.append('sections', JSON.stringify(sectionsData));
-
-            // Add lesson videos separately
-            formData.sections.forEach((section, sectionIndex) => {
-                section.lessons.forEach((lesson, lessonIndex) => {
-                    if (lesson.video) {
-                        const videoFieldName = `lesson_${sectionIndex}_${lessonIndex}`;
-                        console.log('Adding video:', videoFieldName);
-                        submitData.append(videoFieldName, lesson.video, lesson.video.name);
-                    }
-                });
-            });
 
             // Add resource files to FormData
             formData.sections.forEach((section, sectionIndex) => {
@@ -899,24 +922,42 @@ const CreateCourse = () => {
                                                                             <label className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mark as free preview</label>
                                                                         </div>
                                                                         <div>
-                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Video (MP4, WebM)</label>
-                                                                            {lesson.videoPreview ? (
-                                                                                <div className="mb-3">
-                                                                                    <video controls controlsList="nodownload" className="w-full h-40 bg-black rounded-lg">
-                                                                                        <source src={lesson.videoPreview} />
-                                                                                    </video>
-                                                                                </div>
-                                                                            ) : null}
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>YouTube Video URL *</label>
                                                                             <input
-                                                                                type="file"
-                                                                                accept="video/*"
-                                                                                onChange={(e) => handleVideoChange(sectionIndex, lessonIndex, e)}
+                                                                                type="url"
+                                                                                value={lesson.videoUrl}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'videoUrl', e.target.value)}
+                                                                                required
                                                                                 className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
                                                                                     ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
                                                                                     } focus:outline-none focus:ring-2`}
+                                                                                placeholder="https://www.youtube.com/watch?v=..."
                                                                             />
-                                                                            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Max 500MB. Upload will happen when you create the course.</p>
+                                                                            {lesson.videoUrl && getYouTubeThumbnail(lesson.videoUrl) && (
+                                                                                <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                                                    <img
+                                                                                        src={getYouTubeThumbnail(lesson.videoUrl)}
+                                                                                        alt="YouTube thumbnail"
+                                                                                        className="w-full h-40 object-cover"
+                                                                                    />
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Video Duration (seconds)</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                min="0"
+                                                                                value={lesson.videoDuration}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'videoDuration', e.target.value)}
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                placeholder="e.g., 420"
+                                                                            />
                                                                         </div>
 
                                                                         {/* Resources/Documents */}
