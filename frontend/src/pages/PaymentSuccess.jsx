@@ -47,18 +47,18 @@ const PaymentSuccess = () => {
     }, [searchParams, navigate]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center px-4">
             <div className="max-w-md w-full">
-                <div className="bg-white dark:bg-slate-950 dark:bg-slate-900 rounded-2xl shadow-xl p-8 text-center">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl dark:shadow-slate-800 p-6 sm:p-8 text-center">
                     {status === 'verifying' && (
                         <>
-                            <div className="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                <FiLoader className="text-blue-600 text-4xl animate-spin" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <FiLoader className="text-blue-600 text-3xl sm:text-4xl animate-spin" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                                 Verifying Payment...
                             </h2>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-400">
                                 Please wait while we confirm your enrollment.
                             </p>
                             <div className="mt-6">
@@ -73,26 +73,26 @@ const PaymentSuccess = () => {
 
                     {status === 'success' && (
                         <>
-                            <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
-                                <FiCheckCircle className="text-green-600 text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                <FiCheckCircle className="text-green-600 text-3xl sm:text-4xl" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                                 Payment Successful! 🎉
                             </h2>
-                            <p className="text-gray-600 mb-6">
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
                                 Congratulations! You've been enrolled in the course.
                             </p>
 
                             {order && (
-                                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                                <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 mb-6 text-left">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-600">Order ID:</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">Order ID:</span>
                                         <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
                                             {order._id.slice(-8).toUpperCase()}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-gray-600">Amount Paid:</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">Amount Paid:</span>
                                         <span className="text-lg font-bold text-green-600">
                                             ₹{order.amount}
                                         </span>
@@ -115,13 +115,13 @@ const PaymentSuccess = () => {
 
                     {status === 'error' && (
                         <>
-                            <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                                <FiXCircle className="text-red-600 text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                <FiXCircle className="text-red-600 text-3xl sm:text-4xl" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                                 Payment Verification Failed
                             </h2>
-                            <p className="text-gray-600 mb-6">
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
                                 We couldn't verify your payment. Please contact support if you were charged.
                             </p>
 

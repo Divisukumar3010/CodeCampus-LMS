@@ -102,17 +102,17 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
                         <FiStar
                             key={star}
                             className={`${star <= existingReview.rating
-                                    ? 'text-yellow-500 fill-current'
-                                    : 'text-gray-300'
+                                ? 'text-yellow-500 fill-current'
+                                : 'text-gray-300'
                                 }`}
                             size={24}
                         />
                     ))}
                 </div>
                 {existingReview.comment && (
-                    <p className="text-gray-700 mb-4">{existingReview.comment}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4">{existingReview.comment}</p>
                 )}
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <button
                         onClick={() => setIsEditing(true)}
                         className="btn-outline text-sm"
@@ -138,10 +138,10 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
             <form onSubmit={handleSubmit}>
                 {/* Star Rating */}
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Your Rating *
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
                                 key={star}
@@ -153,10 +153,10 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
                             >
                                 <FiStar
                                     className={`${star <= (hoverRating || rating)
-                                            ? 'text-yellow-500 fill-current'
-                                            : 'text-gray-300'
+                                        ? 'text-yellow-500 fill-current'
+                                        : 'text-gray-300'
                                         }`}
-                                    size={32}
+                                    size={28}
                                 />
                             </button>
                         ))}
@@ -174,7 +174,7 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
 
                 {/* Comment */}
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Your Review (Optional)
                     </label>
                     <textarea
@@ -186,7 +186,7 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
                     />
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <button
                         type="submit"
                         disabled={loading || rating === 0}

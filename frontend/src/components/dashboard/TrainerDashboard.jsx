@@ -61,7 +61,7 @@ const TrainerDashboard = () => {
                         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Trainer Dashboard</h1>
                         <p className="text-gray-600 dark:text-slate-400">Manage your courses and track performance</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
                             <FiUser size={16} /> View Profile
                         </Link>
@@ -75,7 +75,7 @@ const TrainerDashboard = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8">
                     <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-primary-500 hover:shadow-md transition">
                         <div className="flex items-center justify-between">
                             <div>
@@ -143,7 +143,7 @@ const TrainerDashboard = () => {
                             />
                             <div className="flex-grow">
                                 <h3 className="text-xl font-semibold mb-3">{bestCourse.title}</h3>
-                                <div className="grid grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
                                     <div>
                                         <p className="text-primary-100 text-sm">Students</p>
                                         <p className="text-2xl font-bold">{bestCourse.enrollmentCount}</p>

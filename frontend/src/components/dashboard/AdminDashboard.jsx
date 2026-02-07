@@ -103,7 +103,7 @@ const AdminDashboard = () => {
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Dashboard</h1>
                         <p className="text-gray-600 dark:text-slate-400">Platform overview and management</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
                             <FiUser size={16} /> View Profile
                         </Link>
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8">
                     <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
                         <div className="flex items-center justify-between">
                             <div>
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
                 {/* Tabs */}
                 <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm mb-8">
                     <div className="border-b border-gray-200 dark:border-slate-800">
-                        <nav className="flex space-x-8 px-6">
+                        <nav className="flex flex-wrap gap-2 sm:gap-0 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
                             {['overview', 'approvals', 'courses', 'users', 'recent orders'].map(tab => (
                                 <button
                                     key={tab}
@@ -321,7 +321,7 @@ const AdminDashboard = () => {
                         {activeTab === 'users' && (
                             <div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">User Management</h3>
-                                <div className="grid md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                                     <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-6 border border-primary-200 dark:border-primary-800">
                                         <p className="text-sm text-primary-600 dark:text-primary-400 font-medium mb-2">Students</p>
                                         <p className="text-3xl font-bold text-primary-700 dark:text-primary-300">{stats?.users?.totalStudents}</p>

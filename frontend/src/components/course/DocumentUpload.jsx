@@ -72,10 +72,10 @@ const DocumentUpload = ({ onDocumentAdd }) => {
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Upload Documents (Optional)
             </label>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <label className="btn-outline cursor-pointer inline-flex items-center gap-2">
                     <FiUpload />
                     <span>{uploading ? 'Uploading...' : 'Choose File'}</span>
@@ -87,7 +87,7 @@ const DocumentUpload = ({ onDocumentAdd }) => {
                         disabled={uploading}
                     />
                 </label>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                     PDF, DOC, DOCX, TXT (Max 10MB)
                 </span>
             </div>
@@ -100,14 +100,14 @@ const DocumentList = ({ documents, onRemove }) => {
 
     return (
         <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Uploaded Documents
             </label>
             <div className="space-y-2">
                 {documents.map((doc, index) => (
                     <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-lg"
                     >
                         <div className="flex items-center gap-3">
                             <FiFile className="text-primary-600" size={20} />
