@@ -42,7 +42,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-300 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-400 relative">
             {/* Image Container */}
-            <Link to={`/courses/${course._id}`} className="block relative overflow-hidden bg-gray-100 h-48">
+            <Link to={`/courses/${course._id}`} className="block relative overflow-hidden bg-gray-100 h-40 sm:h-48">
                 <img
                     src={course.thumbnail?.url || 'https://via.placeholder.com/400x300/3B82F6/FFFFFF?text=Course'}
                     alt={course.title}
@@ -73,7 +73,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
             </Link>
 
             {/* Content */}
-            <div className="p-5">
+            <div className="p-3 sm:p-5">
                 {/* Category */}
                 {course.category?.name && (
                     <p className="text-primary-600 text-sm font-semibold mb-2">
@@ -83,7 +83,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
 
                 {/* Title */}
                 <Link to={`/courses/${course._id}`}>
-                    <h3 className="font-bold text-xl mb-4 line-clamp-2 text-gray-900 dark:text-gray-100 hover:text-primary-600 transition-colors">
+                    <h3 className="font-bold text-base sm:text-xl mb-3 sm:mb-4 line-clamp-2 text-gray-900 dark:text-gray-100 hover:text-primary-600 transition-colors">
                         {course.title}
                     </h3>
                 </Link>
@@ -99,7 +99,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
                 )}
 
                 {/* Rating & Students */}
-                <div className="flex items-center gap-6 mb-5 text-sm">
+                <div className="flex items-center gap-3 sm:gap-6 mb-4 sm:mb-5 text-sm">
                     {course.averageRating >= 0 && (
                         <div className="flex items-center gap-1">
                             <FiStar className="text-yellow-400 fill-current" size={16} />
@@ -124,7 +124,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
                     <div>
                         {hasDiscount ? (
                             <div className="flex items-center gap-2">
-                                <span className="text-2xl font-bold text-primary-600">
+                                <span className="text-xl sm:text-2xl font-bold text-primary-600">
                                     ₹{displayPrice}
                                 </span>
                                 <span className="text-xs text-gray-400 line-through">
@@ -132,7 +132,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
                                 </span>
                             </div>
                         ) : (
-                            <span className="text-2xl font-bold text-primary-600">
+                            <span className="text-xl sm:text-2xl font-bold text-primary-600">
                                 ₹{displayPrice}
                             </span>
                         )}
@@ -141,7 +141,7 @@ const CourseCard = ({ course, onDelete, currentUser }) => {
                     {/* View Details Button */}
                     <Link
                         to={`/courses/${course._id}`}
-                        className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold text-sm transition-colors shadow-md hover:shadow-lg dark:shadow-slate-700"
+                        className="px-3 sm:px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold text-sm transition-colors shadow-md hover:shadow-lg dark:shadow-slate-700"
                     >
                         View
                     </Link>

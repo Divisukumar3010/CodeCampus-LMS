@@ -19,8 +19,8 @@ const CourseDetails = ({ course }) => {
             {/* ================= COURSE CURRICULUM ================= */}
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-primary-600 to-secondary-600 px-6 py-4">
-                    <h3 className="text-xl font-bold text-white">Course Curriculum</h3>
+                <div className="bg-gradient-to-r from-primary-600 to-secondary-600 px-4 sm:px-6 py-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-white">Course Curriculum</h3>
                     <p className="text-primary-100 text-sm mt-1">
                         {course.sections?.length || 0} sections • {course.totalLessons || 0} lessons •{' '}
                         {formatDuration(course.totalDuration || 0)} total length
@@ -38,7 +38,7 @@ const CourseDetails = ({ course }) => {
                                 <button
                                     onClick={() => toggleSection(sectionId)}
                                     className="
-                                        w-full px-6 py-4
+                                        w-full px-4 sm:px-6 py-4
                                         flex items-center justify-between
                                         bg-white dark:bg-slate-900
                                         hover:bg-gray-50 dark:hover:bg-slate-800
@@ -69,9 +69,8 @@ const CourseDetails = ({ course }) => {
                                     </div>
 
                                     <svg
-                                        className={`w-5 h-5 text-gray-500 dark:text-slate-400 transition-transform ${
-                                            isOpen ? 'rotate-180' : ''
-                                        }`}
+                                        className={`w-5 h-5 text-gray-500 dark:text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''
+                                            }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -82,7 +81,7 @@ const CourseDetails = ({ course }) => {
 
                                 {/* Lessons */}
                                 {isOpen && (
-                                    <div className="px-6 pb-4 bg-gray-50 dark:bg-slate-800/60">
+                                    <div className="px-4 sm:px-6 pb-4 bg-gray-50 dark:bg-slate-800/60">
                                         {section.lessons?.map((lesson, lessonIndex) => (
                                             <div
                                                 key={lesson._id || lessonIndex}
@@ -137,7 +136,7 @@ const CourseDetails = ({ course }) => {
             </div>
 
             {/* ================= COURSE STATS ================= */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 {/* Lessons */}
                 <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 text-center">
                     <div className="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center mx-auto mb-2">

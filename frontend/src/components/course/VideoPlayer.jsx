@@ -21,12 +21,12 @@ const VideoPlayer = ({ url, onComplete }) => {
     }, [onComplete]);
 
     return (
-        <div className="video-player">
+        <div className="video-player w-full">
             <video
                 ref={videoRef}
                 controls
                 controlsList="nodownload"
-                className="w-full h-full"
+                className="w-full h-full rounded-lg"
                 src={url}
             >
                 Your browser does not support the video tag.

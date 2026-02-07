@@ -70,7 +70,7 @@ const StudentDashboard = () => {
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Learning Dashboard</h1>
                         <p className="text-gray-600 dark:text-slate-400">Track your progress and continue learning</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
                             <FiUser size={16} /> View Profile
                         </Link>
@@ -81,7 +81,7 @@ const StudentDashboard = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8">
                     <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
                         <div className="flex items-center justify-between">
                             <div>
@@ -135,13 +135,13 @@ const StudentDashboard = () => {
                     </div>
 
                     {loading ? (
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                             {[...Array(3)].map((_, i) => (
                                 <div key={i} className="bg-gray-200 dark:bg-slate-800 h-64 rounded-xl animate-pulse" />
                             ))}
                         </div>
                     ) : enrolledCourses.length > 0 ? (
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                             {enrolledCourses.slice(0, 3).map((progress) => (
                                 <Link
                                     key={progress._id}
@@ -208,7 +208,7 @@ const StudentDashboard = () => {
                 <section>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recommended for You</h2>
                     {recommendedCourses.length > 0 ? (
-                        <div className="grid md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
                             {recommendedCourses.map((course) => (
                                 <CourseCard key={course._id} course={course} />
                             ))}

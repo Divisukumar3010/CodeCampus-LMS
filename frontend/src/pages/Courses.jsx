@@ -123,12 +123,12 @@ const Courses = () => {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
             {/* Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-40 mt-10 rounded-3xl shadow-sm mx-4 sm:mx-6 lg:mx-8 sticky top-[2%]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex justify-between items-center mb-6">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-40 mt-4 sm:mt-6 lg:mt-10 rounded-3xl shadow-sm mx-4 sm:mx-6 lg:mx-8 sticky top-[2%]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <div className="flex justify-between items-center mb-4 sm:mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Browse Courses</h1>
-                            <p className="text-slate-600 dark:text-slate-400 mt-1">{pagination.total} courses available</p>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Browse Courses</h1>
+                            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">{pagination.total} courses available</p>
                         </div>
                         <button
                             onClick={() => setShowFilters(!showFilters)}
@@ -157,11 +157,11 @@ const Courses = () => {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex flex-col md:flex-row gap-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                     {/* Sidebar Filters */}
-                    <aside className={`${showFilters ? 'block' : 'hidden md:block'} md:w-64 flex-shrink-0 sticky top-1/2`}>
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 sticky top-[31%]">
+                    <aside className={`${showFilters ? 'block' : 'hidden md:block'} w-full md:w-64 flex-shrink-0`}>
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:sticky md:top-[31%]">
                             <div className="flex items-center justify-between mb-6 ">
                                 <h2 className="font-bold text-lg text-slate-900 dark:text-white">Filters</h2>
                                 {hasActiveFilters && (
@@ -264,14 +264,14 @@ const Courses = () => {
                     {/* Main Content */}
                     <main className="flex-grow">
                         {loading ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...Array(9)].map((_, i) => (
                                     <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse h-80"></div>
                                 ))}
                             </div>
                         ) : courses.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
                                     {courses.map(course => (
                                         <CourseCard key={course._id} course={course} currentUser={user} />
                                     ))}
@@ -279,7 +279,7 @@ const Courses = () => {
 
                                 {/* Pagination */}
                                 {pagination.totalPages > 1 && (
-                                    <div className="flex justify-center items-center gap-2 mt-12">
+                                    <div className="flex flex-wrap justify-center items-center gap-2 mt-8 sm:mt-12">
                                         <button
                                             onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                             disabled={pagination.currentPage === 1}
@@ -310,8 +310,8 @@ const Courses = () => {
                                 )}
                             </>
                         ) : (
-                            <div className="text-center py-20">
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No Courses Found</h3>
+                            <div className="text-center py-12 sm:py-20">
+                                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">No Courses Found</h3>
                                 <p className="text-slate-600 dark:text-slate-400 mb-6">Try adjusting your filters</p>
                                 <button onClick={clearFilters} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                                     Clear Filters

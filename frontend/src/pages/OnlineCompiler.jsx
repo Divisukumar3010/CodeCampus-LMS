@@ -14,7 +14,8 @@ const OnlineCompiler = () => {
     const [editorTheme, setEditorTheme] = useState('vs-dark');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [htmlPreview, setHtmlPreview] = useState('');
-    
+    const [editorHeight, setEditorHeight] = useState('600px');
+
     const editorRef = useRef(null);
     const iframeRef = useRef(null);
 
@@ -34,10 +35,20 @@ const OnlineCompiler = () => {
             const timer = setTimeout(() => {
                 setHtmlPreview(code);
             }, 500);
-            
+
             return () => clearTimeout(timer);
         }
     }, [code, language]);
+
+    // Responsive editor height
+    useEffect(() => {
+        const updateHeight = () => {
+            setEditorHeight(window.innerWidth < 1024 ? '350px' : '600px');
+        };
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
 
     const languages = [
         { id: 'javascript', name: 'JavaScript' },
@@ -209,52 +220,52 @@ int main() {
         <div className={`min-h-screen ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`} style={{ marginTop: '40px' }}>
             {/* Top Control Bar */}
             <div className={`${isDarkMode ? 'bg-black border-gray-800' : 'bg-white border-gray-200'} border-b`}>
-                <div className="max-w-[1800px] mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between gap-4">
+                <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
                         <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Code Editor</h1>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                             <button
                                 onClick={handleOpenFile}
-                                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors"
                             >
                                 <FolderOpen size={18} />
-                                Open File
+                                <span className="hidden sm:inline">Open File</span>
                             </button>
                             <button
                                 onClick={handleSaveFile}
-                                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors"
                             >
                                 <Save size={18} />
-                                Save File
+                                <span className="hidden sm:inline">Save File</span>
                             </button>
                             <button
                                 onClick={handleRun}
                                 disabled={loading}
-                                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors"
                             >
                                 <Play size={18} fill="white" />
                                 Run
                             </button>
                             <button
                                 onClick={handleReset}
-                                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors"
                             >
                                 <RotateCcw size={18} />
-                                Reset
+                                <span className="hidden sm:inline">Reset</span>
                             </button>
                             <button
-                                className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} px-5 py-2.5 rounded-lg font-medium transition-colors`}
+                                className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors`}
                             >
                                 <History size={18} />
-                                History
+                                <span className="hidden sm:inline">History</span>
                             </button>
 
                             {/* Language Dropdown */}
                             <div className="relative">
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 border-gray-700' : 'bg-gray-100 hover:bg-gray-200 border-gray-300'} px-5 py-2.5 rounded-lg font-medium transition-colors min-w-[180px] justify-between border`}
+                                    className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 border-gray-700' : 'bg-gray-100 hover:bg-gray-200 border-gray-300'} px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors min-w-[140px] sm:min-w-[180px] justify-between border`}
                                 >
                                     <span>{selectedLanguage?.name}</span>
                                     <ChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} size={18} />
@@ -285,8 +296,8 @@ int main() {
             </div>
 
             {/* Main Editor Area */}
-            <div className="max-w-[1800px] mx-auto px-6 py-6">
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr,500px] gap-6">
+            <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr,400px] xl:grid-cols-[1fr,500px] gap-6">
                     {/* Editor */}
                     <div className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-300'} rounded-lg overflow-hidden border`}>
                         <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'} px-4 py-2.5 border-b flex items-center justify-between`}>
@@ -300,7 +311,7 @@ int main() {
                             </button>
                         </div>
                         <Editor
-                            height="600px"
+                            height={editorHeight}
                             language={language === 'cpp' ? 'cpp' : language === 'csharp' ? 'csharp' : language}
                             value={code}
                             onChange={(value) => setCode(value || '')}
@@ -337,7 +348,8 @@ int main() {
                                     <iframe
                                         ref={iframeRef}
                                         srcDoc={htmlPreview}
-                                        style={{ width: '100%', height: '100%', border: 'none', minHeight: '600px' }}
+                                        className="w-full border-none min-h-[350px] lg:min-h-[600px]"
+                                        style={{ height: '100%' }}
                                         title="HTML Preview"
                                         sandbox="allow-scripts allow-same-origin allow-modals"
                                     />

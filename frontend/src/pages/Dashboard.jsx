@@ -25,7 +25,7 @@ const Dashboard = () => {
         }
     };
 
-    return <div className="min-h-screen bg-gray-50">{renderDashboard()}</div>;
+    return <div className="min-h-screen bg-gray-50 dark:bg-slate-950">{renderDashboard()}</div>;
 };
 
 export default Dashboard;

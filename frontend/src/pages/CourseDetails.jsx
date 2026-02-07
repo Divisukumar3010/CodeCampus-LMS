@@ -141,18 +141,18 @@ const CourseDetailsPage = () => {
             <div className={`
                 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900
                 text-white
-                w-[90%] mx-auto
-                rounded-[2rem]
-                px-8 py-4 mt-6 md:mt-10 lg:mt-12 rounded-2xl
+                w-full px-4 sm:w-[95%] md:w-[90%] mx-auto
+                rounded-xl sm:rounded-2xl md:rounded-[2rem]
+                sm:px-6 md:px-8 py-4 mt-4 sm:mt-6 md:mt-10 lg:mt-12
                 ${isDarkMode ? 'shadow-slate-800' : 'shadow-lg'}
             `}>
-                <div className="py-12 md:py-16">
+                <div className="py-6 sm:py-8 md:py-12 lg:py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                             {/* Left Column - Course Info */}
                             <div className="lg:col-span-2">
                                 {/* Breadcrumb */}
-                                <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">
                                     <Link to="/" className="hover:text-white transition">Home</Link>
                                     <span>/</span>
                                     <Link to="/courses" className="hover:text-white transition">Courses</Link>
@@ -166,17 +166,17 @@ const CourseDetailsPage = () => {
                                 </div>
 
                                 {/* Title */}
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
                                     {course.title}
                                 </h1>
 
                                 {/* Subtitle */}
                                 {course.subtitle && (
-                                    <p className="text-xl text-gray-300 mb-6">{course.subtitle}</p>
+                                    <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-4 sm:mb-6">{course.subtitle}</p>
                                 )}
 
                                 {/* Meta Info */}
-                                <div className="flex flex-wrap items-center gap-6 mb-6">
+                                <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 text-sm sm:text-base">
                                     {course.averageRating > 0 && (
                                         <div className="flex items-center gap-2">
                                             <FiStar className="text-yellow-400 fill-current" />
@@ -195,13 +195,13 @@ const CourseDetailsPage = () => {
                                 </div>
 
                                 {/* Trainer Info */}
-                                <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-sm rounded-xl">
-                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl">
+                                <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl">
+                                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-base sm:text-xl">
                                         {course.trainer?.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-400">Created by</p>
-                                        <p className="font-bold text-lg">{course.trainer?.name}</p>
+                                        <p className="font-bold text-base sm:text-lg">{course.trainer?.name}</p>
                                         {course.trainer?.expertise && (
                                             <p className="text-sm text-gray-400">{course.trainer.expertise.join(', ')}</p>
                                         )}
@@ -217,17 +217,16 @@ const CourseDetailsPage = () => {
                                             <img
                                                 src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
                                                 alt={course.title}
-                                                className="w-full h-56 object-cover"
+                                                className="w-full h-48 sm:h-56 object-cover"
                                             />
                                             {hasDiscount && (
-                                                <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                                                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-sm sm:text-base shadow-lg">
                                                     {discountPercentage}% OFF
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="p-6">
-                                            {/* Price */}
+                                        <div className="p-4 sm:p-6">
                                             <div className="mb-6">
                                                 {hasDiscount ? (
                                                     <div className="flex items-center gap-3">
@@ -296,16 +295,16 @@ const CourseDetailsPage = () => {
             </div>
 
             {/* Main Content */}
-            <div className="py-12">
+            <div className="py-6 sm:py-8 md:py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                         {/* Left Column - Course Details */}
-                        <div className="lg:col-span-2 space-y-8">
+                        <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
                             {/* What You'll Learn */}
                             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
-                                <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>What you'll learn</h2>
-                                    <div className="grid md:grid-cols-2 gap-4">
+                                <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                    <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>What you'll learn</h2>
+                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                                         {course.whatYouWillLearn.map((item, index) => (
                                             <div key={index} className="flex items-start gap-3">
                                                 <FiCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
@@ -317,21 +316,21 @@ const CourseDetailsPage = () => {
                             )}
 
                             {/* Description */}
-                            <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Description</h2>
+                            <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                <h2 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Description</h2>
                                 <p className={`leading-relaxed whitespace-pre-line ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{course.description}</p>
                             </div>
 
                             {/* Course Content */}
-                            <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Content</h2>
+                            <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Content</h2>
                                 <CourseDetails course={course} />
                             </div>
 
                             {/* Requirements */}
                             {course.requirements && course.requirements.length > 0 && (
-                                <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Requirements</h2>
+                                <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                    <h2 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Requirements</h2>
                                     <ul className="list-disc list-inside space-y-2">
                                         {course.requirements.map((req, index) => (
                                             <li key={index} className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{req}</li>
@@ -342,8 +341,8 @@ const CourseDetailsPage = () => {
 
                             {/* Target Audience */}
                             {course.targetAudience && course.targetAudience.length > 0 && (
-                                <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Who this course is for</h2>
+                                <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                    <h2 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Who this course is for</h2>
                                     <ul className="list-disc list-inside space-y-2">
                                         {course.targetAudience.map((audience, index) => (
                                             <li key={index} className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{audience}</li>
@@ -354,13 +353,13 @@ const CourseDetailsPage = () => {
 
                             {/* Reviews */}
                             {reviews.length > 0 && (
-                                <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Student Reviews</h2>
-                                    <div className="space-y-6">
+                                <div className={`rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                    <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Student Reviews</h2>
+                                    <div className="space-y-4 sm:space-y-6">
                                         {reviews.map((review) => (
-                                            <div key={review._id} className={`border-b pb-6 last:border-0 last:pb-0 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                                <div className="flex items-start gap-4">
-                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                                            <div key={review._id} className={`border-b pb-4 sm:pb-6 last:border-0 last:pb-0 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                                <div className="flex items-start gap-3 sm:gap-4">
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0">
                                                         {review.user?.name?.charAt(0).toUpperCase() || 'U'}
                                                     </div>
                                                     <div className="flex-grow">
@@ -390,33 +389,33 @@ const CourseDetailsPage = () => {
 
                         {/* Right Column - Mobile Course Card */}
                         <div className="lg:hidden">
-                            <div className={`rounded-2xl shadow-2xl overflow-hidden sticky top-24 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                            <div className={`rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden sticky top-24 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                                 <div className="relative">
                                     <img
                                         src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
                                         alt={course.title}
-                                        className="w-full h-48 object-cover"
+                                        className="w-full h-40 sm:h-48 object-cover"
                                     />
                                     {hasDiscount && (
-                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                                        <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-lg">
                                             {discountPercentage}% OFF
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="p-6">
-                                    <div className="mb-6">
+                                <div className="p-4 sm:p-6">
+                                    <div className="mb-4 sm:mb-6">
                                         {hasDiscount ? (
-                                            <div className="flex items-center gap-3">
-                                                <span className={`text-4xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                            <div className="flex items-center gap-2 sm:gap-3">
+                                                <span className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                                                     ₹{displayPrice}
                                                 </span>
-                                                <span className={`text-2xl ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} line-through`}>
+                                                <span className={`text-xl sm:text-2xl ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} line-through`}>
                                                     ₹{course.price}
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span className={`text-4xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                            <span className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                                                 ₹{displayPrice}
                                             </span>
                                         )}
@@ -425,7 +424,7 @@ const CourseDetailsPage = () => {
                                     {isPurchased ? (
                                         <Link
                                             to={`/course/view/${course._id}`}
-                                            className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition mb-4 w-full"
+                                            className="flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition mb-4 w-full"
                                         >
                                             Continue Learning
                                         </Link>
@@ -433,7 +432,7 @@ const CourseDetailsPage = () => {
                                         <button
                                             onClick={handleEnroll}
                                             disabled={purchasing}
-                                            className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition mb-4 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition mb-4 w-full disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {purchasing ? 'Processing...' : 'Enroll Now'}
                                         </button>

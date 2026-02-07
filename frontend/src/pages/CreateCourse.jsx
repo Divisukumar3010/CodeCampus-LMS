@@ -419,19 +419,19 @@ const CreateCourse = () => {
     };
 
     return (
-        <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-8">
-                    <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create New Course</h1>
+        <div className={`min-h-screen py-6 sm:py-8 md:py-12 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+            <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8">
+                <div className="mb-6 sm:mb-8">
+                    <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create New Course</h1>
                     <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Fill in the details to create your course</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                     {/* Basic Information */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Basic Information</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Basic Information</h2>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             <div>
                                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Course Title *</label>
                                 <input
@@ -479,7 +479,7 @@ const CreateCourse = () => {
                                 />
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category *</label>
                                     <select
@@ -518,7 +518,7 @@ const CreateCourse = () => {
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Language</label>
                                     <input
@@ -573,15 +573,15 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Thumbnail */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Thumbnail *</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Thumbnail *</h2>
 
                         {thumbnailPreview ? (
                             <div className="relative">
                                 <img
                                     src={thumbnailPreview}
                                     alt="Thumbnail preview"
-                                    className="w-full h-64 object-cover rounded-xl"
+                                    className="w-full h-48 sm:h-64 object-cover rounded-xl"
                                 />
                                 <button
                                     type="button"
@@ -592,7 +592,7 @@ const CreateCourse = () => {
                                 </button>
                             </div>
                         ) : (
-                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode
+                            <label className={`flex flex-col items-center justify-center w-full h-48 sm:h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode
                                 ? 'border-gray-600 hover:border-blue-500 bg-gray-700'
                                 : 'border-gray-300 hover:border-blue-500 bg-gray-50'
                                 }`}>
@@ -610,8 +610,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* What You'll Learn */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>What You'll Learn</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>What You'll Learn</h2>
                         <div className="space-y-3">
                             {formData.whatYouWillLearn.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -653,8 +653,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Requirements */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Requirements</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Requirements</h2>
                         <div className="space-y-3">
                             {formData.requirements.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -696,8 +696,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Target Audience */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Target Audience</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Target Audience</h2>
                         <div className="space-y-3">
                             {formData.targetAudience.map((item, index) => (
                                 <div key={index} className="flex gap-3">
@@ -739,8 +739,8 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Tags */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Tags</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Tags</h2>
                         <input
                             type="text"
                             name="tags"
@@ -756,9 +756,9 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Course Sections */}
-                    <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Curriculum</h2>
+                    <div className={`rounded-xl shadow-sm p-3 sm:p-4 md:p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+                            <h2 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Curriculum</h2>
                             <button
                                 type="button"
                                 onClick={addSection}
@@ -780,10 +780,10 @@ const CreateCourse = () => {
                                         {/* Section Header */}
                                         <div
                                             onClick={() => toggleSection(sectionIndex)}
-                                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 cursor-pointer flex justify-between items-center hover:opacity-90"
+                                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 cursor-pointer flex justify-between items-center hover:opacity-90"
                                         >
                                             <div>
-                                                <h3 className="font-bold text-lg">{section.title || `Section ${sectionIndex + 1}`}</h3>
+                                                <h3 className="font-bold text-base sm:text-lg">{section.title || `Section ${sectionIndex + 1}`}</h3>
                                                 <p className="text-sm opacity-90">{section.lessons.length} lessons</p>
                                             </div>
                                             {expandedSections[sectionIndex] ? <FiChevronUp /> : <FiChevronDown />}
@@ -791,7 +791,7 @@ const CreateCourse = () => {
 
                                         {/* Section Content */}
                                         {expandedSections[sectionIndex] && (
-                                            <div className={`p-6 space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                            <div className={`p-3 sm:p-4 md:p-6 space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                                 <div>
                                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Section Title *</label>
                                                     <input
@@ -842,7 +842,7 @@ const CreateCourse = () => {
                                                     ) : (
                                                         <div className="space-y-4">
                                                             {section.lessons.map((lesson, lessonIndex) => (
-                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode
+                                                                <div key={lessonIndex} className={`border rounded-lg p-3 sm:p-4 ${isDarkMode
                                                                     ? 'bg-gray-800 border-gray-700'
                                                                     : 'bg-white border-gray-200'
                                                                     }`}>
@@ -1008,11 +1008,11 @@ const CreateCourse = () => {
                     </div>
 
                     {/* Submit Buttons */}
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex items-center gap-2 flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center gap-2 flex-1 px-4 sm:px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <>
@@ -1029,7 +1029,7 @@ const CreateCourse = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/dashboard/trainer')}
-                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode
+                            className={`px-4 sm:px-6 py-3 font-semibold rounded-lg transition ${isDarkMode
                                 ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 } disabled:opacity-50 disabled:cursor-not-allowed`}

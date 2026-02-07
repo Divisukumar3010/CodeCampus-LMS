@@ -102,7 +102,7 @@ const CourseView = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Course not found</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Course not found</h2>
                     <p className="text-gray-600 dark:text-slate-400">The course you're looking for doesn't exist.</p>
                 </div>
             </div>
@@ -114,8 +114,8 @@ const CourseView = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-            <div className="max-w-7xl mx-auto py-8 px-4">
-                <div className="grid lg:grid-cols-3 gap-6">
+            <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-4 lg:py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
                     <div className="lg:col-span-2">
                         <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden">
@@ -127,8 +127,8 @@ const CourseView = () => {
                                             onComplete={() => handleLessonComplete(currentLesson._id)}
                                         />
                                     </div>
-                                    <div className="p-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                    <div className="p-4 sm:p-6">
+                                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                             {currentLesson.title}
                                         </h2>
                                         <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">{currentLesson.sectionTitle}</p>
@@ -189,9 +189,9 @@ const CourseView = () => {
 
                     {/* Course Content Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden sticky top-24">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden lg:sticky lg:top-24">
                             {/* Progress Header */}
-                            <div className="p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
+                            <div className="p-4 sm:p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
                                 <h3 className="font-bold text-lg mb-3">Your Progress</h3>
                                 {progress && (
                                     <div>
@@ -212,7 +212,7 @@ const CourseView = () => {
 
                             {/* Certificate Section */}
                             {progress?.isCompleted && (
-                                <div className="p-6 bg-gradient-to-br from-green-50 dark:from-green-900/20 to-blue-50 dark:to-blue-900/20 border-b-4 border-green-500">
+                                <div className="p-4 sm:p-6 bg-gradient-to-br from-green-50 dark:from-green-900/20 to-blue-50 dark:to-blue-900/20 border-b-4 border-green-500">
                                     <Certificate
                                         courseId={id}
                                         courseTitle={course.title}
@@ -223,7 +223,7 @@ const CourseView = () => {
                             )}
 
                             {/* Course Sections */}
-                            <div className="max-h-[600px] overflow-y-auto">
+                            <div className="max-h-[400px] lg:max-h-[600px] overflow-y-auto">
                                 <div className="p-4 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                     <h4 className="font-semibold text-gray-900 dark:text-white">Course Content</h4>
                                 </div>
@@ -233,9 +233,9 @@ const CourseView = () => {
                                             {/* Section Header - Collapsible */}
                                             <button
                                                 onClick={() => toggleSection(section._id)}
-                                                className="w-full p-4 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition flex items-center justify-between group"
+                                                className="w-full p-3 sm:p-4 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition flex items-center justify-between group"
                                             >
-                                                <span className="font-semibold text-gray-900 dark:text-white text-left">
+                                                <span className="font-semibold text-gray-900 dark:text-white text-left text-sm sm:text-base">
                                                     {section.title}
                                                 </span>
                                                 <div className="flex items-center gap-3">
@@ -265,7 +265,7 @@ const CourseView = () => {
                                                                     sectionId: section._id,
                                                                     sectionTitle: section.title
                                                                 })}
-                                                                className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition border-l-4 ${isCurrent
+                                                                className={`w-full p-3 sm:p-4 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition border-l-4 ${isCurrent
                                                                     ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-600'
                                                                     : 'border-transparent'
                                                                     }`}

@@ -73,7 +73,7 @@ const Home = () => {
                 </div>
 
                 <div className="relative container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 lg:py-5">
-                    <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
+                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-10 lg:gap-12 items-center">
                         {/* Left Column - Content */}
                         <div className="text-white animate-fade-in">
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 md:mb-6 leading-tight">
@@ -86,7 +86,7 @@ const Home = () => {
                                 Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12">
+                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12">
                                 <Link to="/courses" className="group inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
                                     Explore Courses
                                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -97,7 +97,7 @@ const Home = () => {
                             </div>
 
                             {/* Stats */}
-                            <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                                 <div className="text-center">
                                     <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">50K+</div>
                                     <div className="text-blue-100 text-xs sm:text-sm">Active Learners</div>
@@ -116,7 +116,7 @@ const Home = () => {
                         {/* Right Column - Feature Card */}
                         <div className="hidden lg:block animate-slide-up">
                             <div className={`${isDarkMode ? 'bg-gray-900/40' : 'bg-gray-100/80'} backdrop-blur-xl rounded-3xl p-8 border ${isDarkMode ? 'border-gray-700/40' : 'border-gray-300/60'} shadow-2xl`}>
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     {[
                                         { icon: FiBook, label: 'Online Courses', value: '15+', gradient: 'from-blue-500 to-blue-600' },
                                         { icon: FiUsers, label: 'Expert Instructors', value: '20+', gradient: 'from-purple-500 to-purple-600' },
@@ -144,8 +144,8 @@ const Home = () => {
             {/* Features Section */}
             <section className={`py-12 sm:py-16 md:py-20 px-4 sm:px-6 mx-auto w-[95%] sm:w-[92%] md:w-[98%] max-w-[96%] mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl md:rounded-[3rem] transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/30' : 'bg-white/40'} backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-[#CED4DA] dark:hover:border-[#495057]`}>
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-10 sm:mb-12 md:mb-16">
-                        <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                    <div className="text-center mb-8 sm:mb-12 md:mb-16">
+                        <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                             Why Choose <span className="text-blue-600">CodeCampus</span>?
                         </h2>
                         <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto px-4`}>
@@ -153,7 +153,7 @@ const Home = () => {
                         </p>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-7 md:gap-8">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                         {[
                             {
                                 icon: FiBook,
@@ -193,8 +193,8 @@ const Home = () => {
             {categories.length > 0 && (
                 <section className={`py-12 sm:py-16 md:py-20 px-4 sm:px-6 mx-auto w-[95%] sm:w-[92%] md:w-[98%] max-w-[96%] mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl md:rounded-[3rem] transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/30' : 'bg-white/40'} backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-[#CED4DA] dark:hover:border-[#495057]`}>
                     <div className="container mx-auto px-4">
-                        <div className="text-center mb-10 sm:mb-12 md:mb-16">
-                            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+                            <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                 Explore Top <span className="text-blue-600">Categories</span>
                             </h2>
                             <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Browse courses by category and find your passion</p>
@@ -228,7 +228,7 @@ const Home = () => {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 md:mb-12 gap-4">
                         <div>
-                            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-1 sm:mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                            <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                 Featured <span className="text-blue-600">Courses</span>
                             </h2>
                             <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Handpicked courses loved by our students</p>
@@ -296,7 +296,7 @@ const Home = () => {
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 text-center text-white">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-5 md:mb-6 px-2">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 md:mb-6 px-2">
                         Ready to Start Your Learning Journey?
                     </h2>
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto px-4">
@@ -313,7 +313,7 @@ const Home = () => {
                         </Link>
                     </div>
 
-                    <div className="mt-10 sm:mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 px-4">
+                    <div className="mt-8 sm:mt-10 md:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 px-4">
                         {[
                             { icon: FiCheckCircle, text: '30-Day Money Back Guarantee' },
                             { icon: FiCheckCircle, text: 'Lifetime Access to Courses' },
