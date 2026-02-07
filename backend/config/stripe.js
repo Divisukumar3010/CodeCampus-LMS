@@ -1,8 +1,15 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// Get the primary frontend URL (first entry if comma-separated)
+const getFrontendUrl = () => {
+    const url = process.env.FRONTEND_URL || 'http://localhost:5173';
+    return url.split(',')[0].trim();
+};
+
 // Create Stripe checkout session
 exports.createCheckoutSession = async (courseId, courseName, price, userId, userEmail) => {
     try {
+        const frontendUrl = getFrontendUrl();
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -19,8 +26,8 @@ exports.createCheckoutSession = async (courseId, courseName, price, userId, user
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/payment/cancel`,
+            success_url: `${frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${frontendUrl}/payment/cancel`,
             client_reference_id: courseId,
             customer_email: userEmail,
             metadata: {

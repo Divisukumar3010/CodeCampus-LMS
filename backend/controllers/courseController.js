@@ -2,7 +2,43 @@ const Course = require('../models/Course');
 const Category = require('../models/Category');
 const Order = require('../models/Order');
 const Progress = require('../models/Progress');
-const { uploadImage, uploadVideo, uploadDocument, deleteFile } = require('../config/cloudinary');
+const { uploadImage, uploadDocument, deleteFile } = require('../config/cloudinary');
+
+const extractYouTubeId = (value) => {
+    if (!value || typeof value !== 'string') return null;
+
+    try {
+        const url = new URL(value);
+        const host = url.hostname.replace('www.', '');
+
+        if (host === 'youtu.be') {
+            const id = url.pathname.split('/')[1];
+            return id || null;
+        }
+
+        if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+            if (url.pathname === '/watch') {
+                return url.searchParams.get('v');
+            }
+            if (url.pathname.startsWith('/embed/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+            if (url.pathname.startsWith('/shorts/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+        }
+    } catch (error) {
+        // Fall through to regex match.
+    }
+
+    const match = value.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return match ? match[1] : null;
+};
+
+const normalizeYouTubeUrl = (value) => {
+    const id = extractYouTubeId(value);
+    return id ? `https://www.youtube.com/watch?v=${id}` : null;
+};
 
 // @desc    Get all courses with filters and pagination
 // @route   GET /api/courses
@@ -262,7 +298,7 @@ exports.createCourse = async (req, res, next) => {
             });
         }
 
-        // Process sections with videos
+        // Process sections with YouTube videos
         const processedSections = [];
         for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
             const section = sections[sectionIndex];
@@ -270,52 +306,21 @@ exports.createCourse = async (req, res, next) => {
 
             for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
                 const lesson = section.lessons[lessonIndex];
-                let videoData = {};
+                const normalizedVideoUrl = normalizeYouTubeUrl(lesson.videoUrl);
 
-                // Check if video file exists in req.files
-                const videoFieldName = `lesson_${sectionIndex}_${lessonIndex}`;
-                let videoFile = null;
-
-                // When using uploadAny(), req.files is an ARRAY
-                if (Array.isArray(req.files)) {
-                    videoFile = req.files.find(file => file.fieldname === videoFieldName);
-                } else if (req.files && req.files[videoFieldName]) {
-                    // Fallback for object format
-                    const videoArr = req.files[videoFieldName];
-                    videoFile = Array.isArray(videoArr) ? videoArr[0] : videoArr;
-                }
-
-                if (videoFile && videoFile.buffer) {
-                    try {
-                        console.log('Uploading video:', videoFieldName);
-                        const videoResult = await uploadVideo(videoFile.buffer, 'lms/lessons');
-                        videoData = {
-                            public_id: videoResult.public_id,
-                            url: videoResult.secure_url,
-                            duration: videoResult.duration || 0
-                        };
-                    } catch (videoError) {
-                        console.error(`Error uploading video for lesson ${lessonIndex}:`, videoError);
-                        return res.status(400).json({
-                            success: false,
-                            message: `Error uploading video for lesson "${lesson.title}": ${videoError.message}`
-                        });
-                    }
-                } else {
-                    // Video is optional
-                    videoData = {
-                        url: null,
-                        public_id: null,
-                        duration: 0
-                    };
+                if (!normalizedVideoUrl) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Invalid or missing YouTube URL for lesson "${lesson.title || `Lesson ${lessonIndex + 1}`}"`
+                    });
                 }
 
                 processedLessons.push({
                     title: lesson.title || `Lesson ${lessonIndex + 1}`,
                     description: lesson.description || '',
-                    videoUrl: videoData.url,
-                    videoPublicId: videoData.public_id,
-                    videoDuration: videoData.duration || 0,
+                    videoUrl: normalizedVideoUrl,
+                    videoPublicId: null,
+                    videoDuration: Number.isFinite(Number(lesson.videoDuration)) ? Number(lesson.videoDuration) : 0,
                     isFree: lesson.isFree || false,
                     order: lessonIndex + 1,
                     resources: []
@@ -441,7 +446,7 @@ exports.updateCourse = async (req, res, next) => {
             req.body.tags = JSON.parse(req.body.tags);
         }
 
-        // Handle file uploads
+        // Handle file uploads (thumbnail/resources only)
         if (req.files && req.files.length > 0) {
             // Import upload functions at top: const { uploadImage, uploadVideo, deleteFile } = require('../utils/cloudinary');
 
@@ -460,43 +465,6 @@ exports.updateCourse = async (req, res, next) => {
                 };
             }
 
-            // Process lesson videos
-            if (req.body.sections && Array.isArray(req.body.sections)) {
-                for (let sectionIndex = 0; sectionIndex < req.body.sections.length; sectionIndex++) {
-                    const section = req.body.sections[sectionIndex];
-
-                    if (section.lessons && Array.isArray(section.lessons)) {
-                        for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
-                            const lesson = section.lessons[lessonIndex];
-                            const videoFieldName = `lesson_${sectionIndex}_${lessonIndex}`;
-                            const videoFile = req.files.find(f => f.fieldname === videoFieldName);
-
-                            if (videoFile) {
-                                // Delete old video if exists
-                                const existingLesson = course.sections?.[sectionIndex]?.lessons?.[lessonIndex];
-                                if (existingLesson?.video?.public_id) {
-                                    await deleteFile(existingLesson.video.public_id, 'video');
-                                }
-
-                                // Upload new video
-                                const videoResult = await uploadVideo(videoFile.buffer, 'lms/videos');
-
-                                lesson.video = {
-                                    public_id: videoResult.public_id,
-                                    url: videoResult.secure_url
-                                };
-                                lesson.videoUrl = videoResult.secure_url;
-                                // Duration will be set to 0 - calculate it if you have ffmpeg available
-                                lesson.videoDuration = 0;
-                            } else if (!lesson.videoUrl) {
-                                // If no video file and no existing videoUrl, set default
-                                lesson.videoUrl = '';
-                                lesson.videoDuration = 0;
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         // Ensure all sections and lessons have required fields
@@ -517,10 +485,14 @@ exports.updateCourse = async (req, res, next) => {
                         if (lesson.videoDuration === undefined || lesson.videoDuration === null) {
                             lesson.videoDuration = 0;
                         }
-                        // MUST have videoUrl - never empty
-                        if (!lesson.videoUrl || lesson.videoUrl === '') {
-                            lesson.videoUrl = 'https://placeholder.com/video.mp4';
+
+                        const normalizedVideoUrl = normalizeYouTubeUrl(lesson.videoUrl);
+                        if (!normalizedVideoUrl) {
+                            throw new Error(`Invalid or missing YouTube URL for lesson "${lesson.title || `Lesson ${lessonIndex + 1}`}"`);
                         }
+
+                        lesson.videoUrl = normalizedVideoUrl;
+                        lesson.videoPublicId = null;
                     });
                 }
             });
@@ -575,6 +547,12 @@ exports.updateCourse = async (req, res, next) => {
 
     } catch (error) {
         console.error('Update course error:', error);
+        if (error.message && error.message.startsWith('Invalid or missing YouTube URL')) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
         next(error);
     }
 };
@@ -717,15 +695,20 @@ exports.addLesson = async (req, res, next) => {
             });
         }
 
-        // Upload video
-        const videoResult = await uploadVideo(req.file.buffer, 'lms/lessons');
+        const normalizedVideoUrl = normalizeYouTubeUrl(req.body.videoUrl);
+        if (!normalizedVideoUrl) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or missing YouTube URL'
+            });
+        }
 
         const lesson = {
             title: req.body.title,
             description: req.body.description,
-            videoUrl: videoResult.secure_url,
-            videoPublicId: videoResult.public_id,
-            videoDuration: videoResult.duration || 0,
+            videoUrl: normalizedVideoUrl,
+            videoPublicId: null,
+            videoDuration: Number.isFinite(Number(req.body.videoDuration)) ? Number(req.body.videoDuration) : 0,
             isFree: req.body.isFree || false,
             order: section.lessons.length + 1,
             resources: []

@@ -5,6 +5,41 @@ import { FiUpload, FiX, FiPlus, FiTrash2, FiSave, FiChevronDown, FiChevronUp } f
 import toast from 'react-hot-toast';
 import { useTheme } from '../hooks/useTheme'; // Import useTheme hook
 
+const extractYouTubeId = (value) => {
+    if (!value || typeof value !== 'string') return null;
+
+    try {
+        const url = new URL(value);
+        const host = url.hostname.replace('www.', '');
+
+        if (host === 'youtu.be') {
+            return url.pathname.split('/')[1] || null;
+        }
+
+        if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+            if (url.pathname === '/watch') {
+                return url.searchParams.get('v');
+            }
+            if (url.pathname.startsWith('/embed/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+            if (url.pathname.startsWith('/shorts/')) {
+                return url.pathname.split('/')[2] || null;
+            }
+        }
+    } catch (error) {
+        // Fall through to regex match.
+    }
+
+    const match = value.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return match ? match[1] : null;
+};
+
+const getYouTubeThumbnail = (value) => {
+    const id = extractYouTubeId(value);
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+};
+
 const EditCoursePage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -68,8 +103,7 @@ const EditCoursePage = () => {
                     _id: lesson._id,
                     title: lesson.title || '',
                     description: lesson.description || '',
-                    video: null,
-                    videoPreview: lesson.videoUrl || null,
+                    videoUrl: lesson.videoUrl || '',
                     videoDuration: lesson.videoDuration || 0,
                     isFree: lesson.isFree || false,
                     resources: lesson.resources?.map(resource => ({
@@ -184,9 +218,8 @@ const EditCoursePage = () => {
                         lessons: [...section.lessons, {
                             title: '',
                             description: '',
-                            video: null,
-                            videoPreview: null,
-                            videoDuration: 0,
+                            videoUrl: '',
+                            videoDuration: '',
                             isFree: false,
                             resources: []
                         }]
@@ -223,102 +256,61 @@ const EditCoursePage = () => {
         }));
     };
 
-    const handleVideoChange = (sectionIndex, lessonIndex, e) => {
+    const addResource = (sectionIndex, lessonIndex) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: [...(lesson.resources || []), {
+                                        title: '',
+                                        file: null,
+                                        fileName: '',
+                                        url: ''
+                                    }]
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+    const removeResource = (sectionIndex, lessonIndex, resourceIdx) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: lesson.resources.filter((_, k) => k !== resourceIdx)
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
+    };
+
+    const handleResourceChange = (sectionIndex, lessonIndex, resourceIdx, e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 500 * 1024 * 1024) {
-                toast.error('Video size should be less than 500MB');
+            if (file.size > 50 * 1024 * 1024) {
+                toast.error('Resource size should be less than 50MB');
                 return;
             }
-            updateLesson(sectionIndex, lessonIndex, 'video', file);
-            updateLesson(sectionIndex, lessonIndex, 'videoPreview', URL.createObjectURL(file));
-        }
-        const addResource = (sectionIndex, lessonIndex) => {
-            setFormData(prev => ({
-                ...prev,
-                sections: prev.sections.map((section, i) =>
-                    i === sectionIndex
-                        ? {
-                            ...section,
-                            lessons: section.lessons.map((lesson, j) =>
-                                j === lessonIndex
-                                    ? {
-                                        ...lesson,
-                                        resources: [...(lesson.resources || []), {
-                                            title: '',
-                                            file: null,
-                                            fileName: '',
-                                            url: ''
-                                        }]
-                                    }
-                                    : lesson
-                            )
-                        }
-                        : section
-                )
-            }));
-        };
 
-        const removeResource = (sectionIndex, lessonIndex, resourceIdx) => {
-            setFormData(prev => ({
-                ...prev,
-                sections: prev.sections.map((section, i) =>
-                    i === sectionIndex
-                        ? {
-                            ...section,
-                            lessons: section.lessons.map((lesson, j) =>
-                                j === lessonIndex
-                                    ? {
-                                        ...lesson,
-                                        resources: lesson.resources.filter((_, k) => k !== resourceIdx)
-                                    }
-                                    : lesson
-                            )
-                        }
-                        : section
-                )
-            }));
-        };
-
-        const handleResourceChange = (sectionIndex, lessonIndex, resourceIdx, e) => {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 50 * 1024 * 1024) {
-                    toast.error('Resource size should be less than 50MB');
-                    return;
-                }
-
-                setFormData(prev => ({
-                    ...prev,
-                    sections: prev.sections.map((section, i) =>
-                        i === sectionIndex
-                            ? {
-                                ...section,
-                                lessons: section.lessons.map((lesson, j) =>
-                                    j === lessonIndex
-                                        ? {
-                                            ...lesson,
-                                            resources: lesson.resources.map((resource, k) =>
-                                                k === resourceIdx
-                                                    ? {
-                                                        ...resource,
-                                                        file: file,
-                                                        fileName: file.name,
-                                                        title: file.name.split('.')[0]
-                                                    }
-                                                    : resource
-                                            )
-                                        }
-                                        : lesson
-                                )
-                            }
-                            : section
-                    )
-                }));
-            }
-        };
-
-        const updateResourceTitle = (sectionIndex, lessonIndex, resourceIdx, value) => {
             setFormData(prev => ({
                 ...prev,
                 sections: prev.sections.map((section, i) =>
@@ -331,7 +323,12 @@ const EditCoursePage = () => {
                                         ...lesson,
                                         resources: lesson.resources.map((resource, k) =>
                                             k === resourceIdx
-                                                ? { ...resource, title: value }
+                                                ? {
+                                                    ...resource,
+                                                    file: file,
+                                                    fileName: file.name,
+                                                    title: file.name.split('.')[0]
+                                                }
                                                 : resource
                                         )
                                     }
@@ -341,7 +338,32 @@ const EditCoursePage = () => {
                         : section
                 )
             }));
-        };
+        }
+    };
+
+    const updateResourceTitle = (sectionIndex, lessonIndex, resourceIdx, value) => {
+        setFormData(prev => ({
+            ...prev,
+            sections: prev.sections.map((section, i) =>
+                i === sectionIndex
+                    ? {
+                        ...section,
+                        lessons: section.lessons.map((lesson, j) =>
+                            j === lessonIndex
+                                ? {
+                                    ...lesson,
+                                    resources: lesson.resources.map((resource, k) =>
+                                        k === resourceIdx
+                                            ? { ...resource, title: value }
+                                            : resource
+                                    )
+                                }
+                                : lesson
+                        )
+                    }
+                    : section
+            )
+        }));
     };
 
     const toggleSection = (sectionIndex) => {
@@ -362,6 +384,17 @@ const EditCoursePage = () => {
         if (formData.price && formData.discountPrice && parseFloat(formData.discountPrice) >= parseFloat(formData.price)) {
             toast.error('Discount price must be less than regular price');
             return;
+        }
+
+        for (let sectionIndex = 0; sectionIndex < formData.sections.length; sectionIndex++) {
+            const section = formData.sections[sectionIndex];
+            for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
+                const lesson = section.lessons[lessonIndex];
+                if (!lesson.videoUrl || !extractYouTubeId(lesson.videoUrl)) {
+                    toast.error(`Section ${sectionIndex + 1}, Lesson ${lessonIndex + 1} needs a valid YouTube URL`);
+                    return;
+                }
+            }
         }
 
         setIsLoading(true);
@@ -412,8 +445,8 @@ const EditCoursePage = () => {
                             description: lesson.description,
                             isFree: lesson.isFree,
                             order: lessonIndex + 1,
-                            videoDuration: lesson.videoDuration || 0,
-                            videoUrl: lesson.videoPreview || '',
+                            videoDuration: Number(lesson.videoDuration) || 0,
+                            videoUrl: lesson.videoUrl || '',
                             resources: lesson.resources?.map(resource => ({
                                 title: resource.title,
                                 fileName: resource.fileName,
@@ -440,26 +473,6 @@ const EditCoursePage = () => {
             console.log('Sections Data:', sectionsData);
             submitData.append('sections', JSON.stringify(sectionsData));
 
-            // Add lesson videos as separate fields
-            const videoFiles = [];
-            formData.sections.forEach((section, sectionIndex) => {
-                section.lessons.forEach((lesson, lessonIndex) => {
-                    if (lesson.video && lesson.video instanceof File) {
-                        const videoFieldName = `lesson_${sectionIndex}_${lessonIndex}`;
-                        console.log('Adding video:', videoFieldName, lesson.video.name, lesson.video.size);
-                        videoFiles.push({
-                            fieldName: videoFieldName,
-                            file: lesson.video
-                        });
-                    }
-                });
-            });
-
-            // Add videos to form data
-            videoFiles.forEach(({ fieldName, file }) => {
-                submitData.append(fieldName, file, file.name);
-            });
-            
             // Add resource files to form data
             const resourceFiles = [];
             formData.sections.forEach((section, sectionIndex) => {
@@ -484,7 +497,7 @@ const EditCoursePage = () => {
                 submitData.append(fieldName, file, file.name);
             });
 
-            console.log('Submitting update with', videoFiles.length, 'videos...');
+            console.log('Submitting update with', resourceFiles.length, 'resources...');
 
             const response = await courseAPI.update(id, submitData);
 
@@ -530,63 +543,63 @@ const EditCoursePage = () => {
                         <div className="space-y-6">
                             <div>
                                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Course Title *</label>
-                                <input 
-                                    type="text" 
-                                    name="title" 
-                                    value={formData.title} 
-                                    onChange={handleChange} 
-                                    required 
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    required
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
-                                    placeholder="e.g., Complete Web Development Bootcamp 2024" 
+                                        } focus:outline-none focus:ring-2`}
+                                    placeholder="e.g., Complete Web Development Bootcamp 2024"
                                 />
                             </div>
 
                             <div>
                                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subtitle</label>
-                                <input 
-                                    type="text" 
-                                    name="subtitle" 
-                                    value={formData.subtitle} 
-                                    onChange={handleChange} 
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                <input
+                                    type="text"
+                                    name="subtitle"
+                                    value={formData.subtitle}
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
-                                    placeholder="Brief description of your course" 
+                                        } focus:outline-none focus:ring-2`}
+                                    placeholder="Brief description of your course"
                                 />
                             </div>
 
                             <div>
                                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description *</label>
-                                <textarea 
-                                    name="description" 
-                                    value={formData.description} 
-                                    onChange={handleChange} 
-                                    required 
-                                    rows={6} 
-                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    required
+                                    rows={6}
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                    } focus:outline-none focus:ring-2`}
-                                    placeholder="Detailed description of what students will learn..." 
+                                        } focus:outline-none focus:ring-2`}
+                                    placeholder="Detailed description of what students will learn..."
                                 />
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category *</label>
-                                    <select 
-                                        name="category" 
-                                        value={formData.category} 
-                                        onChange={handleChange} 
-                                        required 
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                    <select
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        required
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="">Select a category</option>
                                         {categories.map(cat => (
@@ -597,14 +610,14 @@ const EditCoursePage = () => {
 
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Level *</label>
-                                    <select 
-                                        name="level" 
-                                        value={formData.level} 
-                                        onChange={handleChange} 
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500' 
+                                    <select
+                                        name="level"
+                                        value={formData.level}
+                                        onChange={handleChange}
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
+                                            } focus:outline-none focus:ring-2`}
                                     >
                                         <option value="beginner">Beginner</option>
                                         <option value="intermediate">Intermediate</option>
@@ -617,51 +630,51 @@ const EditCoursePage = () => {
                             <div className="grid md:grid-cols-3 gap-6">
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Language</label>
-                                    <input 
-                                        type="text" 
-                                        name="language" 
-                                        value={formData.language} 
-                                        onChange={handleChange} 
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="text"
+                                        name="language"
+                                        value={formData.language}
+                                        onChange={handleChange}
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="English" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="English"
                                     />
                                 </div>
 
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Price (INR) *</label>
-                                    <input 
-                                        type="number" 
-                                        name="price" 
-                                        value={formData.price} 
-                                        onChange={handleChange} 
-                                        required 
-                                        min="0" 
-                                        step="0.01" 
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="number"
+                                        name="price"
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        required
+                                        min="0"
+                                        step="0.01"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="99.99" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="99.99"
                                     />
                                 </div>
 
                                 <div>
                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Discount Price (INR)</label>
-                                    <input 
-                                        type="number" 
-                                        name="discountPrice" 
-                                        value={formData.discountPrice} 
-                                        onChange={handleChange} 
-                                        min="0" 
-                                        step="0.01" 
-                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="number"
+                                        name="discountPrice"
+                                        value={formData.discountPrice}
+                                        onChange={handleChange}
+                                        min="0"
+                                        step="0.01"
+                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="49.99" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="49.99"
                                     />
                                 </div>
                             </div>
@@ -679,10 +692,10 @@ const EditCoursePage = () => {
                                 </button>
                             </div>
                         ) : (
-                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode 
-                                ? 'border-gray-600 hover:border-blue-500 bg-gray-700' 
+                            <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition ${isDarkMode
+                                ? 'border-gray-600 hover:border-blue-500 bg-gray-700'
                                 : 'border-gray-300 hover:border-blue-500 bg-gray-50'
-                            }`}>
+                                }`}>
                                 <FiUpload className={`text-5xl mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
                                 <p className={`font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Click to upload thumbnail</p>
                                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>PNG, JPG up to 5MB</p>
@@ -697,37 +710,37 @@ const EditCoursePage = () => {
                         <div className="space-y-3">
                             {formData.whatYouWillLearn.map((item, index) => (
                                 <div key={index} className="flex gap-3">
-                                    <input 
-                                        type="text" 
-                                        value={item} 
-                                        onChange={(e) => handleArrayChange('whatYouWillLearn', index, e.target.value)} 
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="text"
+                                        value={item}
+                                        onChange={(e) => handleArrayChange('whatYouWillLearn', index, e.target.value)}
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="e.g., Build responsive websites" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="e.g., Build responsive websites"
                                     />
                                     {formData.whatYouWillLearn.length > 1 && (
-                                        <button 
-                                            type="button" 
-                                            onClick={() => removeArrayItem('whatYouWillLearn', index)} 
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                        <button
+                                            type="button"
+                                            onClick={() => removeArrayItem('whatYouWillLearn', index)}
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
                                     )}
                                 </div>
                             ))}
-                            <button 
-                                type="button" 
-                                onClick={() => addArrayItem('whatYouWillLearn')} 
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                            <button
+                                type="button"
+                                onClick={() => addArrayItem('whatYouWillLearn')}
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Learning Outcome
                             </button>
@@ -740,37 +753,37 @@ const EditCoursePage = () => {
                         <div className="space-y-3">
                             {formData.requirements.map((item, index) => (
                                 <div key={index} className="flex gap-3">
-                                    <input 
-                                        type="text" 
-                                        value={item} 
-                                        onChange={(e) => handleArrayChange('requirements', index, e.target.value)} 
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="text"
+                                        value={item}
+                                        onChange={(e) => handleArrayChange('requirements', index, e.target.value)}
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="e.g., Basic computer skills" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="e.g., Basic computer skills"
                                     />
                                     {formData.requirements.length > 1 && (
-                                        <button 
-                                            type="button" 
-                                            onClick={() => removeArrayItem('requirements', index)} 
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                        <button
+                                            type="button"
+                                            onClick={() => removeArrayItem('requirements', index)}
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
                                     )}
                                 </div>
                             ))}
-                            <button 
-                                type="button" 
-                                onClick={() => addArrayItem('requirements')} 
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                            <button
+                                type="button"
+                                onClick={() => addArrayItem('requirements')}
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Requirement
                             </button>
@@ -783,37 +796,37 @@ const EditCoursePage = () => {
                         <div className="space-y-3">
                             {formData.targetAudience.map((item, index) => (
                                 <div key={index} className="flex gap-3">
-                                    <input 
-                                        type="text" 
-                                        value={item} 
-                                        onChange={(e) => handleArrayChange('targetAudience', index, e.target.value)} 
-                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode 
-                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                    <input
+                                        type="text"
+                                        value={item}
+                                        onChange={(e) => handleArrayChange('targetAudience', index, e.target.value)}
+                                        className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                        } focus:outline-none focus:ring-2`}
-                                        placeholder="e.g., Beginners who want to learn web development" 
+                                            } focus:outline-none focus:ring-2`}
+                                        placeholder="e.g., Beginners who want to learn web development"
                                     />
                                     {formData.targetAudience.length > 1 && (
-                                        <button 
-                                            type="button" 
-                                            onClick={() => removeArrayItem('targetAudience', index)} 
-                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode 
-                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                        <button
+                                            type="button"
+                                            onClick={() => removeArrayItem('targetAudience', index)}
+                                            className={`px-4 py-2 rounded-lg transition ${isDarkMode
+                                                ? 'text-red-400 hover:bg-red-900/30'
                                                 : 'text-red-600 hover:bg-red-50'
-                                            }`}
+                                                }`}
                                         >
                                             <FiTrash2 />
                                         </button>
                                     )}
                                 </div>
                             ))}
-                            <button 
-                                type="button" 
-                                onClick={() => addArrayItem('targetAudience')} 
-                                className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                    ? 'text-blue-400 hover:text-blue-300' 
+                            <button
+                                type="button"
+                                onClick={() => addArrayItem('targetAudience')}
+                                className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                    ? 'text-blue-400 hover:text-blue-300'
                                     : 'text-blue-600 hover:text-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Target Audience
                             </button>
@@ -823,16 +836,16 @@ const EditCoursePage = () => {
                     {/* Tags */}
                     <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
                         <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Tags</h2>
-                        <input 
-                            type="text" 
-                            name="tags" 
-                            value={formData.tags} 
-                            onChange={handleChange} 
-                            className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                        <input
+                            type="text"
+                            name="tags"
+                            value={formData.tags}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                            } focus:outline-none focus:ring-2`}
-                            placeholder="web development, html, css, javascript (comma separated)" 
+                                } focus:outline-none focus:ring-2`}
+                            placeholder="web development, html, css, javascript (comma separated)"
                         />
                         <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Enter tags separated by commas</p>
                     </div>
@@ -841,13 +854,13 @@ const EditCoursePage = () => {
                     <div className={`rounded-xl shadow-sm p-6 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Course Curriculum</h2>
-                            <button 
-                                type="button" 
-                                onClick={addSection} 
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isDarkMode 
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                            <button
+                                type="button"
+                                onClick={addSection}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isDarkMode
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
                                     : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
+                                    }`}
                             >
                                 <FiPlus /> Add Section
                             </button>
@@ -871,43 +884,43 @@ const EditCoursePage = () => {
                                             <div className={`p-6 space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                                 <div>
                                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Section Title *</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={section.title} 
-                                                        onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)} 
-                                                        required 
-                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                    <input
+                                                        type="text"
+                                                        value={section.title}
+                                                        onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)}
+                                                        required
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                        } focus:outline-none focus:ring-2`}
-                                                        placeholder="e.g., Introduction to Web Development" 
+                                                            } focus:outline-none focus:ring-2`}
+                                                        placeholder="e.g., Introduction to Web Development"
                                                     />
                                                 </div>
 
                                                 <div>
                                                     <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Section Description</label>
-                                                    <textarea 
-                                                        value={section.description} 
-                                                        onChange={(e) => updateSection(sectionIndex, 'description', e.target.value)} 
-                                                        rows={3} 
-                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                    <textarea
+                                                        value={section.description}
+                                                        onChange={(e) => updateSection(sectionIndex, 'description', e.target.value)}
+                                                        rows={3}
+                                                        className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                        } focus:outline-none focus:ring-2`}
-                                                        placeholder="Brief description of this section" 
+                                                            } focus:outline-none focus:ring-2`}
+                                                        placeholder="Brief description of this section"
                                                     />
                                                 </div>
 
                                                 <div className="mt-6">
                                                     <div className="flex justify-between items-center mb-4">
                                                         <h4 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Lessons</h4>
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => addLesson(sectionIndex)} 
-                                                            className={`flex items-center gap-2 font-semibold ${isDarkMode 
-                                                                ? 'text-blue-400 hover:text-blue-300' 
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => addLesson(sectionIndex)}
+                                                            className={`flex items-center gap-2 font-semibold ${isDarkMode
+                                                                ? 'text-blue-400 hover:text-blue-300'
                                                                 : 'text-blue-600 hover:text-blue-700'
-                                                            }`}
+                                                                }`}
                                                         >
                                                             <FiPlus /> Add Lesson
                                                         </button>
@@ -918,19 +931,19 @@ const EditCoursePage = () => {
                                                     ) : (
                                                         <div className="space-y-4">
                                                             {section.lessons.map((lesson, lessonIndex) => (
-                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode 
-                                                                    ? 'bg-gray-800 border-gray-700' 
+                                                                <div key={lessonIndex} className={`border rounded-lg p-4 ${isDarkMode
+                                                                    ? 'bg-gray-800 border-gray-700'
                                                                     : 'bg-white border-gray-200'
-                                                                }`}>
+                                                                    }`}>
                                                                     <div className="flex justify-between items-start mb-4">
                                                                         <h5 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Lesson {lessonIndex + 1}</h5>
-                                                                        <button 
-                                                                            type="button" 
-                                                                            onClick={() => removeLesson(sectionIndex, lessonIndex)} 
-                                                                            className={`p-2 rounded ${isDarkMode 
-                                                                                ? 'text-red-400 hover:bg-red-900/30' 
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => removeLesson(sectionIndex, lessonIndex)}
+                                                                            className={`p-2 rounded ${isDarkMode
+                                                                                ? 'text-red-400 hover:bg-red-900/30'
                                                                                 : 'text-red-600 hover:bg-red-50'
-                                                                            }`}
+                                                                                }`}
                                                                         >
                                                                             <FiTrash2 />
                                                                         </button>
@@ -939,67 +952,77 @@ const EditCoursePage = () => {
                                                                     <div className="space-y-3">
                                                                         <div>
                                                                             <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Title *</label>
-                                                                            <input 
-                                                                                type="text" 
-                                                                                value={lesson.title} 
-                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'title', e.target.value)} 
-                                                                                required 
-                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                            <input
+                                                                                type="text"
+                                                                                value={lesson.title}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'title', e.target.value)}
+                                                                                required
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                } focus:outline-none focus:ring-2`}
-                                                                                placeholder="e.g., Welcome to the Course" 
+                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                placeholder="e.g., Welcome to the Course"
                                                                             />
                                                                         </div>
 
                                                                         <div>
                                                                             <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Description</label>
-                                                                            <textarea 
-                                                                                value={lesson.description} 
-                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'description', e.target.value)} 
-                                                                                rows={2} 
-                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+                                                                            <textarea
+                                                                                value={lesson.description}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'description', e.target.value)}
+                                                                                rows={2}
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
-                                                                                } focus:outline-none focus:ring-2`}
-                                                                                placeholder="Brief description of this lesson" 
+                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                placeholder="Brief description of this lesson"
                                                                             />
                                                                         </div>
 
                                                                         <div>
-                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lesson Video (MP4, WebM)</label>
-                                                                            {lesson.videoPreview ? (
-                                                                                <div className="mb-3">
-                                                                                    <div className="relative bg-black rounded-lg overflow-hidden">
-                                                                                        <video controls className="w-full h-40">
-                                                                                            <source src={lesson.videoPreview} />
-                                                                                        </video>
-                                                                                    </div>
-                                                                                    <p className={`text-xs font-medium mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Current Video</p>
-                                                                                </div>
-                                                                            ) : null}
-                                                                            <div className="mt-3">
-                                                                                <label className={`block text-xs font-medium mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                                                    {lesson.videoPreview ? 'Replace Video' : 'Upload Video'}
-                                                                                </label>
-                                                                                <input 
-                                                                                    type="file" 
-                                                                                    accept="video/*" 
-                                                                                    onChange={(e) => handleVideoChange(sectionIndex, lessonIndex, e)} 
-                                                                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode 
-                                                                                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
-                                                                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>YouTube Video URL *</label>
+                                                                            <input
+                                                                                type="url"
+                                                                                value={lesson.videoUrl}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'videoUrl', e.target.value)}
+                                                                                required
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
                                                                                     } focus:outline-none focus:ring-2`}
-                                                                                />
-                                                                                <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Max 500MB. {lesson.videoPreview ? 'Leave empty to keep existing video.' : ''}</p>
-                                                                            </div>
+                                                                                placeholder="https://www.youtube.com/watch?v=..."
+                                                                            />
+                                                                            {lesson.videoUrl && getYouTubeThumbnail(lesson.videoUrl) && (
+                                                                                <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                                                    <img
+                                                                                        src={getYouTubeThumbnail(lesson.videoUrl)}
+                                                                                        alt="YouTube thumbnail"
+                                                                                        className="w-full h-40 object-cover"
+                                                                                    />
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Video Duration (seconds)</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                min="0"
+                                                                                value={lesson.videoDuration}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'videoDuration', e.target.value)}
+                                                                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode
+                                                                                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                                                                                    } focus:outline-none focus:ring-2`}
+                                                                                placeholder="e.g., 420"
+                                                                            />
                                                                         </div>
 
                                                                         <div className="flex items-center">
-                                                                            <input 
-                                                                                type="checkbox" 
-                                                                                checked={lesson.isFree} 
-                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'isFree', e.target.checked)} 
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={lesson.isFree}
+                                                                                onChange={(e) => updateLesson(sectionIndex, lessonIndex, 'isFree', e.target.checked)}
                                                                                 className="w-4 h-4"
                                                                             />
                                                                             <label className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mark as free preview</label>
@@ -1011,13 +1034,13 @@ const EditCoursePage = () => {
                                                     )}
                                                 </div>
 
-                                                <button 
-                                                    type="button" 
-                                                    onClick={() => removeSection(sectionIndex)} 
-                                                    className={`mt-4 w-full px-4 py-2 rounded-lg border font-semibold transition ${isDarkMode 
-                                                        ? 'text-red-400 hover:bg-red-900/30 border-red-800' 
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSection(sectionIndex)}
+                                                    className={`mt-4 w-full px-4 py-2 rounded-lg border font-semibold transition ${isDarkMode
+                                                        ? 'text-red-400 hover:bg-red-900/30 border-red-800'
                                                         : 'text-red-600 hover:bg-red-50 border-red-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     Delete Section
                                                 </button>
@@ -1031,9 +1054,9 @@ const EditCoursePage = () => {
 
                     {/* Submit Buttons */}
                     <div className="flex gap-4">
-                        <button 
-                            type="submit" 
-                            disabled={isLoading} 
+                        <button
+                            type="submit"
+                            disabled={isLoading}
                             className="flex items-center gap-2 flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
@@ -1048,13 +1071,13 @@ const EditCoursePage = () => {
                                 </>
                             )}
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={() => navigate('/dashboard/trainer')} 
-                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode 
-                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                        <button
+                            type="button"
+                            onClick={() => navigate('/dashboard/trainer')}
+                            className={`px-6 py-3 font-semibold rounded-lg transition ${isDarkMode
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
                             disabled={isLoading}
                         >
                             Cancel

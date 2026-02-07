@@ -58,9 +58,9 @@ const CourseView = () => {
         }
     };
 
-    const handleLessonComplete = async (lessonId) => {
+    const handleLessonComplete = async (lessonId, watchTime = 0) => {
         try {
-            const response = await userAPI.completeLesson(id, { lessonId, watchTime: 0 });
+            const response = await userAPI.completeLesson(id, { lessonId, watchTime });
 
             // Update progress with the response
             setProgress(response.data.progress);
@@ -113,21 +113,39 @@ const CourseView = () => {
     const sections = course.sections || [];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
             <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-4 lg:py-8">
+                <div className="mb-6 flex flex-col gap-2">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Course Player</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{course.title}</h1>
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl dark:shadow-slate-800 overflow-hidden border border-slate-100 dark:border-slate-800">
                             {currentLesson ? (
                                 <div>
                                     <div className="bg-black aspect-video">
-                                        <VideoPlayer
-                                            url={currentLesson.videoUrl}
-                                            onComplete={() => handleLessonComplete(currentLesson._id)}
-                                        />
+                                        {currentLesson.videoUrl ? (
+                                            <VideoPlayer
+                                                url={currentLesson.videoUrl}
+                                                onComplete={({ watchTime }) => handleLessonComplete(currentLesson._id, watchTime)}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-white">
+                                                <p>Video unavailable</p>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="p-4 sm:p-6">
+                                        <div className="flex flex-wrap items-center gap-3 mb-3">
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                                                {isLessonCompleted(currentLesson._id) ? 'Completed' : 'Watch to complete'}
+                                            </span>
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                                                Lesson {currentLesson.order || 1}
+                                            </span>
+                                        </div>
                                         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                             {currentLesson.title}
                                         </h2>
@@ -160,12 +178,9 @@ const CourseView = () => {
                                         )}
 
                                         {!isLessonCompleted(currentLesson._id) && (
-                                            <button
-                                                onClick={() => handleLessonComplete(currentLesson._id)}
-                                                className="btn-primary"
-                                            >
-                                                Mark as Complete
-                                            </button>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                                Finish watching to unlock completion.
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -189,7 +204,7 @@ const CourseView = () => {
 
                     {/* Course Content Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg dark:shadow-slate-700 overflow-hidden lg:sticky lg:top-24">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl dark:shadow-slate-800 overflow-hidden lg:sticky lg:top-24 border border-slate-100 dark:border-slate-800">
                             {/* Progress Header */}
                             <div className="p-4 sm:p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
                                 <h3 className="font-bold text-lg mb-3">Your Progress</h3>

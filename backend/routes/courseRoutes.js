@@ -16,7 +16,7 @@ const {
     getApprovalStatus
 } = require('../controllers/courseController');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
-const { uploadSingle, uploadAny, handleUploadError } = require('../middleware/uploadMiddleware');
+const { uploadAny, handleUploadError } = require('../middleware/uploadMiddleware');
 const isEnrolled = require('../middleware/isEnrolled');
 
 const router = express.Router();
@@ -127,8 +127,6 @@ router.post(
     '/:id/sections/:sectionId/lessons',
     protect,
     authorize('trainer', 'admin'),
-    uploadSingle('video'),
-    handleUploadError,
     addLesson
 );
 
