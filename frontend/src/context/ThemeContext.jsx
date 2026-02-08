@@ -11,8 +11,8 @@ const getInitialTheme = () => {
         return savedTheme === 'dark';
     }
 
-    // Check system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Default to light mode for new visitors
+    return false;
 };
 
 export const ThemeProvider = ({ children }) => {
