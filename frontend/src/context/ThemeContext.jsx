@@ -10,7 +10,6 @@ const getInitialTheme = () => {
     if (savedTheme) {
         return savedTheme === 'dark';
     }
-
     // Default to light mode for new visitors
     return false;
 };
