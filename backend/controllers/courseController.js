@@ -192,8 +192,9 @@ exports.getCourse = async (req, res, next) => {
             isPurchased = !!order;
         }
 
-        // If not purchased, hide lesson videos
-        if (!isPurchased && req.user?.role !== 'admin') {
+        // If not purchased, hide lesson videos (but allow trainer/owner to see their own course)
+        const isOwner = req.user && course.trainer && course.trainer._id.toString() === req.user.id;
+        if (!isPurchased && req.user?.role !== 'admin' && !isOwner) {
             course.sections.forEach(section => {
                 section.lessons.forEach(lesson => {
                     if (!lesson.isFree) {
@@ -270,8 +271,7 @@ exports.createCourse = async (req, res, next) => {
         let thumbnailFile = null;
 
         // Debug: log all files received
-        console.log('req.files keys:', req.files ? Object.keys(req.files) : 'no files');
-        console.log('Full req.files:', req.files);
+        console.log('Files received:', req.files ? req.files.map(f => ({ field: f.fieldname, name: f.originalname, size: f.size })) : 'no files');
 
         // When using uploadAny(), req.files is an ARRAY, not an object
         // So we need to find the thumbnail by fieldname
@@ -335,6 +335,7 @@ exports.createCourse = async (req, res, next) => {
 
                     for (const resourceFile of resourceFiles) {
                         try {
+                            console.log(`Uploading resource: ${resourceFile.originalname} (${resourceFile.size} bytes)`);
                             const result = await uploadDocument(resourceFile.buffer, 'lms/resources');
                             const resourceIdx = parseInt(resourceFile.fieldname.split('_')[3]);
                             const metadata = lesson.resources?.[resourceIdx] || {};
@@ -344,8 +345,9 @@ exports.createCourse = async (req, res, next) => {
                                 fileSize: resourceFile.size,
                                 type: getResourceType(resourceFile.originalname)
                             });
+                            console.log(`Resource uploaded: ${result.secure_url}`);
                         } catch (uploadErr) {
-                            console.error('Error uploading resource:', uploadErr);
+                            console.error(`Error uploading resource ${resourceFile.originalname}:`, uploadErr.message);
                         }
                     }
                 }
@@ -404,6 +406,16 @@ exports.createCourse = async (req, res, next) => {
                 $inc: { courseCount: 1 }
             });
         }
+
+        // Log resources saved per lesson
+        processedSections.forEach(s => {
+            s.lessons.forEach(l => {
+                if (l.resources.length > 0) {
+                    console.log(`Lesson "${l.title}": ${l.resources.length} resources saved`);
+                    l.resources.forEach(r => console.log(`  - ${r.title}: ${r.url}`));
+                }
+            });
+        });
 
         res.status(201).json({
             success: true,
@@ -532,34 +544,48 @@ exports.updateCourse = async (req, res, next) => {
                         lesson.videoPublicId = null;
 
                         // Process new resource files for this lesson
+                        const lessonResources = [];
+
+                        // Keep existing resources that already have URLs
+                        if (lesson.resources && Array.isArray(lesson.resources)) {
+                            for (const r of lesson.resources) {
+                                if (r.url && r.url.trim()) {
+                                    lessonResources.push({
+                                        title: r.title || '',
+                                        url: r.url,
+                                        fileSize: r.fileSize || 0,
+                                        type: r.type || getResourceType(r.fileName || '')
+                                    });
+                                }
+                            }
+                        }
+
+                        // Upload any new resource files
                         if (Array.isArray(req.files)) {
                             const resourceFiles = req.files.filter(f =>
                                 f.fieldname.startsWith(`resource_${sectionIndex}_${lessonIndex}_`)
                             );
 
-                            if (resourceFiles.length > 0) {
-                                // Keep existing resources that have URLs (already uploaded)
-                                const existingResources = (lesson.resources || []).filter(r => r.url && !r.file);
-
-                                for (const resourceFile of resourceFiles) {
-                                    try {
-                                        const result = await uploadDocument(resourceFile.buffer, 'lms/resources');
-                                        const resourceIdx = parseInt(resourceFile.fieldname.split('_')[3]);
-                                        const metadata = lesson.resources?.[resourceIdx] || {};
-                                        existingResources.push({
-                                            title: metadata.title || resourceFile.originalname.split('.')[0],
-                                            url: result.secure_url,
-                                            fileSize: resourceFile.size,
-                                            type: getResourceType(resourceFile.originalname)
-                                        });
-                                    } catch (uploadErr) {
-                                        console.error('Error uploading resource:', uploadErr);
-                                    }
+                            for (const resourceFile of resourceFiles) {
+                                try {
+                                    console.log(`Uploading resource: ${resourceFile.originalname} (${resourceFile.size} bytes)`);
+                                    const result = await uploadDocument(resourceFile.buffer, 'lms/resources');
+                                    const resourceIdx = parseInt(resourceFile.fieldname.split('_')[3]);
+                                    const metadata = lesson.resources?.[resourceIdx] || {};
+                                    lessonResources.push({
+                                        title: metadata.title || resourceFile.originalname.split('.')[0],
+                                        url: result.secure_url,
+                                        fileSize: resourceFile.size,
+                                        type: getResourceType(resourceFile.originalname)
+                                    });
+                                    console.log(`Resource uploaded: ${result.secure_url}`);
+                                } catch (uploadErr) {
+                                    console.error(`Error uploading resource ${resourceFile.originalname}:`, uploadErr.message);
                                 }
-
-                                lesson.resources = existingResources;
                             }
                         }
+
+                        lesson.resources = lessonResources;
                     }
                 }
             }
