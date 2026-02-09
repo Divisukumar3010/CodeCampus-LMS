@@ -431,21 +431,18 @@ const CreateCourse = () => {
     const handleResourceChange = (sectionIndex, lessonIndex, e) => {
         const files = Array.from(e.target.files);
 
+        const validExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+
         const validFiles = files.filter(file => {
             const maxSize = 50 * 1024 * 1024; // 50MB
-            const validTypes = ['application/pdf', 'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'application/vnd.ms-powerpoint',
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+            const ext = file.name.split('.').pop().toLowerCase();
 
             if (file.size > maxSize) {
                 toast.error(`${file.name} exceeds 50MB limit`);
                 return false;
             }
-            if (!validTypes.includes(file.type)) {
-                toast.error(`${file.name} is not a supported format`);
+            if (!validExtensions.includes(ext)) {
+                toast.error(`${file.name} is not a supported format. Allowed: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX`);
                 return false;
             }
             return true;
@@ -607,12 +604,14 @@ const CreateCourse = () => {
             }));
             submitData.append('sections', JSON.stringify(sectionsData));
 
-            // Add resource files to FormData
+            // Log what we're sending
+            let totalResourceFiles = 0;
             formData.sections.forEach((section, sectionIndex) => {
                 section.lessons.forEach((lesson, lessonIndex) => {
                     if (lesson.resources && lesson.resources.length > 0) {
                         lesson.resources.forEach((resource, resourceIdx) => {
                             if (resource.file) {
+                                totalResourceFiles++;
                                 const docFieldName = `resource_${sectionIndex}_${lessonIndex}_${resourceIdx}`;
                                 submitData.append(docFieldName, resource.file, resource.file.name);
                             }
@@ -620,11 +619,21 @@ const CreateCourse = () => {
                     }
                 });
             });
+            console.log(`Submitting course with ${totalResourceFiles} resource files`);
 
-            console.log('Submitting course data...');
             const response = await courseAPI.create(submitData);
 
             if (response.data.success) {
+                // Check if resources were saved
+                const savedCourse = response.data.course;
+                let savedResourceCount = 0;
+                savedCourse?.sections?.forEach(s => s.lessons?.forEach(l => {
+                    savedResourceCount += (l.resources?.length || 0);
+                }));
+                if (totalResourceFiles > 0 && savedResourceCount === 0) {
+                    toast.error('Warning: Documents were not saved. Check server logs for errors.');
+                }
+
                 // Create exam if enabled and has questions
                 if (enableExam && examQuestions.length > 0) {
                     try {
@@ -1243,6 +1252,7 @@ const CreateCourse = () => {
                                                                                 <input
                                                                                     type="file"
                                                                                     multiple
+                                                                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                                                                     onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, e)}
                                                                                     className={`flex-grow px-4 py-3 rounded-lg border ${isDarkMode
                                                                                         ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'

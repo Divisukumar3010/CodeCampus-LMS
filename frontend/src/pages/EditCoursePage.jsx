@@ -1179,6 +1179,67 @@ const EditCoursePage = () => {
                                                                             />
                                                                             <label className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mark as free preview</label>
                                                                         </div>
+
+                                                                        {/* Resources */}
+                                                                        <div className="mt-4">
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                                                Lesson Resources
+                                                                            </label>
+
+                                                                            {lesson.resources && lesson.resources.length > 0 && (
+                                                                                <div className="mb-3 space-y-2">
+                                                                                    {lesson.resources.map((resource, resourceIdx) => (
+                                                                                        <div key={resourceIdx} className={`flex items-center justify-between p-3 rounded-lg border ${isDarkMode
+                                                                                            ? 'bg-gray-800 border-gray-700'
+                                                                                            : 'bg-gray-50 border-gray-200'
+                                                                                            }`}>
+                                                                                            <div className="flex-grow mr-3">
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    value={resource.title}
+                                                                                                    onChange={(e) => updateResourceTitle(sectionIndex, lessonIndex, resourceIdx, e.target.value)}
+                                                                                                    className={`w-full bg-transparent text-sm font-medium border-none focus:outline-none ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                                                                                    placeholder="Resource title"
+                                                                                                />
+                                                                                                <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                                                    {resource.file ? resource.file.name : resource.url ? 'Uploaded' : 'No file'}
+                                                                                                    {resource.file && ` (${(resource.file.size / 1024 / 1024).toFixed(2)} MB)`}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                            {!resource.url && (
+                                                                                                <input
+                                                                                                    type="file"
+                                                                                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                                                                                    onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, resourceIdx, e)}
+                                                                                                    className={`text-xs w-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                                                                                                />
+                                                                                            )}
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                onClick={() => removeResource(sectionIndex, lessonIndex, resourceIdx)}
+                                                                                                className={`ml-2 p-2 rounded transition ${isDarkMode
+                                                                                                    ? 'text-red-400 hover:bg-red-900/30'
+                                                                                                    : 'text-red-600 hover:bg-red-50'
+                                                                                                    }`}
+                                                                                            >
+                                                                                                <FiTrash2 size={16} />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )}
+
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => addResource(sectionIndex, lessonIndex)}
+                                                                                className={`text-sm px-3 py-1.5 rounded-lg border transition ${isDarkMode
+                                                                                    ? 'text-blue-400 border-blue-800 hover:bg-blue-900/30'
+                                                                                    : 'text-blue-600 border-blue-200 hover:bg-blue-50'
+                                                                                    }`}
+                                                                            >
+                                                                                + Add Resource
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             ))}
