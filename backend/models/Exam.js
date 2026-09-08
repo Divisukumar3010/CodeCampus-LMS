@@ -111,7 +111,6 @@ examSchema.pre('save', function (next) {
     next();
 });
 
-examSchema.index({ course: 1 });
 examSchema.index({ createdBy: 1 });
 
 module.exports = mongoose.model('Exam', examSchema);

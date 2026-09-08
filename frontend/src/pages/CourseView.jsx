@@ -248,17 +248,27 @@ const CourseView = () => {
                                 </div>
                             )}
 
-                            {/* Certificate Section - show when no exam and lessons complete, or exam passed */}
-                            {((!exam && progress?.isCompleted) || progress?.exam?.hasPassed) && (
-                                <div className="p-4 sm:p-6 bg-gradient-to-br from-green-50 dark:from-green-900/20 to-blue-50 dark:to-blue-900/20 border-b-4 border-green-500">
+                            {/* Certificate Section - strictly unlocked ONLY after exam is passed */}
+                            {progress?.exam?.hasPassed ? (
+                                <div className="p-4 sm:p-6 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 to-teal-50 dark:to-teal-950/30 border-b-4 border-emerald-500">
                                     <Certificate
                                         courseId={id}
                                         courseTitle={course.title}
                                         progress={progress}
-                                        isCompleted={!exam ? progress?.isCompleted : progress?.exam?.hasPassed}
+                                        isCompleted={true}
                                     />
                                 </div>
-                            )}
+                            ) : progress?.isCompleted ? (
+                                <div className="p-4 sm:p-5 bg-amber-50/80 dark:bg-amber-950/20 border-b border-amber-200 dark:border-amber-900/40 text-center">
+                                    <div className="inline-flex items-center gap-2 text-amber-800 dark:text-amber-300 font-semibold text-sm mb-1">
+                                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                                        Next Step: Pass Course Exam
+                                    </div>
+                                    <p className="text-xs text-amber-700/90 dark:text-amber-400">
+                                        All lessons completed! Pass the qualification exam above to unlock and generate your official certificate.
+                                    </p>
+                                </div>
+                            ) : null}
 
                             {/* Course Sections */}
                             <div className="max-h-[400px] lg:max-h-[600px] overflow-y-auto">

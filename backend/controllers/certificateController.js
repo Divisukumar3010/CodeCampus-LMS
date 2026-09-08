@@ -45,13 +45,11 @@ exports.generateCourseCertificate = async (req, res, next) => {
 
         // Check if exam exists and if student has passed
         const exam = await Exam.findOne({ course: courseId });
-        if (exam) {
-            if (!progress.exam || !progress.exam.hasPassed) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'You must pass the course exam to receive a certificate'
-                });
-            }
+        if (!exam || !progress.exam || !progress.exam.hasPassed) {
+            return res.status(400).json({
+                success: false,
+                message: 'You must take and pass the course qualification exam to receive your certificate'
+            });
         }
 
         // Check if certificate already generated
