@@ -18,7 +18,10 @@ connectDatabase();
 const app = express();
 
 // Security Middleware
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false
+}));
 app.use(mongoSanitize());
 app.use(hpp());
 
@@ -59,6 +62,13 @@ if (process.env.NODE_ENV === 'development') {
 // Serve static files BEFORE routes
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/certificates', express.static(path.join(__dirname, 'public/certificates')));
+app.use('/videos', express.static(path.join(__dirname, 'public/videos'), {
+    setHeaders: (res) => {
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+}));
 
 // Rate limiting
 app.use('/api', apiLimiter);

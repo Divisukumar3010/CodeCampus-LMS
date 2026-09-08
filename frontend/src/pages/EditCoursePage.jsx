@@ -181,6 +181,8 @@ const EditCoursePage = () => {
                         url: resource.url || '',
                         fileName: resource.fileName || '',
                         originalName: resource.originalName || '',
+                        type: resource.type || 'other',
+                        fileSize: resource.fileSize || 0,
                         file: null
                     })) || []
                 })) || []
@@ -433,7 +435,8 @@ const EditCoursePage = () => {
                                                     ...resource,
                                                     file: file,
                                                     fileName: file.name,
-                                                    title: file.name.split('.')[0]
+                                                    title: resource.title || file.name.split('.')[0],
+                                                    url: ''
                                                 }
                                                 : resource
                                         )
@@ -554,10 +557,12 @@ const EditCoursePage = () => {
                             videoDuration: Number(lesson.videoDuration) || 0,
                             videoUrl: lesson.videoUrl || '',
                             resources: lesson.resources?.map(resource => ({
-                                title: resource.title,
-                                fileName: resource.fileName,
-                                url: resource.url,
-                                originalName: resource.originalName
+                                title: resource.title || resource.file?.name?.split('.')[0] || resource.fileName || '',
+                                fileName: resource.fileName || resource.file?.name || '',
+                                url: resource.url || null,
+                                originalName: resource.originalName,
+                                type: resource.type,
+                                fileSize: resource.fileSize
                             })) || []
                         };
 
@@ -1206,14 +1211,12 @@ const EditCoursePage = () => {
                                                                                                     {resource.file && ` (${(resource.file.size / 1024 / 1024).toFixed(2)} MB)`}
                                                                                                 </p>
                                                                                             </div>
-                                                                                            {!resource.url && (
-                                                                                                <input
-                                                                                                    type="file"
-                                                                                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                                                                                                    onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, resourceIdx, e)}
-                                                                                                    className={`text-xs w-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
-                                                                                                />
-                                                                                            )}
+                                                                                            <input
+                                                                                                type="file"
+                                                                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                                                                                onChange={(e) => handleResourceChange(sectionIndex, lessonIndex, resourceIdx, e)}
+                                                                                                className={`text-xs w-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                                                                                            />
                                                                                             <button
                                                                                                 type="button"
                                                                                                 onClick={() => removeResource(sectionIndex, lessonIndex, resourceIdx)}

@@ -540,8 +540,10 @@ const CreateCourse = () => {
             const section = formData.sections[sectionIndex];
             for (let lessonIndex = 0; lessonIndex < section.lessons.length; lessonIndex++) {
                 const lesson = section.lessons[lessonIndex];
-                if (!lesson.videoUrl || !extractYouTubeId(lesson.videoUrl)) {
-                    toast.error(`Section ${sectionIndex + 1}, Lesson ${lessonIndex + 1} needs a valid YouTube URL`);
+                const vUrl = (lesson.videoUrl || '').trim();
+                const isValidVideo = extractYouTubeId(vUrl) || vUrl.startsWith('/videos/') || vUrl.startsWith('http://') || vUrl.startsWith('https://');
+                if (!vUrl || !isValidVideo) {
+                    toast.error(`Section ${sectionIndex + 1}, Lesson ${lessonIndex + 1} needs a valid YouTube URL or video link`);
                     return;
                 }
             }
@@ -1158,7 +1160,7 @@ const CreateCourse = () => {
                                                                             <label className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mark as free preview</label>
                                                                         </div>
                                                                         <div>
-                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>YouTube Video URL *</label>
+                                                                            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Video URL (YouTube or MP4 link) *</label>
                                                                             <input
                                                                                 type="url"
                                                                                 value={lesson.videoUrl}
@@ -1169,7 +1171,7 @@ const CreateCourse = () => {
                                                                                     ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
                                                                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
                                                                                     } focus:outline-none focus:ring-2`}
-                                                                                placeholder="https://www.youtube.com/watch?v=..."
+                                                                                placeholder="https://www.youtube.com/watch?v=... or /videos/..."
                                                                             />
                                                                             {lesson.videoUrl && getYouTubeThumbnail(lesson.videoUrl) && (
                                                                                 <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">

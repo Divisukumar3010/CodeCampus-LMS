@@ -35,10 +35,28 @@ const extractYouTubeId = (value) => {
     return match ? match[1] : null;
 };
 
-const normalizeYouTubeUrl = (value) => {
-    const id = extractYouTubeId(value);
-    return id ? `https://www.youtube.com/watch?v=${id}` : null;
+const normalizeVideoUrl = (value) => {
+    if (!value || typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    const id = extractYouTubeId(trimmed);
+    if (id) {
+        return `https://www.youtube.com/watch?v=${id}`;
+    }
+    // Check if it's a direct video path (e.g. /videos/... or http...mp4)
+    if (
+        trimmed.startsWith('/videos/') ||
+        trimmed.startsWith('http://') ||
+        trimmed.startsWith('https://') ||
+        trimmed.endsWith('.mp4') ||
+        trimmed.endsWith('.webm') ||
+        trimmed.endsWith('.mov')
+    ) {
+        return trimmed;
+    }
+    return null;
 };
+
+const normalizeYouTubeUrl = normalizeVideoUrl;
 
 const getResourceType = (filename) => {
     if (!filename) return 'other';
@@ -328,6 +346,22 @@ exports.createCourse = async (req, res, next) => {
 
                 // Process resource files for this lesson
                 const lessonResources = [];
+
+                // Keep any resources from JSON that already have URLs (e.g. from client-side upload)
+                if (lesson.resources && Array.isArray(lesson.resources)) {
+                    for (const r of lesson.resources) {
+                        if (r.url && r.url.trim()) {
+                            lessonResources.push({
+                                title: r.title || '',
+                                url: r.url,
+                                fileSize: r.fileSize || 0,
+                                type: r.type || getResourceType(r.title || r.fileName || '')
+                            });
+                        }
+                    }
+                }
+
+                // Upload new resource files from FormData
                 if (Array.isArray(req.files)) {
                     const resourceFiles = req.files.filter(f =>
                         f.fieldname.startsWith(`resource_${sectionIndex}_${lessonIndex}_`)
@@ -348,6 +382,10 @@ exports.createCourse = async (req, res, next) => {
                             console.log(`Resource uploaded: ${result.secure_url}`);
                         } catch (uploadErr) {
                             console.error(`Error uploading resource ${resourceFile.originalname}:`, uploadErr.message);
+                            return res.status(500).json({
+                                success: false,
+                                message: `Failed to upload resource "${resourceFile.originalname}": ${uploadErr.message}`
+                            });
                         }
                     }
                 }
@@ -554,7 +592,7 @@ exports.updateCourse = async (req, res, next) => {
                                         title: r.title || '',
                                         url: r.url,
                                         fileSize: r.fileSize || 0,
-                                        type: r.type || getResourceType(r.fileName || '')
+                                        type: r.type || getResourceType(r.title || r.fileName || '')
                                     });
                                 }
                             }
@@ -581,6 +619,10 @@ exports.updateCourse = async (req, res, next) => {
                                     console.log(`Resource uploaded: ${result.secure_url}`);
                                 } catch (uploadErr) {
                                     console.error(`Error uploading resource ${resourceFile.originalname}:`, uploadErr.message);
+                                    return res.status(500).json({
+                                        success: false,
+                                        message: `Failed to upload resource "${resourceFile.originalname}": ${uploadErr.message}`
+                                    });
                                 }
                             }
                         }

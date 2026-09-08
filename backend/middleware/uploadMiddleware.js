@@ -31,7 +31,7 @@ const fileFilter = (req, file, cb) => {
         return cb(new Error('Only video files are allowed'));
     }
 
-    if (file.fieldname === 'resources') {
+    if (file.fieldname === 'resources' || file.fieldname.startsWith('resource_')) {
         const isDoc = allowedDocTypes.test(extname);
         if (isDoc) {
             return cb(null, true);

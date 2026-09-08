@@ -199,24 +199,24 @@ const seedDatabase = async () => {
                 tags: ['web development', 'html', 'css', 'javascript', 'react', 'nodejs'],
                 sections: [
                     {
-                        title: 'Introduction to Web Development',
-                        description: 'Get started with the basics',
+                        title: 'Full Stack & MERN Architecture',
+                        description: 'Overview of modern full-stack web architecture with MongoDB, Express, React, and Node',
                         order: 1,
                         lessons: [
                             {
-                                title: 'Welcome to the Course',
-                                description: 'Course overview and what you will learn',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 600,
+                                title: 'Full Stack Web Development in 2024 (Roadmap & Overview)',
+                                description: 'Comprehensive walkthrough of front-end, back-end, APIs, and modern toolchains.',
+                                videoUrl: 'https://www.youtube.com/watch?v=71Isrtou3f0',
+                                videoDuration: 1200,
                                 isFree: true,
                                 order: 1,
                                 resources: []
                             },
                             {
-                                title: 'Setting Up Your Development Environment',
-                                description: 'Install necessary tools and software',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 900,
+                                title: 'HTML & Web Fundamentals',
+                                description: 'Semantic HTML5 structure, elements, attributes, and modern web standards.',
+                                videoUrl: 'https://www.youtube.com/watch?v=kUMe1FH4CHE',
+                                videoDuration: 1800,
                                 isFree: true,
                                 order: 2,
                                 resources: []
@@ -224,24 +224,24 @@ const seedDatabase = async () => {
                         ]
                     },
                     {
-                        title: 'HTML Fundamentals',
-                        description: 'Learn the building blocks of the web',
+                        title: 'Modern CSS & Responsive Web Design',
+                        description: 'Styling websites with modern CSS, Flexbox, CSS Grid, and responsive principles',
                         order: 2,
                         lessons: [
                             {
-                                title: 'HTML Basics',
-                                description: 'Understanding HTML structure and tags',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 1200,
+                                title: 'CSS3 Foundations & Selectors',
+                                description: 'CSS cascade, specificity, box model, colors, and layout rules.',
+                                videoUrl: 'https://www.youtube.com/watch?v=1PnVor36_40',
+                                videoDuration: 2400,
                                 isFree: false,
                                 order: 1,
                                 resources: []
                             },
                             {
-                                title: 'HTML Forms and Input',
-                                description: 'Creating interactive forms',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 1500,
+                                title: 'Flexbox & CSS Grid Mastery',
+                                description: 'Building mobile-first responsive layouts with modern CSS alignment tools.',
+                                videoUrl: 'https://www.youtube.com/watch?v=fYq5PXgSsbE',
+                                videoDuration: 1950,
                                 isFree: false,
                                 order: 2,
                                 resources: []
@@ -290,17 +290,26 @@ const seedDatabase = async () => {
                 tags: ['data science', 'python', 'machine learning', 'pandas'],
                 sections: [
                     {
-                        title: 'Python Fundamentals',
-                        description: 'Master Python basics',
+                        title: 'Python for Data Science',
+                        description: 'Master Python basics and libraries',
                         order: 1,
                         lessons: [
                             {
-                                title: 'Introduction to Python',
+                                title: 'Python for Beginners - Crash Course',
                                 description: 'Getting started with Python',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 800,
+                                videoUrl: 'https://www.youtube.com/watch?v=_uQrJ0TkZlc',
+                                videoDuration: 3600,
                                 isFree: true,
                                 order: 1,
+                                resources: []
+                            },
+                            {
+                                title: 'NumPy Tutorial: Data Manipulation',
+                                description: 'Working with arrays and matrices',
+                                videoUrl: 'https://www.youtube.com/watch?v=QUT1VHiLmmI',
+                                videoDuration: 3500,
+                                isFree: false,
+                                order: 2,
                                 resources: []
                             }
                         ]
@@ -352,10 +361,10 @@ const seedDatabase = async () => {
                         order: 1,
                         lessons: [
                             {
-                                title: 'What is React Native?',
-                                description: 'Introduction to React Native',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 700,
+                                title: 'React Native Crash Course & Expo Setup',
+                                description: 'Introduction to React Native and mobile development',
+                                videoUrl: 'https://www.youtube.com/watch?v=0-S5a0eXPoc',
+                                videoDuration: 4200,
                                 isFree: true,
                                 order: 1,
                                 resources: []
@@ -402,17 +411,60 @@ const seedDatabase = async () => {
                 tags: ['javascript', 'es6', 'programming'],
                 sections: [
                     {
-                        title: 'JavaScript Basics',
-                        description: 'Learn the fundamentals',
+                        title: 'JavaScript Fundamentals & Core Concepts',
+                        description: 'Core building blocks, variables, data types, and syntax rules',
                         order: 1,
                         lessons: [
                             {
-                                title: 'Variables and Data Types',
-                                description: 'Understanding JavaScript variables',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 900,
+                                title: '1. JavaScript Crash Course for Beginners',
+                                description: 'What is JavaScript, syntax basics, console, variables, and data types.',
+                                videoUrl: 'https://www.youtube.com/watch?v=hdI2bqOjy3c',
+                                videoDuration: 6000,
                                 isFree: true,
                                 order: 1,
+                                resources: []
+                            },
+                            {
+                                title: '2. Variables, Data Types & Operators',
+                                description: 'Deep dive into let, const, primitive types, operators, and type coercion.',
+                                videoUrl: 'https://www.youtube.com/watch?v=edlFjlzxkSI',
+                                videoDuration: 1800,
+                                isFree: true,
+                                order: 2,
+                                resources: []
+                            },
+                            {
+                                title: '3. Functions, Scope & Arrow Functions',
+                                description: 'Function declarations, expressions, arrow functions, and lexical scope.',
+                                videoUrl: 'https://www.youtube.com/watch?v=N8ap4k_1QEQ',
+                                videoDuration: 1500,
+                                isFree: false,
+                                order: 3,
+                                resources: []
+                            }
+                        ]
+                    },
+                    {
+                        title: 'DOM Manipulation & Modern ES6+',
+                        description: 'Interactive web apps with DOM events, async JavaScript, and modern features',
+                        order: 2,
+                        lessons: [
+                            {
+                                title: '4. JavaScript DOM Manipulation Tutorial',
+                                description: 'Selecting elements, event listeners, creating and modifying nodes in real time.',
+                                videoUrl: 'https://www.youtube.com/watch?v=5fb2aPlgoys',
+                                videoDuration: 2400,
+                                isFree: true,
+                                order: 1,
+                                resources: []
+                            },
+                            {
+                                title: '5. Asynchronous JavaScript: Promises & Async/Await',
+                                description: 'Fetch API, promises, async/await syntax, and error handling.',
+                                videoUrl: 'https://www.youtube.com/watch?v=spvYqO_Ks9c',
+                                videoDuration: 2100,
+                                isFree: false,
+                                order: 2,
                                 resources: []
                             }
                         ]
@@ -464,10 +516,10 @@ const seedDatabase = async () => {
                         order: 1,
                         lessons: [
                             {
-                                title: 'What is Machine Learning?',
-                                description: 'Introduction and overview',
-                                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                videoDuration: 1000,
+                                title: 'Machine Learning Course for Beginners',
+                                description: 'Introduction to ML concepts and algorithms',
+                                videoUrl: 'https://www.youtube.com/watch?v=NWONeJKn6kc',
+                                videoDuration: 5400,
                                 isFree: true,
                                 order: 1,
                                 resources: []
