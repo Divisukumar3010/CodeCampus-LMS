@@ -188,11 +188,28 @@ const CourseView = () => {
                                             </div>
                                         )}
 
-                                        {!isLessonCompleted(currentLesson._id) && (
-                                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                                Finish watching to unlock completion.
-                                            </p>
-                                        )}
+                                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-4">
+                                            {!isLessonCompleted(currentLesson._id) ? (
+                                                <>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                                        Finish watching or click to complete:
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleLessonComplete(currentLesson._id, currentLesson.videoDuration || 60)}
+                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-semibold shadow-md transition"
+                                                    >
+                                                        <FiCheckCircle size={16} />
+                                                        Mark as Complete
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                                                    <FiCheckCircle size={18} />
+                                                    <span>You have completed this lesson.</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ) : (

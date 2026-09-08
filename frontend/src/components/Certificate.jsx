@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FiDownload, FiAward, FiCheck, FiLoader, FiShield, FiExternalLink } from 'react-icons/fi';
+import { FiDownload, FiAward, FiCheck, FiLoader, FiShield, FiExternalLink, FiMail, FiSend } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { certificateAPI } from '../services/api';
 
 const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
     const [generating, setGenerating] = useState(false);
+    const [emailing, setEmailing] = useState(false);
     const [certificate, setCertificate] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -25,11 +26,23 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
         try {
             const response = await certificateAPI.generateCertificate(courseId);
             setCertificate(response.data.certificate);
-            toast.success('Official Certificate generated successfully! 🎓');
+            toast.success('Certificate generated & emailed to your inbox! 🎓📬');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to generate certificate');
         } finally {
             setGenerating(false);
+        }
+    };
+
+    const handleEmailCertificate = async () => {
+        setEmailing(true);
+        try {
+            await certificateAPI.emailCertificate(courseId);
+            toast.success('Certificate successfully emailed to your inbox! 📬');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to send certificate email');
+        } finally {
+            setEmailing(false);
         }
     };
 
@@ -102,8 +115,25 @@ const Certificate = ({ courseId, courseTitle, progress, isCompleted }) => {
 
                 <div className="space-y-2">
                     <button
+                        onClick={handleEmailCertificate}
+                        disabled={emailing}
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-5 rounded-xl inline-flex items-center justify-center gap-2 transition shadow-lg shadow-blue-600/20 hover:shadow-xl active:scale-[0.99] disabled:opacity-50"
+                    >
+                        {emailing ? (
+                            <>
+                                <FiLoader className="w-4 h-4 animate-spin" />
+                                Sending to Your Email...
+                            </>
+                        ) : (
+                            <>
+                                <FiMail className="w-4 h-4" />
+                                Send Certificate to Email
+                            </>
+                        )}
+                    </button>
+                    <button
                         onClick={handleDownload}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-5 rounded-xl inline-flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-600/20 hover:shadow-xl active:scale-[0.99]"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-5 rounded-xl inline-flex items-center justify-center gap-2 transition shadow-md shadow-emerald-600/20 hover:shadow-lg active:scale-[0.99]"
                     >
                         <FiDownload className="w-4 h-4" />
                         Download Certificate (PDF)

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { sendWelcomeEmail, sendLoginNotificationEmail } = require('../utils/sendEmail');
 
 // Helper function to send token response
 const sendTokenResponse = (user, statusCode, res) => {
@@ -62,6 +63,13 @@ exports.register = async (req, res, next) => {
         user.lastLogin = Date.now();
         await user.save();
 
+        // Send Welcome Email asynchronously
+        try {
+            sendWelcomeEmail(user).catch(err => console.error('⚠️ Welcome email send failed:', err.message));
+        } catch (emailErr) {
+            console.error('⚠️ Welcome email error:', emailErr.message);
+        }
+
         sendTokenResponse(user, 201, res);
     } catch (error) {
         next(error);
@@ -114,6 +122,16 @@ exports.login = async (req, res, next) => {
         // Update last login
         user.lastLogin = Date.now();
         await user.save();
+
+        // Send Login Notification Email asynchronously
+        try {
+            sendLoginNotificationEmail(user, {
+                ip: req.ip || req.headers['x-forwarded-for'] || 'Localhost',
+                userAgent: req.headers['user-agent'] || 'Web Browser'
+            }).catch(err => console.error('⚠️ Login notification email failed:', err.message));
+        } catch (emailErr) {
+            console.error('⚠️ Login notification error:', emailErr.message);
+        }
 
         sendTokenResponse(user, 200, res);
     } catch (error) {

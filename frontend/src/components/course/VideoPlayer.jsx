@@ -538,9 +538,30 @@ const YouTubePlayer = ({ videoId, onComplete }) => {
             <div ref={containerRef} className="w-full h-full" />
 
             {playerError && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="max-w-sm text-center text-white text-sm bg-black/70 px-4 py-3 rounded-lg">
-                        {playerError}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/85 z-20 p-4">
+                    <div className="max-w-md text-center text-white bg-slate-900/95 border border-slate-700 p-6 rounded-2xl shadow-2xl">
+                        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+                            !
+                        </div>
+                        <p className="font-semibold text-base mb-1">{playerError}</p>
+                        <p className="text-xs text-slate-400 mb-4">You can watch this lesson directly on YouTube.</p>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                            <a
+                                href={`https://www.youtube.com/watch?v=${videoId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-lg transition shadow-lg"
+                            >
+                                Watch on YouTube
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => onCompleteRef.current?.({ watchTime: 60, duration: 60 })}
+                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition shadow-lg"
+                            >
+                                Mark as Completed
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
