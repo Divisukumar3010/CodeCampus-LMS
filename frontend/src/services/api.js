@@ -153,6 +153,7 @@ export const examAPI = {
 // Certificate APIs
 export const certificateAPI = {
     generateCertificate: (courseId) => api.post(`/certificates/generate/${courseId}`),
+    emailCertificate: (courseId) => api.post(`/certificates/email/${courseId}`),
     getCertificate: (courseId) => api.get(`/certificates/${courseId}`),
     getMyCertificates: () => api.get('/certificates/my-certificates'),
     verifyCertificate: (certificateId) => api.get(`/certificates/verify/${certificateId}`),

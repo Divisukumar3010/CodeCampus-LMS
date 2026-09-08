@@ -263,36 +263,42 @@ const generateCertificate = async (
             /* =========================================================
                6. SIGNATURES & VERIFIED EMBOSSED SEAL
                ========================================================= */
-            const signAreaY = H - 215;
-            const colW = 190;
-            const leftColX = 75;
+            const colW = 210;
+            const leftColX = 70;
             const centerColX = (W - 100) / 2;
-            const rightColX = W - 75 - colW;
+            const rightColX = W - 70 - colW;
+            const lineY = H - 150; // crisp reference baseline for signatures
 
             // Signature drawer function
             const renderSignature = (sigPath, title, name, colX) => {
+                const sigW = 160;
+                const sigH = 65;
+                const sigX = colX + (colW - sigW) / 2;
+                const sigY = lineY - sigH + 5; // places signature right above and naturally touching the baseline
+
                 // Signature image
                 if (fs.existsSync(sigPath)) {
-                    doc.image(sigPath, colX + (colW - 110) / 2, signAreaY, {
-                        width: 110,
-                        height: 48,
-                        fit: [110, 48]
+                    doc.image(sigPath, sigX, sigY, {
+                        width: sigW,
+                        height: sigH,
+                        fit: [sigW, sigH],
+                        align: 'center',
+                        valign: 'bottom'
                     });
                 }
 
                 // Formal signature line
-                const lineY = signAreaY + 52;
-                doc.moveTo(colX + 15, lineY)
-                    .lineTo(colX + colW - 15, lineY)
-                    .lineWidth(0.75)
+                doc.moveTo(colX + 10, lineY)
+                    .lineTo(colX + colW - 10, lineY)
+                    .lineWidth(0.8)
                     .strokeColor(primaryNavy)
                     .stroke();
 
                 // Name & Title
                 doc.font('Helvetica-Bold')
-                    .fontSize(11)
+                    .fontSize(11.5)
                     .fillColor(primaryNavy)
-                    .text(name, colX, lineY + 6, {
+                    .text(name, colX, lineY + 7, {
                         width: colW,
                         align: 'center'
                     });
@@ -300,7 +306,7 @@ const generateCertificate = async (
                 doc.font('Helvetica')
                     .fontSize(8.5)
                     .fillColor(slateMuted)
-                    .text(title, colX, lineY + 20, {
+                    .text(title, colX, lineY + 22, {
                         width: colW,
                         align: 'center'
                     });
@@ -308,7 +314,7 @@ const generateCertificate = async (
 
             // Left Signature - Founder & CEO (Sukumar Divi)
             renderSignature(
-                path.join(__dirname, '../public/assets/Founder.png'),
+                path.join(__dirname, '../public/assets/Founder-sign.png'),
                 'Founder & Chief Executive Officer',
                 'Sukumar Divi',
                 leftColX
@@ -317,18 +323,18 @@ const generateCertificate = async (
             // Center Seal - Official Gold Verified Seal
             const sealPath = path.join(__dirname, '../public/assets/VerifiedStamp.png');
             if (fs.existsSync(sealPath)) {
-                doc.image(sealPath, centerColX + 5, signAreaY - 8, {
+                doc.image(sealPath, centerColX + 5, lineY - 65, {
                     width: 90,
                     height: 90,
                     fit: [90, 90]
                 });
             }
 
-            // Right Signature - Co-Founder & CTO (Rajitha B)
+            // Right Signature - Co-Founder & CTO (Teja S)
             renderSignature(
-                path.join(__dirname, '../public/assets/Co-Founder.png'),
+                path.join(__dirname, '../public/assets/Co-Founder-sign.png'),
                 'Co-Founder & Chief Technology Officer',
-                'Rajitha B',
+                'Teja S',
                 rightColX
             );
 

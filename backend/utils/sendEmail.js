@@ -14,10 +14,11 @@ const sendEmail = async (options) => {
 
   // Define email options
   const mailOptions = {
-    from: `${process.env.EMAIL_FROM_NAME || 'CodeCampus'} <${process.env.EMAIL_FROM}>`,
+    from: `${process.env.EMAIL_FROM_NAME || 'CodeCampus'} <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
     to: options.email,
     subject: options.subject,
     html: options.html || options.message,
+    attachments: options.attachments || [],
   };
 
   // Send email
@@ -157,9 +158,155 @@ const sendCourseApprovalEmail = async (trainer, course, isApproved) => {
   });
 };
 
+const sendCertificateEmail = async (user, course, certificateData) => {
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+  const verifyUrl = `${frontendUrl}/verify/${certificateData.certificateId}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }
+        .container { max-width: 620px; margin: 24px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #047857 100%); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { margin: 0 0 8px 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        .header p { margin: 0; opacity: 0.9; font-size: 14px; font-weight: 400; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fef08a; padding: 6px 16px; border-radius: 9999px; font-size: 12px; font-weight: 600; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .content { padding: 36px 32px; }
+        .cert-card { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .cert-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+        .cert-meta { font-size: 13px; color: #64748b; line-height: 1.8; }
+        .cert-id { font-family: 'Courier New', monospace; font-weight: bold; color: #1e3a8a; background: #e0e7ff; padding: 3px 8px; border-radius: 6px; }
+        .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #059669, #0d9488); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; margin: 12px 0 20px 0; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
+        .footer { background: #f1f5f9; text-align: center; padding: 24px; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🎓 Certificate of Completion</h1>
+          <p>Congratulations on reaching a major milestone!</p>
+          <div class="badge">Verified Credential Issued</div>
+        </div>
+        <div class="content">
+          <h2>Dear ${user.name},</h2>
+          <p>Congratulations on successfully completing all curriculum modules and passing the examination for <strong>${course.title}</strong> on CodeCampus!</p>
+          
+          <div class="cert-card">
+            <div class="cert-title">${course.title}</div>
+            <div class="cert-meta">
+              <div><strong>Recipient:</strong> ${user.name}</div>
+              <div><strong>Certificate ID:</strong> <span class="cert-id">${certificateData.certificateId}</span></div>
+              <div><strong>Conferred on:</strong> ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <div><strong>Verification Status:</strong> Officially Authenticated & Verified</div>
+            </div>
+          </div>
+
+          <p>Your official high-resolution certificate PDF is attached directly to this email for your records and career portfolio.</p>
+
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${verifyUrl}" class="button" target="_blank">Verify Certificate Online</a>
+          </div>
+
+          <p style="font-size: 13px; color: #64748b;">
+            You can share this credential on LinkedIn, include it on your resume, or share the verification link with potential employers.
+          </p>
+          <p style="margin-top: 24px;">Best regards,<br><strong>CodeCampus Academic Accreditation Team</strong></p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} CodeCampus LMS. All rights reserved.</p>
+          <p>This credential was issued to ${user.email} in accordance with CodeCampus examination standards.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const attachments = [];
+  if (certificateData.filePath) {
+    attachments.push({
+      filename: `${course.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_Certificate.pdf`,
+      path: certificateData.filePath,
+    });
+  }
+
+  return sendEmail({
+    email: user.email,
+    subject: `🎓 Your Certificate of Completion: ${course.title} (ID: ${certificateData.certificateId})`,
+    html,
+    attachments,
+  });
+};
+
+const sendLoginNotificationEmail = async (user, meta = {}) => {
+  const loginTime = new Date().toLocaleString('en-US', {
+    dateStyle: 'full',
+    timeStyle: 'medium'
+  });
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }
+        .container { max-width: 580px; margin: 24px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .header { background: linear-gradient(135deg, #0f172a, #334155); color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+        .content { padding: 32px 28px; }
+        .info-card { background: #f1f5f9; border-radius: 10px; padding: 18px 20px; margin: 20px 0; font-size: 14px; }
+        .button { display: inline-block; padding: 12px 28px; background: #2563eb; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 10px; }
+        .footer { background: #f8fafc; text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔐 Account Login Notification</h1>
+        </div>
+        <div class="content">
+          <h2>Hello ${user.name},</h2>
+          <p>We noticed a successful sign-in to your CodeCampus account.</p>
+          
+          <div class="info-card">
+            <div><strong>Account:</strong> ${user.email}</div>
+            <div><strong>Time:</strong> ${loginTime}</div>
+            ${meta.ip ? `<div><strong>IP Address:</strong> ${meta.ip}</div>` : ''}
+            ${meta.userAgent ? `<div><strong>Device / Browser:</strong> ${meta.userAgent}</div>` : ''}
+          </div>
+
+          <p>If this was you, you can safely disregard this email.</p>
+          <p style="color: #dc2626; font-size: 13px;">If you did not log in, please reset your password immediately or contact our security team.</p>
+
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="${frontendUrl}/dashboard" class="button">Go to Dashboard</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} CodeCampus LMS. All rights reserved.</p>
+          <p>Security notification sent to ${user.email}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    email: user.email,
+    subject: `🔐 New Sign-in to CodeCampus Account (${user.name})`,
+    html
+  });
+};
+
 module.exports = {
   sendEmail,
   sendWelcomeEmail,
   sendEnrollmentEmail,
   sendCourseApprovalEmail,
+  sendCertificateEmail,
+  sendLoginNotificationEmail,
 };

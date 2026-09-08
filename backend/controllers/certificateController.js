@@ -3,6 +3,7 @@ const Course = require('../models/Course');
 const Exam = require('../models/Exam');
 const User = require('../models/User');
 const { generateCertificate } = require('../utils/certificateGenerator');
+const { sendCertificateEmail } = require('../utils/sendEmail');
 const crypto = require('crypto');
 
 // @desc    Generate certificate for completed course
@@ -95,9 +96,21 @@ exports.generateCourseCertificate = async (req, res, next) => {
         };
         await progress.save();
 
+        // Send certificate via SMTP email
+        try {
+            await sendCertificateEmail(user, course, {
+                certificateId,
+                filePath: certificateData.filePath
+            });
+            console.log(`✅ Certificate email sent to ${user.email} for course "${course.title}"`);
+        } catch (emailErr) {
+            console.error('⚠️ Failed to send certificate email:', emailErr);
+            // Non-blocking error: allow response to succeed even if email delivery fails
+        }
+
         res.status(200).json({
             success: true,
-            message: 'Certificate generated successfully',
+            message: 'Certificate generated successfully and emailed to your inbox!',
             certificate: {
                 certificateId: certificateId,
                 certificateUrl: certificateData.url,
@@ -219,5 +232,47 @@ exports.verifyCertificate = async (req, res, next) => {
 
     } catch (error) {
         next(error);
+    }
+};
+
+// @desc    Send / Resend certificate to user's email
+// @route   POST /api/certificates/email/:courseId
+// @access  Private
+exports.emailCertificate = async (req, res, next) => {
+    try {
+        const { courseId } = req.params;
+        const userId = req.user.id;
+
+        const progress = await Progress.findOne({
+            user: userId,
+            course: courseId
+        }).populate('course', 'title');
+
+        if (!progress || !progress.certificate.isGenerated) {
+            return res.status(404).json({
+                success: false,
+                message: 'Certificate not generated yet'
+            });
+        }
+
+        const user = await User.findById(userId);
+        const path = require('path');
+        const filePath = path.join(__dirname, `../public${progress.certificate.certificateUrl}`);
+
+        await sendCertificateEmail(user, progress.course, {
+            certificateId: progress.certificate.certificateId,
+            filePath: filePath
+        });
+
+        res.status(200).json({
+            success: true,
+            message: `Certificate sent to ${user.email} successfully!`
+        });
+    } catch (error) {
+        console.error('Error emailing certificate:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send certificate email. Please verify SMTP settings.'
+        });
     }
 };

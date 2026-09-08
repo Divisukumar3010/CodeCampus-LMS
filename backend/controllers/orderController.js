@@ -3,6 +3,7 @@ const Course = require('../models/Course');
 const User = require('../models/User');
 const Progress = require('../models/Progress');
 const { createCheckoutSession, retrieveSession } = require('../config/stripe');
+const { sendEnrollmentEmail } = require('../utils/sendEmail');
 
 // @desc    Create payment session
 // @route   POST /api/orders/create-session
@@ -129,6 +130,19 @@ exports.verifyPayment = async (req, res, next) => {
             course: courseId,
             enrolledAt: new Date()
         });
+
+        // Send Enrollment Confirmation Email asynchronously
+        try {
+            const populatedCourse = await Course.findById(courseId).populate('trainer', 'name');
+            const currentUser = await User.findById(userId);
+            if (currentUser && populatedCourse) {
+                sendEnrollmentEmail(currentUser, populatedCourse)
+                    .then(() => console.log(`✅ Enrollment email delivered to ${currentUser.email} for course "${populatedCourse.title}"`))
+                    .catch(err => console.error('⚠️ Enrollment email failed:', err.message));
+            }
+        } catch (emailErr) {
+            console.error('⚠️ Enrollment email error:', emailErr.message);
+        }
 
         res.status(201).json({
             success: true,
