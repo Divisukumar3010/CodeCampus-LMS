@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const Category = require('./models/Category');
 const User = require('./models/User');
 const Course = require('./models/Course');
+const Exam = require('./models/Exam');
+const ExamAttempt = require('./models/ExamAttempt');
 const connectDatabase = require('./config/database');
 
 dotenv.config();

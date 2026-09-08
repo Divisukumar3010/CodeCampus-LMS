@@ -150,4 +150,20 @@ export const examAPI = {
         api.get(`/exams/${courseId}/attempts/${attemptId}`),
 };
 
+// Certificate APIs
+export const certificateAPI = {
+    generateCertificate: (courseId) => api.post(`/certificates/generate/${courseId}`),
+    getCertificate: (courseId) => api.get(`/certificates/${courseId}`),
+    getMyCertificates: () => api.get('/certificates/my-certificates'),
+    verifyCertificate: (certificateId) => api.get(`/certificates/verify/${certificateId}`),
+};
+
+// Compiler APIs
+export const compilerAPI = {
+    execute: (data) => api.post('/compiler/execute', data),
+    getLanguages: () => api.get('/compiler/languages'),
+    getHistory: () => api.get('/compiler/history'),
+    clearHistory: () => api.delete('/compiler/history'),
+};
+
 export default api;

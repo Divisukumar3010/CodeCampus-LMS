@@ -1,4 +1,9 @@
 const axios = require('axios');
+const { spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const CodeExecutionHistory = require('../models/CodeExecutionHistory');
 
 // Language mapping for Judge0 API
 const languageMap = {
@@ -10,9 +15,264 @@ const languageMap = {
     html: 95,          // HTML, CSS, JavaScript
 };
 
-// Judge0 API endpoint
-const JUDGE0_API = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com';
-const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY || 'your-api-key';
+// Judge0 API configuration (defaults to free public endpoint if no RapidAPI key provided)
+const hasRapidApiKey = process.env.JUDGE0_API_KEY && process.env.JUDGE0_API_KEY !== 'your-api-key';
+const JUDGE0_API = process.env.JUDGE0_API_URL || (hasRapidApiKey ? 'https://judge0-ce.p.rapidapi.com' : 'https://ce.judge0.com');
+const JUDGE0_API_KEY = hasRapidApiKey ? process.env.JUDGE0_API_KEY : null;
+
+// Execute with Judge0
+async function executeWithJudge0(code, language, input) {
+    const languageId = languageMap[language];
+    if (!languageId) {
+        throw new Error(`Unsupported language for online compiler: ${language}`);
+    }
+
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    if (JUDGE0_API_KEY) {
+        headers['X-RapidAPI-Key'] = JUDGE0_API_KEY;
+        headers['X-RapidAPI-Host'] = 'judge0-ce.p.rapidapi.com';
+    }
+
+    const submissionData = {
+        source_code: code,
+        language_id: languageId,
+        stdin: input || '',
+        cpu_time_limit: 5,
+        memory_limit: 128000
+    };
+
+    const endpoint = `${JUDGE0_API}/submissions?base64_encoded=false&wait=true`;
+    const response = await axios.post(endpoint, submissionData, {
+        headers,
+        timeout: 12000
+    });
+
+    const result = response.data;
+    const stdout = (result.stdout || '').trim();
+    const stderr = (result.stderr || '').trim();
+    const compileOutput = (result.compile_output || '').trim();
+    const statusDesc = result.status?.description || '';
+
+    // If compile error or runtime error
+    if (compileOutput) {
+        return {
+            output: '',
+            error: compileOutput
+        };
+    }
+
+    if (result.status?.id > 3) {
+        // e.g. Time Limit Exceeded, Wrong Answer, Runtime Error
+        return {
+            output: stdout,
+            error: stderr || statusDesc
+        };
+    }
+
+    return {
+        output: stdout || (stderr ? '' : '(No output)'),
+        error: stderr
+    };
+}
+
+// Fallback local execution when Judge0 API is unreachable
+function executeLocally(code, language, input) {
+    const tempDir = os.tmpdir();
+    const timestamp = Date.now() + '_' + Math.floor(Math.random() * 10000);
+
+    switch (language) {
+        case 'javascript': {
+            const filename = path.join(tempDir, `script_${timestamp}.js`);
+            fs.writeFileSync(filename, code);
+            try {
+                const result = spawnSync('node', [filename], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                if (result.error) {
+                    return { output: '', error: result.error.message };
+                }
+
+                const out = (result.stdout || '').trim();
+                const err = (result.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(filename); } catch {}
+            }
+        }
+
+        case 'python': {
+            const filename = path.join(tempDir, `script_${timestamp}.py`);
+            fs.writeFileSync(filename, code);
+            try {
+                // Try python or python3
+                let result = spawnSync('python', [filename], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                if (result.error) {
+                    result = spawnSync('python3', [filename], {
+                        input: input || '',
+                        encoding: 'utf-8',
+                        timeout: 5000,
+                        maxBuffer: 1024 * 1024
+                    });
+                }
+
+                if (result.error) {
+                    return { output: '', error: 'Python interpreter not found on server' };
+                }
+
+                const out = (result.stdout || '').trim();
+                const err = (result.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(filename); } catch {}
+            }
+        }
+
+        case 'java': {
+            const classNameMatch = code.match(/public\s+class\s+(\w+)/);
+            const className = classNameMatch ? classNameMatch[1] : 'Main';
+            const javaFilename = path.join(tempDir, `${className}.java`);
+
+            let finalCode = code;
+            if (!classNameMatch && !code.includes('class ')) {
+                finalCode = `public class Main {\n    public static void main(String[] args) {\n${code}\n    }\n}`;
+            }
+
+            fs.writeFileSync(javaFilename, finalCode);
+            try {
+                const compile = spawnSync('javac', [javaFilename], {
+                    encoding: 'utf-8',
+                    timeout: 8000
+                });
+
+                if (compile.error || compile.status !== 0) {
+                    return {
+                        output: '',
+                        error: compile.stderr || compile.stdout || compile.error?.message || 'Java compilation failed'
+                    };
+                }
+
+                const run = spawnSync('java', ['-cp', tempDir, className], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                const out = (run.stdout || '').trim();
+                const err = (run.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(javaFilename); } catch {}
+                try { fs.unlinkSync(path.join(tempDir, `${className}.class`)); } catch {}
+            }
+        }
+
+        case 'c': {
+            const cFile = path.join(tempDir, `prog_${timestamp}.c`);
+            const exeFile = path.join(tempDir, `prog_${timestamp}${os.platform() === 'win32' ? '.exe' : ''}`);
+            fs.writeFileSync(cFile, code);
+            try {
+                const compile = spawnSync('gcc', [cFile, '-o', exeFile], {
+                    encoding: 'utf-8',
+                    timeout: 8000
+                });
+
+                if (compile.error || compile.status !== 0) {
+                    return {
+                        output: '',
+                        error: compile.stderr || compile.stdout || compile.error?.message || 'C compilation failed'
+                    };
+                }
+
+                const run = spawnSync(exeFile, [], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                const out = (run.stdout || '').trim();
+                const err = (run.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(cFile); } catch {}
+                try { fs.unlinkSync(exeFile); } catch {}
+            }
+        }
+
+        case 'cpp': {
+            const cppFile = path.join(tempDir, `prog_${timestamp}.cpp`);
+            const exeFile = path.join(tempDir, `prog_${timestamp}${os.platform() === 'win32' ? '.exe' : ''}`);
+            fs.writeFileSync(cppFile, code);
+            try {
+                const compile = spawnSync('g++', [cppFile, '-o', exeFile], {
+                    encoding: 'utf-8',
+                    timeout: 8000
+                });
+
+                if (compile.error || compile.status !== 0) {
+                    return {
+                        output: '',
+                        error: compile.stderr || compile.stdout || compile.error?.message || 'C++ compilation failed'
+                    };
+                }
+
+                const run = spawnSync(exeFile, [], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                const out = (run.stdout || '').trim();
+                const err = (run.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(cppFile); } catch {}
+                try { fs.unlinkSync(exeFile); } catch {}
+            }
+        }
+
+        default:
+            return {
+                output: '',
+                error: `Unsupported language: ${language}`
+            };
+    }
+}
 
 // @desc    Execute code
 // @route   POST /api/compiler/execute
@@ -35,276 +295,99 @@ exports.executeCode = async (req, res, next) => {
             });
         }
 
+        let finalOutput = '';
+        let finalError = '';
+        let executionStatus = 'success';
+        const startTime = Date.now();
+
         // For HTML, return as-is
         if (language === 'html') {
-            return res.status(200).json({
-                success: true,
-                output: code
-            });
-        }
-
-        // Check if using Judge0 API
-        if (!JUDGE0_API_KEY || JUDGE0_API_KEY === 'your-api-key') {
-            // Fallback: Basic local execution
-            return executeLocally(code, language, input, res);
-        }
-
-        // Use Judge0 API for execution
-        const submissionData = {
-            source_code: code,
-            language_id: languageMap[language],
-            stdin: input || '',
-            wait: true,
-            cpu_time_limit: 5,
-            memory_limit: 128000,
-        };
-
-        try {
-            const response = await axios.post(
-                `${JUDGE0_API}/submissions`,
-                submissionData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-RapidAPI-Key': JUDGE0_API_KEY,
-                        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-                    },
-                    timeout: 10000,
-                }
-            );
-
-            const result = response.data;
-
-            if (result.stderr) {
-                return res.status(200).json({
-                    success: true,
-                    error: result.stderr,
-                    output: result.stdout || ''
-                });
+            finalOutput = code;
+        } else {
+            // Try Judge0 API first
+            try {
+                const result = await executeWithJudge0(code, language, input);
+                finalOutput = result.output || '';
+                finalError = result.error || '';
+            } catch (apiError) {
+                console.warn('Judge0 online execution failed, using local execution engine:', apiError.message);
+                // Fallback to local execution
+                const localResult = executeLocally(code, language, input);
+                finalOutput = localResult.output || '';
+                finalError = localResult.error || '';
             }
-
-            res.status(200).json({
-                success: true,
-                output: result.stdout || '(No output)',
-                error: result.stderr || ''
-            });
-        } catch (error) {
-            console.error('Judge0 API Error:', error.message);
-            // Fallback to local execution
-            return executeLocally(code, language, input, res);
         }
+
+        if (finalError) {
+            executionStatus = 'error';
+        }
+
+        const duration = Date.now() - startTime;
+
+        // Asynchronously save to CodeExecutionHistory
+        try {
+            await CodeExecutionHistory.create({
+                user: req.user ? req.user.id : null,
+                language,
+                code,
+                input: input || '',
+                output: finalOutput,
+                error: finalError,
+                executionTime: duration,
+                status: executionStatus
+            });
+        } catch (dbErr) {
+            console.error('Failed to log code execution history:', dbErr.message);
+        }
+
+        return res.status(200).json({
+            success: true,
+            output: finalOutput,
+            error: finalError,
+            executionTime: duration
+        });
     } catch (error) {
         next(error);
     }
 };
 
-// Fallback local execution for basic languages
-function executeLocally(code, language, input, res) {
+// @desc    Get execution history (user-specific if logged in, or recent public/guest entries)
+// @route   GET /api/compiler/history
+// @access  Public (Enhanced for logged in)
+exports.getExecutionHistory = async (req, res, next) => {
     try {
-        const { execSync } = require('child_process');
-        const fs = require('fs');
-        const path = require('path');
-        const os = require('os');
-
-        const tempDir = os.tmpdir();
-        let filename, command, output;
-
-        switch (language) {
-            case 'javascript': {
-                // Execute JavaScript with console output capture
-                let capturedOutput = '';
-                const originalLog = console.log;
-                const originalError = console.error;
-
-                console.log = (...args) => {
-                    capturedOutput += args.join(' ') + '\n';
-                };
-
-                console.error = (...args) => {
-                    capturedOutput += args.join(' ') + '\n';
-                };
-
-                try {
-                    eval(code);
-                    console.log = originalLog;
-                    console.error = originalError;
-                    output = capturedOutput.trim() || '(No output)';
-                } catch (err) {
-                    console.log = originalLog;
-                    console.error = originalError;
-                    return res.status(200).json({
-                        success: true,
-                        error: err.message,
-                        output: ''
-                    });
-                }
-                break;
-            }
-
-            case 'python': {
-                const timestamp = Date.now();
-                filename = path.join(tempDir, `script_${timestamp}.py`);
-                fs.writeFileSync(filename, code);
-                try {
-                    const { spawnSync } = require('child_process');
-                    const result = spawnSync('python', [filename], {
-                        input: input || '',
-                        encoding: 'utf-8',
-                        timeout: 5000,
-                        maxBuffer: 1024 * 1024,
-                    });
-
-                    if (result.error) {
-                        throw result.error;
-                    }
-
-                    output = (result.stdout || '') + (result.stderr || '');
-                } catch (err) {
-                    return res.status(200).json({
-                        success: true,
-                        error: err.stderr?.toString() || err.message,
-                        output: ''
-                    });
-                } finally {
-                    try { fs.unlinkSync(filename); } catch (e) { }
-                }
-                break;
-            }
-
-            case 'java': {
-                // Extract public class name from code
-                const classNameMatch = code.match(/public\s+class\s+(\w+)/);
-                const className = classNameMatch ? classNameMatch[1] : 'Main';
-                filename = path.join(tempDir, `${className}.java`);
-
-                // If user provided a different public class name, use their code as-is
-                // Otherwise, wrap in a class named Main if not already present
-                let finalCode = code;
-                if (!classNameMatch && !code.includes('class ')) {
-                    finalCode = `public class Main {\n    public static void main(String[] args) {\n${code}\n    }\n}`;
-                }
-
-                fs.writeFileSync(filename, finalCode);
-                try {
-                    execSync(`javac "${filename}"`, { timeout: 5000, stdio: 'pipe' });
-
-                    // Use spawnSync for better input handling on Windows
-                    const { spawnSync } = require('child_process');
-                    const result = spawnSync('java', ['-cp', tempDir, className], {
-                        input: input || '',
-                        encoding: 'utf-8',
-                        timeout: 5000,
-                        maxBuffer: 1024 * 1024,
-                    });
-
-                    if (result.error) {
-                        throw result.error;
-                    }
-
-                    output = (result.stdout || '') + (result.stderr || '');
-                } catch (err) {
-                    return res.status(200).json({
-                        success: true,
-                        error: err.stderr?.toString() || err.message,
-                        output: ''
-                    });
-                } finally {
-                    try { fs.unlinkSync(filename); } catch (e) { }
-                    const classFile = filename.replace('.java', '.class');
-                    try { fs.unlinkSync(classFile); } catch (e) { }
-                }
-                break;
-            }
-
-            case 'c': {
-                const timestamp = Date.now();
-                filename = path.join(tempDir, `program_${timestamp}.c`);
-                const exeFile = path.join(tempDir, `program_${timestamp}${os.platform() === 'win32' ? '.exe' : ''}`);
-                fs.writeFileSync(filename, code);
-                try {
-                    execSync(`gcc "${filename}" -o "${exeFile}"`, { timeout: 5000, stdio: 'pipe' });
-
-                    const { spawnSync } = require('child_process');
-                    const result = spawnSync(exeFile, [], {
-                        input: input || '',
-                        encoding: 'utf-8',
-                        timeout: 5000,
-                        maxBuffer: 1024 * 1024,
-                    });
-
-                    if (result.error) {
-                        throw result.error;
-                    }
-
-                    output = (result.stdout || '') + (result.stderr || '');
-                } catch (err) {
-                    return res.status(200).json({
-                        success: true,
-                        error: err.stderr?.toString() || err.message,
-                        output: ''
-                    });
-                } finally {
-                    try { fs.unlinkSync(filename); } catch (e) { }
-                    try { fs.unlinkSync(exeFile); } catch (e) { }
-                }
-                break;
-            }
-
-            case 'cpp': {
-                const timestamp = Date.now();
-                filename = path.join(tempDir, `program_${timestamp}.cpp`);
-                const exeFile = path.join(tempDir, `program_${timestamp}${os.platform() === 'win32' ? '.exe' : ''}`);
-                fs.writeFileSync(filename, code);
-                try {
-                    execSync(`g++ "${filename}" -o "${exeFile}"`, { timeout: 5000, stdio: 'pipe' });
-
-                    const { spawnSync } = require('child_process');
-                    const result = spawnSync(exeFile, [], {
-                        input: input || '',
-                        encoding: 'utf-8',
-                        timeout: 5000,
-                        maxBuffer: 1024 * 1024,
-                    });
-
-                    if (result.error) {
-                        throw result.error;
-                    }
-
-                    output = (result.stdout || '') + (result.stderr || '');
-                } catch (err) {
-                    return res.status(200).json({
-                        success: true,
-                        error: err.stderr?.toString() || err.message,
-                        output: ''
-                    });
-                } finally {
-                    try { fs.unlinkSync(filename); } catch (e) { }
-                    try { fs.unlinkSync(exeFile); } catch (e) { }
-                }
-                break;
-            }
-
-            default:
-                return res.status(400).json({
-                    success: false,
-                    error: `Language not supported: ${language}`
-                });
-        }
+        const query = req.user ? { user: req.user.id } : { user: null };
+        const history = await CodeExecutionHistory.find(query)
+            .sort({ createdAt: -1 })
+            .limit(30)
+            .select('language code input output error executionTime status createdAt');
 
         res.status(200).json({
             success: true,
-            output: output || '(No output)',
-            error: ''
+            count: history.length,
+            history
         });
-
     } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Clear execution history
+// @route   DELETE /api/compiler/history
+// @access  Public (clears own or guest history)
+exports.clearExecutionHistory = async (req, res, next) => {
+    try {
+        const query = req.user ? { user: req.user.id } : { user: null };
+        await CodeExecutionHistory.deleteMany(query);
+
         res.status(200).json({
             success: true,
-            error: error.message,
-            output: ''
+            message: 'Execution history cleared successfully'
         });
+    } catch (error) {
+        next(error);
     }
-}
+};
 
 // @desc    Get supported languages
 // @route   GET /api/compiler/languages

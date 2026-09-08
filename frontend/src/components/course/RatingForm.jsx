@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FiStar } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_URL } from '../../utils/constants';
 
 const RatingForm = ({ courseId, onReviewSubmitted }) => {
     const [rating, setRating] = useState(0);
@@ -19,7 +20,7 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                `http://localhost:5000/api/reviews/my-review/${courseId}`,
+                `${API_URL}/reviews/my-review/${courseId}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -47,8 +48,8 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
         try {
             const token = localStorage.getItem('token');
             const url = existingReview
-                ? `http://localhost:5000/api/reviews/${existingReview._id}`
-                : 'http://localhost:5000/api/reviews';
+                ? `${API_URL}/reviews/${existingReview._id}`
+                : `${API_URL}/reviews`;
 
             const method = existingReview ? 'put' : 'post';
 
@@ -77,7 +78,7 @@ const RatingForm = ({ courseId, onReviewSubmitted }) => {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(
-                `http://localhost:5000/api/reviews/${existingReview._id}`,
+                `${API_URL}/reviews/${existingReview._id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
