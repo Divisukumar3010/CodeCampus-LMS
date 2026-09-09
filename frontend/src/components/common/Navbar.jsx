@@ -130,6 +130,15 @@ const Navbar = () => {
                                                 </div>
 
                                                 <Link
+                                                    to="/profile"
+                                                    className="flex items-center space-x-3 px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <FiUser className="text-base lg:text-lg" />
+                                                    <span className="font-medium text-sm">View Profile</span>
+                                                </Link>
+
+                                                <Link
                                                     to="/dashboard"
                                                     className="flex items-center space-x-3 px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
                                                     onClick={() => setProfileMenuOpen(false)}
@@ -229,6 +238,17 @@ const Navbar = () => {
                                         >
                                             <FiBook className="text-lg text-green-400" />
                                             <span>My Courses</span>
+                                        </Link>
+                                    )}
+
+                                    {isAuthenticated && (
+                                        <Link 
+                                            to="/profile" 
+                                            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-all font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            <FiUser className="text-lg text-blue-500" />
+                                            <span>View Profile</span>
                                         </Link>
                                     )}
 
