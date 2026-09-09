@@ -65,9 +65,6 @@ const TrainerDashboard = () => {
                         <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
                             <FiUser size={16} /> View Profile
                         </Link>
-                        <Link to="/profile/edit" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition font-semibold text-sm">
-                            <FiEdit size={16} /> Edit Profile
-                        </Link>
                         <Link to="/create-course" className="btn-primary flex items-center gap-2 shadow-lg dark:shadow-slate-700 hover:shadow-xl">
                             <FiPlus size={20} /> Create New Course
                         </Link>
