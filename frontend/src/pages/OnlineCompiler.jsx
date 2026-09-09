@@ -89,31 +89,41 @@ const OnlineCompiler = () => {
     }, []);
 
     const languages = [
-        { id: 'javascript', name: 'JavaScript' },
-        { id: 'python', name: 'Python (3.10.0)' },
-        { id: 'java', name: 'Java' },
-        { id: 'c', name: 'C' },
-        { id: 'cpp', name: 'C++' },
-        { id: 'html', name: 'HTML/CSS/JS' },
+        { id: 'javascript', name: 'JavaScript', version: 'Node.js 22' },
+        { id: 'typescript', name: 'TypeScript', version: 'v5.6.2' },
+        { id: 'python', name: 'Python', version: 'v3.13.2' },
+        { id: 'java', name: 'Java', version: 'JDK 17' },
+        { id: 'c', name: 'C', version: 'GCC 14.1' },
+        { id: 'cpp', name: 'C++', version: 'GCC 14.1' },
+        { id: 'html', name: 'HTML/CSS/JS', version: 'HTML5' },
     ];
 
     const templates = {
-        javascript: `console.log("Hello, World!");`,
-        python: `print("Hello, World!")`,
+        javascript: `console.log("Hello, World!");\nconsole.log(\`Running on Node.js \${process.version}\`);`,
+        typescript: `interface User {\n    name: string;\n    role: string;\n}\n\nconst user: User = {\n    name: "Developer",\n    role: "Full Stack Engineer"\n};\n\nconsole.log(\`Hello, \${user.name}! Welcome to CodeCampus (\${user.role})\`);`,
+        python: `import sys\n\nprint("Hello, World!")\nprint(f"Python version: {sys.version.split()[0]}")`,
         java: `public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
+        System.out.println("Java Runtime: " + System.getProperty("java.version"));
     }
 }`,
         c: `#include <stdio.h>
+
 int main() {
     printf("Hello, World!\\n");
+    #ifdef __VERSION__
+    printf("Compiled with GCC: %s\\n", __VERSION__);
+    #endif
     return 0;
 }`,
         cpp: `#include <iostream>
-using namespace std;
+
 int main() {
-    cout << "Hello, World!" << endl;
+    std::cout << "Hello, World!" << std::endl;
+    #ifdef __VERSION__
+    std::cout << "Compiled with GCC: " << __VERSION__ << std::endl;
+    #endif
     return 0;
 }`,
         html: `<!DOCTYPE html>
@@ -328,7 +338,7 @@ int main() {
     const handleOpenFile = () => {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.js,.py,.java,.c,.cpp,.html';
+        input.accept = '.js,.ts,.py,.java,.c,.cpp,.html';
         input.onchange = (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -344,6 +354,7 @@ int main() {
     const handleSaveFile = () => {
         const extensions = {
             javascript: 'js',
+            typescript: 'ts',
             python: 'py',
             java: 'java',
             c: 'c',
@@ -443,27 +454,44 @@ int main() {
                                     className={`flex items-center gap-2 ${isDarkMode
                                         ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white'
                                         : 'bg-white hover:bg-gray-100 border-gray-300 text-gray-900'
-                                        } px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all min-w-[130px] sm:min-w-[170px] justify-between border shadow-sm`}
+                                        } px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all min-w-[150px] sm:min-w-[200px] justify-between border shadow-sm`}
                                 >
-                                    <span>{selectedLanguage?.name}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span>{selectedLanguage?.name}</span>
+                                        {selectedLanguage?.version && (
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-700'}`}>
+                                                {selectedLanguage.version}
+                                            </span>
+                                        )}
+                                    </div>
                                     <ChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} size={16} />
                                 </button>
 
                                 {isDropdownOpen && (
-                                    <div className={`absolute right-0 top-full mt-1.5 w-full ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
+                                    <div className={`absolute right-0 top-full mt-1.5 w-full min-w-[220px] ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
                                         } rounded-xl border shadow-2xl z-50 overflow-hidden py-1`}>
                                         {languages.map((lang) => (
                                             <button
                                                 key={lang.id}
                                                 onClick={() => handleLanguageChange(lang.id)}
-                                                className={`w-full text-left px-4 py-2 text-sm font-medium transition-colors ${language === lang.id
+                                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${language === lang.id
                                                     ? 'bg-primary-600 text-white'
                                                     : isDarkMode
                                                         ? 'hover:bg-slate-800 text-slate-200'
                                                         : 'hover:bg-gray-100 text-gray-800'
                                                     }`}
                                             >
-                                                {lang.name}
+                                                <span>{lang.name}</span>
+                                                {lang.version && (
+                                                    <span className={`text-[11px] px-1.5 py-0.5 rounded font-mono ${language === lang.id
+                                                        ? 'bg-primary-700/80 text-white'
+                                                        : isDarkMode
+                                                            ? 'bg-slate-800 text-slate-400'
+                                                            : 'bg-gray-100 text-gray-600'
+                                                        }`}>
+                                                        {lang.version}
+                                                    </span>
+                                                )}
                                             </button>
                                         ))}
                                     </div>
@@ -485,8 +513,16 @@ int main() {
                                 <span className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-yellow-500/80' : 'bg-yellow-400'}`} />
                                 <span className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-green-500/80' : 'bg-green-400'}`} />
                                 <span className={`text-xs font-mono font-semibold ml-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                                    main.{language === 'javascript' ? 'js' : language === 'python' ? 'py' : language === 'cpp' ? 'cpp' : language}
+                                    {language === 'java' ? (() => {
+                                        const m = code.match(/public\s+class\s+([A-Za-z0-9_$]+)/);
+                                        return `${m ? m[1] : 'Main'}.java`;
+                                    })() : `main.${language === 'javascript' ? 'js' : language === 'typescript' ? 'ts' : language === 'python' ? 'py' : language === 'cpp' ? 'cpp' : language}`}
                                 </span>
+                                {selectedLanguage?.version && (
+                                    <span className="text-[10px] text-emerald-500 font-mono font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full ml-2">
+                                        {selectedLanguage.version}
+                                    </span>
+                                )}
                             </div>
                             <button
                                 onClick={toggleEditorTheme}
@@ -498,7 +534,7 @@ int main() {
                         </div>
                         <Editor
                             height={editorHeight}
-                            language={language === 'cpp' ? 'cpp' : language === 'csharp' ? 'csharp' : language}
+                            language={language === 'cpp' ? 'cpp' : language === 'typescript' ? 'typescript' : language}
                             value={code}
                             onChange={(value) => setCode(value || '')}
                             onMount={handleEditorMount}

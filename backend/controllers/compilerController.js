@@ -5,14 +5,15 @@ const path = require('path');
 const os = require('os');
 const CodeExecutionHistory = require('../models/CodeExecutionHistory');
 
-// Language mapping for Judge0 API
+// Language mapping for Judge0 API (Upgraded to modern versions)
 const languageMap = {
-    javascript: 63,    // JavaScript (Node.js 12.14.0)
-    python: 71,        // Python (3.8.1)
-    java: 62,          // Java (OpenJDK 13.0.1)
-    c: 50,             // C (GCC 9.2.0)
-    cpp: 54,           // C++ (GCC 9.2.0)
-    html: 95,          // HTML, CSS, JavaScript
+    javascript: { id: 102, name: 'JavaScript (Node.js 22.08.0)', version: 'Node.js 22' },
+    python: { id: 109, name: 'Python (3.13.2)', version: '3.13.2' },
+    java: { id: 91, name: 'Java (JDK 17.0.6)', version: 'JDK 17' },
+    c: { id: 103, name: 'C (GCC 14.1.0)', version: 'GCC 14.1.0' },
+    cpp: { id: 105, name: 'C++ (GCC 14.1.0)', version: 'GCC 14.1.0' },
+    typescript: { id: 101, name: 'TypeScript (5.6.2)', version: '5.6.2' },
+    html: { id: 95, name: 'HTML, CSS, JavaScript', version: 'HTML5' },
 };
 
 // Judge0 API configuration (defaults to free public endpoint if no RapidAPI key provided)
@@ -22,7 +23,11 @@ const JUDGE0_API_KEY = hasRapidApiKey ? process.env.JUDGE0_API_KEY : null;
 
 // Execute with Judge0
 async function executeWithJudge0(code, language, input) {
-    const languageId = languageMap[language];
+    const langConfig = languageMap[language];
+    if (!langConfig) {
+        throw new Error(`Unsupported language for online compiler: ${language}`);
+    }
+    const languageId = typeof langConfig === 'object' ? langConfig.id : langConfig;
     if (!languageId) {
         throw new Error(`Unsupported language for online compiler: ${language}`);
     }
@@ -36,13 +41,32 @@ async function executeWithJudge0(code, language, input) {
         headers['X-RapidAPI-Host'] = 'judge0-ce.p.rapidapi.com';
     }
 
+    let sourceCode = code;
+    let mainFilename = null;
+
+    if (language === 'java') {
+        const publicClassMatch = code.match(/public\s+class\s+([A-Za-z0-9_$]+)/);
+        if (publicClassMatch && publicClassMatch[1] !== 'Main') {
+            const detectedName = publicClassMatch[1];
+            // Normalize public class <Name> to public class Main so it works anywhere
+            sourceCode = code.replace(new RegExp(`public\\s+class\\s+${detectedName}\\b`), 'public class Main');
+            mainFilename = `${detectedName}.java`;
+        } else {
+            mainFilename = 'Main.java';
+        }
+    }
+
     const submissionData = {
-        source_code: code,
+        source_code: sourceCode,
         language_id: languageId,
         stdin: input || '',
         cpu_time_limit: 5,
         memory_limit: 128000
     };
+
+    if (mainFilename) {
+        submissionData.main_filename = mainFilename;
+    }
 
     const endpoint = `${JUDGE0_API}/submissions?base64_encoded=false&wait=true`;
     const response = await axios.post(endpoint, submissionData, {
@@ -266,6 +290,43 @@ function executeLocally(code, language, input) {
             }
         }
 
+        case 'typescript': {
+            const filename = path.join(tempDir, `script_${timestamp}.ts`);
+            fs.writeFileSync(filename, code);
+            try {
+                // Try tsx, ts-node, or strip-types with modern node (node 22+ supports --experimental-strip-types)
+                let result = spawnSync('node', ['--experimental-strip-types', filename], {
+                    input: input || '',
+                    encoding: 'utf-8',
+                    timeout: 5000,
+                    maxBuffer: 1024 * 1024
+                });
+
+                if (result.error || (result.status !== 0 && result.stderr?.includes('experimental-strip-types'))) {
+                    result = spawnSync('npx', ['--yes', 'tsx', filename], {
+                        input: input || '',
+                        encoding: 'utf-8',
+                        timeout: 8000,
+                        maxBuffer: 1024 * 1024
+                    });
+                }
+
+                if (result.error) {
+                    return { output: '', error: result.error.message };
+                }
+
+                const out = (result.stdout || '').trim();
+                const err = (result.stderr || '').trim();
+
+                return {
+                    output: out || (err ? '' : '(No output)'),
+                    error: err
+                };
+            } finally {
+                try { fs.unlinkSync(filename); } catch {}
+            }
+        }
+
         default:
             return {
                 output: '',
@@ -394,10 +455,14 @@ exports.clearExecutionHistory = async (req, res, next) => {
 // @access  Public
 exports.getLanguages = async (req, res, next) => {
     try {
-        const languages = Object.keys(languageMap).map(lang => ({
-            id: lang,
-            name: lang.charAt(0).toUpperCase() + lang.slice(1)
-        }));
+        const languages = Object.keys(languageMap).map(lang => {
+            const info = languageMap[lang];
+            return {
+                id: lang,
+                name: typeof info === 'object' ? info.name : lang.charAt(0).toUpperCase() + lang.slice(1),
+                version: typeof info === 'object' ? info.version : ''
+            };
+        });
 
         res.status(200).json({
             success: true,
