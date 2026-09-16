@@ -382,9 +382,9 @@ int main() {
     const selectedLanguage = languages.find(lang => lang.id === language);
 
     return (
-        <div className={`min-h-screen ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`} style={{ marginTop: '40px' }}>
+        <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
             {/* Top Control Bar */}
-            <div className={`${isDarkMode ? 'bg-black border-gray-800' : 'bg-white border-gray-200'} border-b sticky top-16 z-30 shadow-sm`}>
+            <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b sticky top-0 z-30 shadow-sm`}>
                 <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-3.5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-3">

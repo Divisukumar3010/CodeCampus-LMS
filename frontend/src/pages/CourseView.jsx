@@ -32,6 +32,26 @@ const CourseView = () => {
         }
     }, [course]);
 
+    // Flatten all lessons across sections for sequential prev/next navigation
+    const allLessons = [];
+    if (course?.sections) {
+        course.sections.forEach(section => {
+            if (section.lessons) {
+                section.lessons.forEach(l => {
+                    allLessons.push({
+                        ...l,
+                        sectionId: section._id,
+                        sectionTitle: section.title
+                    });
+                });
+            }
+        });
+    }
+
+    const currentLessonIndex = allLessons.findIndex(l => l._id === currentLesson?._id);
+    const prevLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
+    const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
+
     const fetchCourseAndProgress = async () => {
         try {
             const [courseRes, progressRes] = await Promise.all([
@@ -188,33 +208,52 @@ const CourseView = () => {
                                             </div>
                                         )}
 
-                                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-4">
-                                            {!isLessonCompleted(currentLesson._id) ? (
-                                                <>
-                                                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                                                        Finish watching or click to complete:
-                                                    </p>
+                                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            {/* Previous Lesson / Next Lesson controls */}
+                                            <div className="flex items-center gap-2">
+                                                {prevLesson && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setCurrentLesson(prevLesson)}
+                                                        className="btn-secondary py-1.5 px-3 text-xs"
+                                                    >
+                                                        ← Previous Lesson
+                                                    </button>
+                                                )}
+                                                {nextLesson && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setCurrentLesson(nextLesson)}
+                                                        className="btn-secondary py-1.5 px-3 text-xs"
+                                                    >
+                                                        Next Lesson →
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                {!isLessonCompleted(currentLesson._id) ? (
                                                     <button
                                                         type="button"
                                                         onClick={() => handleLessonComplete(currentLesson._id, currentLesson.videoDuration || 60)}
-                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-semibold shadow-md transition"
+                                                        className="btn-primary py-2 px-4 text-xs font-semibold"
                                                     >
-                                                        <FiCheckCircle size={16} />
-                                                        Mark as Complete
+                                                        <FiCheckCircle size={15} />
+                                                        Mark Lesson Complete
                                                     </button>
-                                                </>
-                                            ) : (
-                                                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-                                                    <FiCheckCircle size={18} />
-                                                    <span>You have completed this lesson.</span>
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                                                        <FiCheckCircle size={16} />
+                                                        <span>Lesson Completed</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="aspect-video bg-gray-900 dark:bg-slate-900 flex items-center justify-center text-white">
-                                    <p>No lessons available</p>
+                                <div className="aspect-video bg-slate-900 flex items-center justify-center text-white">
+                                    <p className="text-sm text-slate-400">No lessons available in this module</p>
                                 </div>
                             )}
                         </div>
