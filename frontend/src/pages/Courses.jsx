@@ -121,43 +121,41 @@ const Courses = () => {
     const hasActiveFilters = Object.values(filters).some(val => val && val !== 'newest');
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
             {/* Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-40 mt-4 sm:mt-6 lg:mt-10 rounded-3xl shadow-sm mx-4 sm:mx-6 lg:mx-8 sticky top-[2%]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-                    <div className="flex justify-between items-center mb-4 sm:mb-6">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Browse Courses</h1>
-                            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">{pagination.total} courses available</p>
-                        </div>
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="md:hidden inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                            </svg>
-                            Filters
-                        </button>
+            <div className="card p-5 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Academic Course Catalog</h1>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{pagination.total} university accredited courses available</p>
                     </div>
-
-                    {/* Search Bar */}
-                    <div className="relative">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="md:hidden inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                         </svg>
-                        <input
-                            type="text"
-                            placeholder="Search courses..."
-                            value={filters.search}
-                            onChange={(e) => handleSearchChange(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
-                        />
-                    </div>
+                        Filters
+                    </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder="Search courses..."
+                        value={filters.search}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                    />
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            <div>
                 <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                     {/* Sidebar Filters */}
                     <aside className={`${showFilters ? 'block' : 'hidden md:block'} w-full md:w-64 flex-shrink-0`}>
