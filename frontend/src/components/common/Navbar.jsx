@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useAuthModal } from '../../context/AuthModalContext';
 import { FiMenu, FiX, FiUser, FiLogOut, FiSettings, FiBook } from 'react-icons/fi';
 import ThemeToggle from '../ThemeToggle';
 import OnlineCompiler from '../../pages/OnlineCompiler';
 
 const Navbar = () => {
     const { user, isAuthenticated, logout } = useAuth();
+    const { openModal } = useAuthModal();
     const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -14,7 +16,7 @@ const Navbar = () => {
     const handleLogout = async () => {
         await logout();
         setProfileMenuOpen(false);
-        navigate('/login');
+        navigate('/');
     };
 
     return (
@@ -160,18 +162,20 @@ const Navbar = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <Link
-                                        to="/login"
-                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors"
+                                    <button
+                                        type="button"
+                                        onClick={() => openModal('login')}
+                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors cursor-pointer"
                                     >
                                         Login
-                                    </Link>
-                                    <Link
-                                        to="/register"
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-4 lg:px-6 py-2 lg:py-3 text-sm lg:text-base rounded-full transition-all shadow-lg dark:shadow-purple-500/20 hover:scale-105"
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => openModal('register')}
+                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-4 lg:px-6 py-2 lg:py-3 text-sm lg:text-base rounded-full transition-all shadow-lg dark:shadow-purple-500/20 hover:scale-105 cursor-pointer"
                                     >
                                         Get Started
-                                    </Link>
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -307,20 +311,26 @@ const Navbar = () => {
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
-                                            <Link 
-                                                to="/login" 
-                                                className="block text-center border-2 border-blue-500/50 text-blue-600 dark:text-blue-400 py-3 font-bold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors text-sm"
-                                                onClick={() => setMobileMenuOpen(false)}
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    openModal('login');
+                                                    setMobileMenuOpen(false);
+                                                }}
+                                                className="w-full block text-center border-2 border-blue-500/50 text-blue-600 dark:text-blue-400 py-3 font-bold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors text-sm cursor-pointer"
                                             >
                                                 Login
-                                            </Link>
-                                            <Link 
-                                                to="/register" 
-                                                className="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 font-bold rounded-lg hover:scale-[1.02] transition-transform shadow-lg shadow-blue-500/20 text-sm"
-                                                onClick={() => setMobileMenuOpen(false)}
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    openModal('register');
+                                                    setMobileMenuOpen(false);
+                                                }}
+                                                className="w-full block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 font-bold rounded-lg hover:scale-[1.02] transition-transform shadow-lg shadow-blue-500/20 text-sm cursor-pointer"
                                             >
                                                 Get Started
-                                            </Link>
+                                            </button>
                                         </div>
                                     )}
                                 </div>

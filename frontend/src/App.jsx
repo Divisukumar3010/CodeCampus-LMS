@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { AuthModalProvider } from './context/AuthModalContext';
 import { ThemeProvider } from './context/ThemeContext';
+import AuthModal from './components/auth/AuthModal';
 import { useTheme } from './hooks/useTheme';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Navbar from './components/common/Navbar';
@@ -32,11 +34,24 @@ import EditProfile from './pages/EditProfile';
 import ExamPage from './pages/ExamPage';
 import GradesPage from './pages/GradesPage';
 import CalendarPage from './pages/CalendarPage';
+import { useEffect } from 'react';
 import { useAuth } from './context/AuthContext';
+import { useAuthModal } from './context/AuthModalContext';
 
 function ProfileViewWrapper() {
   const { user } = useAuth();
   return <ProfileView user={user} />;
+}
+
+// Wrapper that renders the Home page while automatically opening the auth modal
+function AuthModalRouteWrapper({ view }) {
+  const { openModal } = useAuthModal();
+
+  useEffect(() => {
+    openModal(view);
+  }, [view, openModal]);
+
+  return <Home />;
 }
 
 // Determines whether the current route uses the LMS App Shell or the Public Marketing layout
@@ -161,9 +176,9 @@ function MainContentRoutes() {
         <Routes>
           {/* Public Pages */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={<AuthModalRouteWrapper view="login" />} />
+          <Route path="/register" element={<AuthModalRouteWrapper view="register" />} />
+          <Route path="/forgot-password" element={<AuthModalRouteWrapper view="forgot-password" />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/oauth/callback" element={<OAuthCallback />} />
           <Route path="/courses" element={<Courses />} />
@@ -241,41 +256,46 @@ function AppContent() {
   return (
     <AuthProvider>
       <Router>
-        <div className={`flex flex-col min-h-screen transition-colors duration-300 ${
-          isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
-        }`}>
-          <MainContentRoutes />
-        </div>
+        <AuthModalProvider>
+          <div className={`flex flex-col min-h-screen transition-colors duration-300 ${
+            isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+          }`}>
+            <MainContentRoutes />
+          </div>
 
-        {/* Toast notifications */}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: isDarkMode ? '#0f172a' : '#ffffff',
-              color: isDarkMode ? '#f8fafc' : '#0f172a',
-              padding: '14px 18px',
-              borderRadius: '10px',
-              fontSize: '13px',
-              fontWeight: '500',
-              border: isDarkMode ? '1px solid #1e293b' : '1px solid #e2e8f0',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-            },
-            success: {
-              iconTheme: {
-                primary: '#10b981',
-                secondary: isDarkMode ? '#0f172a' : '#ffffff',
+          {/* Global Auth Modal Dialog */}
+          <AuthModal />
+
+          {/* Toast notifications */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: isDarkMode ? '#0f172a' : '#ffffff',
+                color: isDarkMode ? '#f8fafc' : '#0f172a',
+                padding: '14px 18px',
+                borderRadius: '10px',
+                fontSize: '13px',
+                fontWeight: '500',
+                border: isDarkMode ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
               },
-            },
-            error: {
-              iconTheme: {
-                primary: '#ef4444',
-                secondary: isDarkMode ? '#0f172a' : '#ffffff',
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: isDarkMode ? '#0f172a' : '#ffffff',
+                },
               },
-            },
-          }}
-        />
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: isDarkMode ? '#0f172a' : '#ffffff',
+                },
+              },
+            }}
+          />
+        </AuthModalProvider>
       </Router>
     </AuthProvider>
   );
