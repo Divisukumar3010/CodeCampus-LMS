@@ -420,7 +420,11 @@ exports.resetPassword = async (req, res, next) => {
 
 // Helper to determine base URLs
 const getBackendUrl = (req) => {
-    const protocol = req.protocol || 'http';
+    if (process.env.BACKEND_URL) {
+        return process.env.BACKEND_URL.replace(/\/+$/, '');
+    }
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol = (forwardedProto && forwardedProto.split(',')[0].trim()) || req.protocol || 'http';
     const host = req.get('host') || 'localhost:5000';
     return `${protocol}://${host}`;
 };

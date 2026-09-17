@@ -17,6 +17,9 @@ connectDatabase();
 
 const app = express();
 
+// Trust reverse proxy (Render, Vercel, Heroku, etc.) so req.protocol correctly reflects https
+app.set('trust proxy', 1);
+
 // Security Middleware
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
