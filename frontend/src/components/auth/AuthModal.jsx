@@ -116,7 +116,9 @@ export default function AuthModal() {
             const result = await login(loginData);
             if (result.success) {
                 closeModal();
-                navigate('/dashboard');
+                if (location.pathname === '/login') {
+                    navigate('/');
+                }
             } else {
                 setLoginError(result.message || 'Invalid email or password.');
             }
@@ -162,7 +164,9 @@ export default function AuthModal() {
 
             if (result.success) {
                 closeModal();
-                navigate('/dashboard');
+                if (location.pathname === '/register') {
+                    navigate('/');
+                }
             } else {
                 setRegisterError(result.message || 'Registration failed. Please try again.');
             }

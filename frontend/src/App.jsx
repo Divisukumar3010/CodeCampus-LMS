@@ -64,6 +64,7 @@ function MainContentRoutes() {
     '/dashboard',
     '/my-courses',
     '/courses',
+    '/course/view',
     '/online-compiler',
     '/grades',
     '/calendar',
@@ -73,7 +74,8 @@ function MainContentRoutes() {
     '/trainer/dashboard',
     '/dashboard/trainer'
   ].some(p => location.pathname === p || location.pathname.startsWith(p + '/')) ||
-  (location.pathname.startsWith('/courses/') && location.pathname.endsWith('/edit'));
+  (location.pathname.startsWith('/courses/') && location.pathname.endsWith('/edit')) ||
+  (location.pathname.startsWith('/course/') && location.pathname.endsWith('/exam'));
 
   // If user is authenticated on an LMS route, render inside the LMSLayout shell
   if (isAuthenticated && isLMSRoute) {
@@ -160,6 +162,22 @@ function MainContentRoutes() {
             element={
               <ProtectedRoute>
                 <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/view/:id"
+            element={
+              <ProtectedRoute>
+                <CourseView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/:id/exam"
+            element={
+              <ProtectedRoute>
+                <ExamPage />
               </ProtectedRoute>
             }
           />
