@@ -97,6 +97,7 @@ function MainContentRoutes() {
             }
           />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/online-compiler" element={<OnlineCompiler />} />
           <Route
             path="/grades"
