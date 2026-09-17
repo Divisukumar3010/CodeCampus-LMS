@@ -5,10 +5,12 @@ import { FiPlay, FiUsers, FiStar, FiArrowRight, FiBook, FiAward, FiTrendingUp, F
 import CourseCard from '../components/course/CourseCard';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { useAuthModal } from '../context/AuthModalContext';
 import { useTheme } from '../hooks/useTheme';
 
 const Home = () => {
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
+    const { openModal } = useAuthModal();
     const { isDarkMode } = useTheme();
     const [featuredCourses, setFeaturedCourses] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -91,9 +93,19 @@ const Home = () => {
                                     Explore Courses
                                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <Link to="/register" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
-                                    Start Free Trial
-                                </Link>
+                                {isAuthenticated ? (
+                                    <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
+                                        My Dashboard
+                                    </Link>
+                                ) : (
+                                    <button 
+                                        type="button"
+                                        onClick={() => openModal('register')}
+                                        className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all cursor-pointer"
+                                    >
+                                        Start Free Trial
+                                    </button>
+                                )}
                             </div>
 
                             {/* Stats */}
@@ -304,10 +316,21 @@ const Home = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center px-4">
-                        <Link to="/register" className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105">
-                            Get Started Free
-                            <FiArrowRight />
-                        </Link>
+                        {isAuthenticated ? (
+                            <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105">
+                                Go to My Courses
+                                <FiArrowRight />
+                            </Link>
+                        ) : (
+                            <button 
+                                type="button"
+                                onClick={() => openModal('register')}
+                                className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105 cursor-pointer"
+                            >
+                                Get Started Free
+                                <FiArrowRight />
+                            </button>
+                        )}
                         <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
                             Browse Courses
                         </Link>

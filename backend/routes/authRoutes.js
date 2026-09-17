@@ -10,8 +10,7 @@ const {
     forgotPassword,
     resetPassword,
     initiateGoogleAuth,
-    googleCallback,
-    googleAuth
+    googleCallback
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -33,6 +32,5 @@ router.put('/reset-password/:token', resetPassword);
 // Real Google OAuth 2.0 (Authorization Code Flow)
 router.get('/google', initiateGoogleAuth);
 router.get('/google/callback', googleCallback);
-router.post('/google', googleAuth);
 
 module.exports = router;
