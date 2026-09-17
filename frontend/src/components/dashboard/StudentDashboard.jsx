@@ -177,55 +177,98 @@ const StudentDashboard = () => {
                 </div>
             </div>
 
-            {/* "Continue Learning" Active Course Workspace */}
-            {activeCourseProgress && activeCourseProgress.course && (
-                <div className="card overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-6 shadow-md border-indigo-800">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="space-y-2 flex-1">
-                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                Active Learning Session
-                            </div>
-                            <h2 className="text-xl sm:text-2xl font-bold leading-tight">
-                                {activeCourseProgress.course.title}
-                            </h2>
-                            <p className="text-xs text-indigo-200/80">
-                                Faculty Instructor: {activeCourseProgress.course.trainer?.name || 'Lead Department Faculty'}
-                            </p>
+            {/* "Continue Learning" / "Completed Curriculum" Active Course Workspace */}
+            {activeCourseProgress && activeCourseProgress.course && (() => {
+                const isCourseComplete = activeCourseProgress.percentComplete === 100 || activeCourseProgress.isCompleted;
+                const hasPassedExam = activeCourseProgress.exam?.hasPassed;
 
-                            {/* Progress tracking */}
-                            <div className="pt-2 max-w-md">
-                                <div className="flex justify-between text-xs font-medium text-indigo-200 mb-1.5">
-                                    <span>Syllabus Progress</span>
-                                    <span>{activeCourseProgress.percentComplete || 0}% Complete</span>
+                return (
+                    <div className="card overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-6 shadow-md border-indigo-800">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="space-y-2 flex-1">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                                    {isCourseComplete ? (
+                                        <>
+                                            <FiCheckCircle className="text-emerald-400" size={12} />
+                                            <span>Curriculum Completed</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                            <span>Active Learning Session</span>
+                                        </>
+                                    )}
                                 </div>
-                                <div className="w-full bg-indigo-950 rounded-full h-2 overflow-hidden border border-indigo-700/50">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-indigo-400 to-emerald-400 rounded-full transition-all duration-500"
-                                        style={{ width: `${activeCourseProgress.percentComplete || 0}%` }}
-                                    />
+                                <h2 className="text-xl sm:text-2xl font-bold leading-tight">
+                                    {activeCourseProgress.course.title}
+                                </h2>
+                                <p className="text-xs text-indigo-200/80">
+                                    Faculty Instructor: {activeCourseProgress.course.trainer?.name || 'Lead Department Faculty'}
+                                </p>
+
+                                {/* Progress tracking */}
+                                <div className="pt-2 max-w-md">
+                                    <div className="flex justify-between text-xs font-medium text-indigo-200 mb-1.5">
+                                        <span>Syllabus Progress</span>
+                                        <span>{activeCourseProgress.percentComplete || 0}% Complete</span>
+                                    </div>
+                                    <div className="w-full bg-indigo-950 rounded-full h-2 overflow-hidden border border-indigo-700/50">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-indigo-400 to-emerald-400 rounded-full transition-all duration-500"
+                                            style={{ width: `${activeCourseProgress.percentComplete || 0}%` }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row items-stretch md:items-center gap-3">
-                            <Link
-                                to={`/course/view/${activeCourseProgress.course._id}`}
-                                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-lg hover:shadow-indigo-500/20 transition"
-                            >
-                                <FiPlay size={16} />
-                                Resume Lesson
-                            </Link>
-                            <Link
-                                to={`/courses/${activeCourseProgress.course._id}`}
-                                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition"
-                            >
-                                View Syllabus
-                            </Link>
+                            <div className="flex flex-col sm:flex-row items-stretch md:items-center gap-3">
+                                {isCourseComplete ? (
+                                    <>
+                                        <Link
+                                            to={`/course/view/${activeCourseProgress.course._id}`}
+                                            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-sm shadow-lg hover:shadow-emerald-500/20 transition"
+                                        >
+                                            <FiCheckCircle size={16} />
+                                            Review Course
+                                        </Link>
+                                        {!hasPassedExam ? (
+                                            <Link
+                                                to={`/course/${activeCourseProgress.course._id}/exam`}
+                                                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition"
+                                            >
+                                                <FiAward size={16} />
+                                                Take Exam
+                                            </Link>
+                                        ) : (
+                                            <Link
+                                                to="/grades"
+                                                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition"
+                                            >
+                                                <FiAward size={16} />
+                                                View Certificate
+                                            </Link>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Link
+                                        to={`/course/view/${activeCourseProgress.course._id}`}
+                                        className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-lg hover:shadow-indigo-500/20 transition"
+                                    >
+                                        <FiPlay size={16} />
+                                        Resume Lesson
+                                    </Link>
+                                )}
+                                <Link
+                                    to={`/courses/${activeCourseProgress.course._id}`}
+                                    className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition"
+                                >
+                                    View Syllabus
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* Split Grid: Enrolled Courses & Academic Assessments/Announcements */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -69,15 +69,6 @@ const Navbar = () => {
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                             </Link>
                         )}
-                        {isAuthenticated && (
-                            <Link
-                                to="/dashboard"
-                                className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors relative group"
-                            >
-                                Dashboard
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
-                            </Link>
-                        )}
                     </div>
 
                     {/* Right side items (Auth/Profile + ThemeToggle) */}
@@ -90,75 +81,107 @@ const Navbar = () => {
                         {/* Auth / Profile - Desktop */}
                         <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
                             {isAuthenticated ? (
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                                        className="flex items-center space-x-2 lg:space-x-3 bg-white dark:bg-slate-900/50 backdrop-blur-md px-3 lg:px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-slate-900/70 transition-all border border-white/30 dark:border-slate-700/30 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                <div className="flex items-center space-x-2 xl:space-x-3">
+                                    <Link
+                                        to="/dashboard"
+                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors px-2 py-1"
                                     >
-                                        {user?.avatar?.url ? (
-                                            <img
-                                                src={user.avatar.url}
-                                                alt={user.name}
-                                                className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow"
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src = '/CodeCampus.png';
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm lg:text-base">
-                                                {user?.name?.charAt(0).toUpperCase()}
-                                            </div>
-                                        )}
-                                        <div className="text-left hidden xl:block">
-                                            <p className="font-bold text-gray-900 dark:text-gray-100 text-sm">{user?.name}</p>
-                                            <p className="text-xs text-gray-700 dark:text-gray-400 capitalize">{user?.role}</p>
-                                        </div>
-                                        <svg className="w-3 h-3 lg:w-4 lg:h-4 text-gray-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
+                                        Dashboard
+                                    </Link>
 
-                                    {profileMenuOpen && (
-                                        <>
-                                            <div
-                                                className="fixed inset-0 z-10"
-                                                onClick={() => setProfileMenuOpen(false)}
-                                            />
-                                            <div className="absolute right-0 mt-4 w-56 lg:w-64 bg-white dark:bg-slate-900/70 backdrop-blur-xl rounded-2xl shadow-2xl dark:shadow-slate-800 py-2 border border-white/30 dark:border-slate-700/30 z-20">
-                                                <div className="px-4 py-3 border-b border-white/30 dark:border-slate-700/30">
-                                                    <p className="font-bold text-gray-900 dark:text-gray-100 text-sm">{user?.name}</p>
-                                                    <p className="text-xs text-gray-700 dark:text-gray-400 truncate">{user?.email}</p>
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                                            className="flex items-center space-x-2 lg:space-x-2.5 bg-white dark:bg-slate-900/50 backdrop-blur-md px-3 py-1.5 rounded-full hover:bg-gray-50 dark:hover:bg-slate-900/70 transition-all border border-white/40 dark:border-slate-700/40 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                                        >
+                                            {user?.avatar?.url ? (
+                                                <img
+                                                    src={user.avatar.url}
+                                                    alt={user.name}
+                                                    className="w-7 h-7 lg:w-8 lg:h-8 rounded-full object-cover border border-blue-500 shadow"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = '/CodeCampus.png';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs lg:text-sm">
+                                                    {user?.name?.charAt(0).toUpperCase() || 'U'}
                                                 </div>
+                                            )}
+                                            <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm max-w-[100px] truncate">
+                                                {user?.name || 'Profile'}
+                                            </span>
+                                            <svg className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
 
-                                                <Link
-                                                    to="/profile"
-                                                    className="flex items-center space-x-3 px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                        {profileMenuOpen && (
+                                            <>
+                                                <div
+                                                    className="fixed inset-0 z-10"
                                                     onClick={() => setProfileMenuOpen(false)}
-                                                >
-                                                    <FiUser className="text-base lg:text-lg" />
-                                                    <span className="font-medium text-sm">View Profile</span>
-                                                </Link>
+                                                />
+                                                <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl dark:shadow-slate-800 py-2 border border-gray-100 dark:border-slate-700/50 z-20 animate-fade-in">
+                                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700/50">
+                                                        <p className="font-bold text-gray-900 dark:text-gray-100 text-sm truncate">{user?.name}</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                                                        <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+                                                            {user?.role}
+                                                        </span>
+                                                    </div>
 
-                                                <Link
-                                                    to="/dashboard"
-                                                    className="flex items-center space-x-3 px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                                                    onClick={() => setProfileMenuOpen(false)}
-                                                >
-                                                    <FiSettings className="text-base lg:text-lg" />
-                                                    <span className="font-medium text-sm">Dashboard</span>
-                                                </Link>
+                                                    <Link
+                                                        to="/profile"
+                                                        className="flex items-center space-x-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                                        onClick={() => setProfileMenuOpen(false)}
+                                                    >
+                                                        <FiUser className="text-base text-blue-500" />
+                                                        <span className="font-medium text-sm">Profile</span>
+                                                    </Link>
 
-                                                <button
-                                                    onClick={handleLogout}
-                                                    className="flex items-center space-x-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 w-full text-left transition-colors"
-                                                >
-                                                    <FiLogOut className="text-base lg:text-lg" />
-                                                    <span className="font-medium text-sm">Logout</span>
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
+                                                    <Link
+                                                        to="/dashboard"
+                                                        className="flex items-center space-x-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                                        onClick={() => setProfileMenuOpen(false)}
+                                                    >
+                                                        <FiSettings className="text-base text-purple-500" />
+                                                        <span className="font-medium text-sm">Dashboard</span>
+                                                    </Link>
+
+                                                    {user?.role === 'student' && (
+                                                        <Link
+                                                            to="/my-courses"
+                                                            className="flex items-center space-x-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                                            onClick={() => setProfileMenuOpen(false)}
+                                                        >
+                                                            <FiBook className="text-base text-green-500" />
+                                                            <span className="font-medium text-sm">My Courses</span>
+                                                        </Link>
+                                                    )}
+
+                                                    <div className="pt-1 mt-1 border-t border-gray-100 dark:border-slate-700/50">
+                                                        <button
+                                                            onClick={handleLogout}
+                                                            className="flex items-center space-x-3 px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 w-full text-left transition-colors"
+                                                        >
+                                                            <FiLogOut className="text-base" />
+                                                            <span className="font-medium text-sm">Logout</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        onClick={handleLogout}
+                                        className="text-sm lg:text-base text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-semibold px-2 py-1 transition-colors flex items-center space-x-1"
+                                        title="Logout"
+                                    >
+                                        <span>Logout</span>
+                                    </button>
                                 </div>
                             ) : (
                                 <>

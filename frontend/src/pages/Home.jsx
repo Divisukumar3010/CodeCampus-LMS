@@ -94,7 +94,7 @@ const Home = () => {
                                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 {isAuthenticated ? (
-                                    <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
+                                    <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
                                         My Dashboard
                                     </Link>
                                 ) : (
