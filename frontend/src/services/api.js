@@ -67,6 +67,9 @@ export const authAPI = {
     getMe: () => api.get('/auth/me'),
     updateProfile: (data) => api.put('/auth/update-profile', data),
     changePassword: (data) => api.put('/auth/change-password', data),
+    forgotPassword: (data) => api.post('/auth/forgot-password', data),
+    resetPassword: (token, data) => api.put(`/auth/reset-password/${token}`, data),
+    googleAuth: (data) => api.post('/auth/google', data),
 };
 
 // Course APIs

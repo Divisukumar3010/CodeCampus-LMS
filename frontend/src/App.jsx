@@ -12,6 +12,9 @@ import LMSLayout from './components/layout/LMSLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import OAuthCallback from './pages/OAuthCallback';
 import Courses from './pages/Courses';
 import CourseDetails from './pages/CourseDetails';
 import CourseView from './pages/CourseView';
@@ -160,6 +163,9 @@ function MainContentRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/online-compiler" element={<OnlineCompiler />} />

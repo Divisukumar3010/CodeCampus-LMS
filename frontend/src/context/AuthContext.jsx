@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { authAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -17,12 +17,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Check if user is logged in on mount
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
+    const checkAuth = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
@@ -38,7 +33,12 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    // Check if user is logged in on mount
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
 
     const register = async (userData) => {
         try {
@@ -105,12 +105,32 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const loginWithGoogle = async (tokenData) => {
+        try {
+            const response = await authAPI.googleAuth(tokenData);
+            const { accessToken, refreshToken, user } = response.data;
+
+            localStorage.setItem('token', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            setUser(user);
+            setIsAuthenticated(true);
+
+            toast.success(`Welcome to CodeCampus, ${user.name}!`);
+            return { success: true, user };
+        } catch (error) {
+            const message = error.response?.data?.message || 'Google authentication failed';
+            toast.error(message);
+            return { success: false, message };
+        }
+    };
+
     const value = {
         user,
         loading,
         isAuthenticated,
         register,
         login,
+        loginWithGoogle,
         logout,
         updateUser,
         checkAuth,

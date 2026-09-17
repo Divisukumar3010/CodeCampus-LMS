@@ -302,6 +302,76 @@ const sendLoginNotificationEmail = async (user, meta = {}) => {
   });
 };
 
+const sendPasswordResetEmail = async (user, resetToken) => {
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+  const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }
+        .container { max-width: 580px; margin: 24px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .header { background: linear-gradient(135deg, #1e1b4b, #312e81, #4338ca); color: white; padding: 32px; text-align: center; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .content { padding: 32px 28px; }
+        .alert-card { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; margin: 20px 0; color: #92400e; font-size: 13px; }
+        .button { display: inline-block; padding: 13px 32px; background: #4f46e5; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 16px 0; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); }
+        .footer { background: #f8fafc; text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0; }
+        .link-text { word-break: break-all; color: #4f46e5; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔐 Password Reset Request</h1>
+          <p style="margin: 4px 0 0 0; opacity: 0.85; font-size: 13px;">CodeCampus Academic LMS Security</p>
+        </div>
+        <div class="content">
+          <h2>Hello ${user.name},</h2>
+          <p>We received a request to reset the password for your CodeCampus account.</p>
+          <p>Click the button below to choose a new password:</p>
+
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${resetUrl}" class="button" target="_blank">Reset My Password</a>
+          </div>
+
+          <div class="alert-card">
+            <strong>⏰ Security Notice:</strong> This password reset link is strictly valid for <strong>15 minutes</strong> and can only be used once.
+          </div>
+
+          <p style="font-size: 13px; color: #64748b;">
+            If you did not make this request, you can safely ignore this email. Your current password will remain unchanged and your account is secure.
+          </p>
+
+          <p style="font-size: 12px; color: #94a3b8; margin-top: 24px;">
+            Button not working? Copy and paste this URL into your browser:<br>
+            <a href="${resetUrl}" class="link-text">${resetUrl}</a>
+          </p>
+
+          <p style="margin-top: 24px; font-size: 14px;">
+            Best regards,<br>
+            <strong>CodeCampus Security Team</strong>
+          </p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} CodeCampus LMS. All rights reserved.</p>
+          <p>This automated security message was sent to ${user.email}.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    email: user.email,
+    subject: '🔐 CodeCampus Password Reset Request (Valid for 15 minutes)',
+    html,
+  });
+};
+
 module.exports = {
   sendEmail,
   sendWelcomeEmail,
@@ -309,4 +379,5 @@ module.exports = {
   sendCourseApprovalEmail,
   sendCertificateEmail,
   sendLoginNotificationEmail,
+  sendPasswordResetEmail,
 };
