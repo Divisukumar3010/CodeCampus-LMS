@@ -59,19 +59,20 @@ const Home = () => {
     return (
         <div className={`transition-colors duration-300 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
             {/* Hero Section */}
-            <section className="relative overflow-hidden
-    bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700
-    rounded-2xl sm:rounded-3xl md:rounded-[3rem]
-    mt-4 sm:mt-6 md:mt-10 mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[96%]
-    pt-16 sm:pt-20 md:pt-24 lg:pt-12 pb-20 sm:pb-24 md:pb-32
-    border border-white/20
-    shadow-[0_30px_80px_rgba(0,0,0,0.25)]
-    flex justify-center">
+            <section className={`relative overflow-hidden
+                ${isDarkMode
+                    ? 'bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 border-slate-800/80 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'
+                    : 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.25)]'}
+                rounded-2xl sm:rounded-3xl md:rounded-[3rem]
+                mt-4 sm:mt-6 md:mt-10 mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[96%]
+                pt-16 sm:pt-20 md:pt-24 lg:pt-12 pb-20 sm:pb-24 md:pb-32
+                border
+                flex justify-center transition-colors duration-300`}>
 
                 {/* Decorative Elements */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-white rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-purple-300 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className={`absolute top-0 right-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-indigo-500' : 'bg-white'} rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2`}></div>
+                    <div className={`absolute bottom-0 left-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2`}></div>
                 </div>
 
                 <div className="relative container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 lg:py-5">
@@ -84,7 +85,7 @@ const Home = () => {
                                     World-Class Learning
                                 </span>
                             </h1>
-                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-7 md:mb-8 leading-relaxed">
+                            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-7 md:mb-8 leading-relaxed`}>
                                 Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
                             </p>
 
@@ -94,14 +95,14 @@ const Home = () => {
                                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 {isAuthenticated ? (
-                                    <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
+                                    <Link to="/dashboard" className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 transition-all`}>
                                         My Dashboard
                                     </Link>
                                 ) : (
                                     <button 
                                         type="button"
                                         onClick={() => openModal('register')}
-                                        className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all cursor-pointer"
+                                        className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 transition-all cursor-pointer`}
                                     >
                                         Start Free Trial
                                     </button>
@@ -293,25 +294,26 @@ const Home = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="relative overflow-hidden
-                bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700
+            <section className={`relative overflow-hidden
+                ${isDarkMode
+                    ? 'bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 border-slate-800/80 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'
+                    : 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.25)]'}
                 rounded-2xl sm:rounded-3xl md:rounded-[3rem] lg:rounded-[4rem]
                 mt-4 sm:mt-5 md:mt-7 mb-2
                 w-[95%] sm:w-[92%] md:w-[98%] mx-auto
                 pt-16 sm:pt-20 md:pt-24 lg:pt-12 pb-8 sm:pb-10 md:pb-12
-                border border-white/20
-                shadow-[0_30px_80px_rgba(0,0,0,0.25)]
-                flex justify-center">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 left-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-white rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 right-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-purple-300 rounded-full blur-3xl"></div>
+                border
+                flex justify-center transition-colors duration-300`}>
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className={`absolute top-0 left-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-indigo-500' : 'bg-white'} rounded-full blur-3xl`}></div>
+                    <div className={`absolute bottom-0 right-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} rounded-full blur-3xl`}></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 text-center text-white">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 md:mb-6 px-2">
                         Ready to Start Your Learning Journey?
                     </h2>
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto px-4">
+                    <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto px-4`}>
                         Join thousands of students learning new skills and advancing their careers with CodeCampus
                     </p>
 
@@ -331,7 +333,7 @@ const Home = () => {
                                 <FiArrowRight />
                             </button>
                         )}
-                        <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-blue-500 bg-opacity-20 backdrop-blur-sm text-white px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg border-2 border-white border-opacity-30 hover:bg-blue-500 hover:bg-opacity-30 transition-all">
+                        <Link to="/courses" className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg border-2 transition-all`}>
                             Browse Courses
                         </Link>
                     </div>
@@ -345,7 +347,7 @@ const Home = () => {
                         ].map((item, index) => (
                             <div key={index} className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-center">
                                 <item.icon className="text-green-300 text-lg sm:text-xl flex-shrink-0" />
-                                <span className="text-blue-100 text-sm sm:text-base">{item.text}</span>
+                                <span className={`${isDarkMode ? 'text-slate-300' : 'text-blue-100'} text-sm sm:text-base`}>{item.text}</span>
                             </div>
                         ))}
                     </div>
