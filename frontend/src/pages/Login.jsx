@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiCheckCircle } from 'react-icons/fi';
+import { GoogleAuthButton, SocialAuthDivider } from '../components/auth/SocialAuthButtons';
 
 const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { login, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
@@ -13,6 +15,8 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const successMessage = location.state?.message;
 
     // Redirect if already logged in
     if (isAuthenticated) {
@@ -61,8 +65,16 @@ const Login = () => {
                             <FiLock className="text-white text-2xl" />
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
-                        <p className="mt-2 text-gray-600 dark:text-slate-400">Sign in to continue learning</p>
+                        <p className="mt-2 text-gray-600 dark:text-slate-400">Sign in to your academic LMS portal</p>
                     </div>
+
+                    {/* Success Banner (e.g. from password reset) */}
+                    {successMessage && (
+                        <div className="mb-6 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-xl text-sm flex items-center gap-2.5">
+                            <FiCheckCircle className="w-5 h-5 flex-shrink-0" />
+                            <span>{successMessage}</span>
+                        </div>
+                    )}
 
                     {/* Error Message */}
                     {error && (
@@ -71,8 +83,15 @@ const Login = () => {
                         </div>
                     )}
 
+                    {/* One-Click Single Sign-On (Google) */}
+                    <div className="mb-6">
+                        <GoogleAuthButton text="Continue with Google" />
+                    </div>
+
+                    <SocialAuthDivider text="Or sign in with email" />
+
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-5 mt-6">
                         {/* Email */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">

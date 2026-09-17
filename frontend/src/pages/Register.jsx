@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { GoogleAuthButton, SocialAuthDivider } from '../components/auth/SocialAuthButtons';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -101,12 +102,19 @@ const Register = () => {
         <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full">
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-slate-800">
-                    <div className="text-center mb-8">
+                    <div className="text-center mb-6">
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Create Account</h2>
                         <p className="mt-2 text-gray-600 dark:text-slate-400">Start your learning journey today</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* One-Click Single Sign-On (Google) */}
+                    <div className="mb-6">
+                        <GoogleAuthButton text="Sign up with Google" />
+                    </div>
+
+                    <SocialAuthDivider text="Or register with email" />
+
+                    <form onSubmit={handleSubmit} className="space-y-5 mt-6">
 
                         {/* NAME */}
                         <div>

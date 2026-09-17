@@ -19,9 +19,27 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Please provide a password'],
+        required: function () {
+            // Only require password if user registered locally without OAuth provider
+            return this.authProvider === 'local';
+        },
         minlength: [8, 'Password must be at least 8 characters'],
         select: false // Don't return password in queries by default
+    },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google', 'microsoft'],
+        default: 'local'
+    },
+    googleId: {
+        type: String,
+        sparse: true,
+        index: true
+    },
+    microsoftId: {
+        type: String,
+        sparse: true,
+        index: true
     },
     role: {
         type: String,
@@ -96,7 +114,7 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
+    if (!this.password || !this.isModified('password')) {
         return next();
     }
 
@@ -107,7 +125,26 @@ userSchema.pre('save', async function (next) {
 
 // Compare passwords
 userSchema.methods.comparePassword = async function (candidatePassword) {
+    if (!this.password) return false;
     return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Generate and hash password reset token
+userSchema.methods.getResetPasswordToken = function () {
+    const crypto = require('crypto');
+    // Generate 32-byte secure random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash token and set to resetPasswordToken field (SHA-256)
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set token expiration to 15 minutes
+    this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+    return resetToken;
 };
 
 // Generate JWT Access Token
