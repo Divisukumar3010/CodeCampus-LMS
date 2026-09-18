@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import Certificate from '../components/Certificate';
 import RatingForm from '../components/course/RatingForm';
 import ExamSection from '../components/exam/ExamSection';
+import D3ProgressRing from '../components/d3/D3ProgressRing';
 
 const CourseView = () => {
     const { id } = useParams();
@@ -273,20 +274,41 @@ const CourseView = () => {
                     <div className="lg:col-span-1">
                         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl dark:shadow-slate-800 overflow-hidden lg:sticky lg:top-24 border border-slate-100 dark:border-slate-800">
                             {/* Progress Header */}
-                            <div className="p-4 sm:p-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
-                                <h3 className="font-bold text-lg mb-3">Your Progress</h3>
+                            <div className="p-5 bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-900 text-white border-b border-indigo-800/60">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="font-bold text-sm tracking-wide uppercase text-indigo-200">Curriculum Progress</h3>
+                                    {progress?.isCompleted && (
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                                            <FiCheckCircle size={11} />
+                                            Completed
+                                        </span>
+                                    )}
+                                </div>
                                 {progress && (
-                                    <div>
-                                        <div className="flex justify-between text-sm mb-2">
-                                            <span>{progress.completedLessons?.length || 0} / {course.totalLessons || 0} lessons</span>
-                                            <span className="font-bold">{progress.percentComplete || 0}%</span>
-                                        </div>
-                                        <div className="w-full bg-white bg-opacity-30 rounded-full h-3">
-                                            <div
-                                                className={`h-3 rounded-full transition-all duration-500 shadow-lg ${progress.isCompleted ? 'bg-green-500' : 'bg-yellow-500'
-                                                    }`}
-                                                style={{ width: `${progress.percentComplete || 0}%` }}
-                                            />
+                                    <div className="flex items-center gap-4">
+                                        <D3ProgressRing
+                                            percent={progress.percentComplete || 0}
+                                            size={78}
+                                            strokeWidth={7}
+                                            color={progress.isCompleted ? '#10b981' : '#6366f1'}
+                                            trackColor="rgba(255, 255, 255, 0.12)"
+                                            textColor="#ffffff"
+                                        />
+                                        <div className="flex-1 space-y-1">
+                                            <p className="text-xs text-indigo-200">
+                                                <span className="font-bold text-white text-sm">{progress.completedLessons?.length || 0}</span> of {course.totalLessons || 0} lessons finished
+                                            </p>
+                                            <div className="w-full bg-indigo-950/80 rounded-full h-1.5 overflow-hidden border border-indigo-700/50">
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-indigo-400 to-emerald-400 rounded-full transition-all duration-500"
+                                                    style={{ width: `${progress.percentComplete || 0}%` }}
+                                                />
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pt-0.5">
+                                                {progress.isCompleted
+                                                    ? 'Ready for qualification exam'
+                                                    : `${Math.max(0, (course.totalLessons || 0) - (progress.completedLessons?.length || 0))} lessons remaining`}
+                                            </p>
                                         </div>
                                     </div>
                                 )}

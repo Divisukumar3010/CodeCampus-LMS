@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useAuthModal } from '../context/AuthModalContext';
 import { useTheme } from '../hooks/useTheme';
+import D3PlatformMetrics from '../components/d3/D3PlatformMetrics';
 
 const Home = () => {
     const { user, isAuthenticated } = useAuth();
@@ -99,7 +100,7 @@ const Home = () => {
                                         My Dashboard
                                     </Link>
                                 ) : (
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => openModal('register')}
                                         className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 transition-all cursor-pointer`}
@@ -126,29 +127,9 @@ const Home = () => {
                             </div>
                         </div>
 
-                        {/* Right Column - Feature Card */}
-                        <div className="hidden lg:block animate-slide-up">
-                            <div className={`${isDarkMode ? 'bg-gray-900/40' : 'bg-gray-100/80'} backdrop-blur-xl rounded-3xl p-8 border ${isDarkMode ? 'border-gray-700/40' : 'border-gray-300/60'} shadow-2xl`}>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    {[
-                                        { icon: FiBook, label: 'Online Courses', value: '15+', gradient: 'from-blue-500 to-blue-600' },
-                                        { icon: FiUsers, label: 'Expert Instructors', value: '20+', gradient: 'from-purple-500 to-purple-600' },
-                                        { icon: FiAward, label: 'Certificates Issued', value: '10K+', gradient: 'from-green-500 to-green-600' },
-                                        { icon: FiStar, label: 'Average Rating', value: '4.8', gradient: 'from-yellow-500 to-orange-500' }
-                                    ].map((item, index) => (
-                                        <div key={index} className={`rounded-2xl p-6 text-center transform hover:scale-105 transition-transform shadow-lg ${isDarkMode
-                                            ? 'bg-gray-800 text-gray-100'
-                                            : 'bg-white text-gray-900'
-                                            }`}>
-                                            <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center mx-auto mb-4`}>
-                                                <item.icon className="text-white text-2xl" />
-                                            </div>
-                                            <div className="text-3xl font-bold mb-1">{item.value}</div>
-                                            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.label}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                        {/* Right Column - D3 Interactive Platform Metrics Hub */}
+                        <div className="w-full mt-6 lg:mt-0 animate-slide-up">
+                            <D3PlatformMetrics isDarkMode={isDarkMode} />
                         </div>
                     </div>
                 </div>
@@ -324,7 +305,7 @@ const Home = () => {
                                 <FiArrowRight />
                             </Link>
                         ) : (
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => openModal('register')}
                                 className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105 cursor-pointer"
