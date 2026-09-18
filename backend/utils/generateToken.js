@@ -6,7 +6,7 @@ const generateAccessToken = (userId, role) => {
         { id: userId, role: role },
         process.env.JWT_SECRET,
         {
-            expiresIn: process.env.JWT_EXPIRE || '7d',
+            expiresIn: process.env.JWT_EXPIRE || '48h',
         }
     );
 };
@@ -17,7 +17,7 @@ const generateRefreshToken = (userId) => {
         { id: userId },
         process.env.JWT_REFRESH_SECRET,
         {
-            expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d',
+            expiresIn: process.env.JWT_REFRESH_EXPIRE || '48h',
         }
     );
 };
