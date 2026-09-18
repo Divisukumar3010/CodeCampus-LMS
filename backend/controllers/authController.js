@@ -20,12 +20,12 @@ const sendTokenResponse = (user, statusCode, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 48 * 60 * 60 * 1000 // 48 hours
     };
 
     res.status(statusCode)
         .cookie('token', accessToken, options)
-        .cookie('refreshToken', refreshToken, { ...options, maxAge: 30 * 24 * 60 * 60 * 1000 })
+        .cookie('refreshToken', refreshToken, { ...options, maxAge: 48 * 60 * 60 * 1000 })
         .json({
             success: true,
             accessToken,
@@ -575,11 +575,11 @@ exports.googleCallback = async (req, res, next) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 48 * 60 * 60 * 1000 // 48 hours
         };
 
         res.cookie('token', accessToken, cookieOptions);
-        res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 48 * 60 * 60 * 1000 });
 
         return res.redirect(`${frontendUrl}/oauth/callback?success=true&token=${accessToken}&refreshToken=${refreshToken}`);
     } catch (err) {
