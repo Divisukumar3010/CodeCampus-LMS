@@ -13,8 +13,9 @@ export const GoogleAuthButton = ({ text = 'Continue with Google', disabled = fal
         if (loading || disabled) return;
         setLoading(true);
         // Direct browser navigation to backend initiateGoogleAuth endpoint
-        // Backend handles state generation, CSRF cookies, and official Google login redirect
-        window.location.href = `${getApiBaseUrl()}/auth/google`;
+        // Pass current origin so backend redirects back to the exact hosted domain or localhost
+        const origin = window.location.origin;
+        window.location.href = `${getApiBaseUrl()}/auth/google?redirect_origin=${encodeURIComponent(origin)}`;
     };
 
     return (

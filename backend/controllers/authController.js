@@ -429,13 +429,24 @@ const getBackendUrl = (req) => {
     return `${protocol}://${host}`;
 };
 
-const getFrontendUrl = () => {
+const getAllowedOrigins = () => {
     const raw = process.env.FRONTEND_URL;
     if (raw) {
-        const first = raw.split(',')[0].trim();
-        if (first) return first;
+        return raw.split(',').map(u => u.trim().replace(/\/+$/, '')).filter(Boolean);
     }
-    return 'http://localhost:5173';
+    return ['http://localhost:5173', 'https://code-campus-lms-kappa.vercel.app'];
+};
+
+const getFrontendUrl = (targetOrigin) => {
+    const allowed = getAllowedOrigins();
+    if (targetOrigin) {
+        const cleanOrigin = targetOrigin.replace(/\/+$/, '');
+        if (allowed.includes(cleanOrigin)) {
+            return cleanOrigin;
+        }
+    }
+    // Default to the first configured URL or fallback
+    return allowed[0] || 'http://localhost:5173';
 };
 
 // @desc    Initiate Real Google OAuth 2.0 redirect
@@ -444,24 +455,49 @@ const getFrontendUrl = () => {
 exports.initiateGoogleAuth = async (req, res, next) => {
     try {
         const clientId = process.env.GOOGLE_CLIENT_ID;
+        const requestedOrigin = req.query.redirect_origin || req.headers.referer || req.headers.origin;
+        let validatedOrigin = null;
+
+        if (requestedOrigin) {
+            try {
+                const parsed = new URL(requestedOrigin).origin;
+                const allowed = getAllowedOrigins();
+                if (allowed.includes(parsed)) {
+                    validatedOrigin = parsed;
+                }
+            } catch (e) {
+                // Invalid URL format, ignore
+            }
+        }
+
+        const fallbackFrontend = getFrontendUrl(validatedOrigin);
+
         if (!clientId || clientId.includes('your_google_client_id')) {
             return res.status(500).send(`
                 <html>
                 <body style="font-family:sans-serif;padding:2rem;text-align:center;">
                     <h2>Google OAuth Not Configured</h2>
                     <p>Please configure <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> in <code>backend/.env</code> to proceed with Google Login.</p>
-                    <a href="${getFrontendUrl()}/login" style="color:#4f46e5;font-weight:bold;">Return to Login</a>
+                    <a href="${fallbackFrontend}/login" style="color:#4f46e5;font-weight:bold;">Return to Login</a>
                 </body>
                 </html>
             `);
         }
 
-        // Generate cryptographic state for CSRF prevention
-        const state = crypto.randomBytes(24).toString('hex');
-        res.cookie('oauth_state_google', state, {
+        // Generate cryptographic CSRF token & encode origin into state
+        const csrfToken = crypto.randomBytes(24).toString('hex');
+        const statePayload = {
+            csrf: csrfToken,
+            origin: validatedOrigin || fallbackFrontend
+        };
+        const state = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
+
+        // Store CSRF in cookie with proper cross-site settings
+        const isProd = process.env.NODE_ENV === 'production';
+        res.cookie('oauth_state_google', csrfToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 10 * 60 * 1000 // 10 minutes
         });
 
@@ -479,24 +515,46 @@ exports.initiateGoogleAuth = async (req, res, next) => {
 // @route   GET /api/auth/google/callback
 // @access  Public
 exports.googleCallback = async (req, res, next) => {
-    const frontendUrl = getFrontendUrl();
+    let targetFrontendUrl = getFrontendUrl();
     try {
         const { code, state, error } = req.query;
 
+        // Parse state to extract origin and csrf token
+        let stateCsrf = null;
+        if (state) {
+            try {
+                const decodedState = JSON.parse(Buffer.from(state, 'base64url').toString('utf8'));
+                if (decodedState.origin) {
+                    targetFrontendUrl = getFrontendUrl(decodedState.origin);
+                }
+                stateCsrf = decodedState.csrf;
+            } catch (e) {
+                // Backward compatibility if state was plain hex string
+                stateCsrf = state;
+            }
+        }
+
         if (error) {
             console.error('Google Auth Error from provider:', error);
-            return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent(error)}`);
+            return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent(error)}`);
         }
 
         if (!code) {
-            return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent('No authorization code provided by Google')}`);
+            return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent('No authorization code provided by Google')}`);
         }
 
         // Validate state
         const savedState = req.cookies.oauth_state_google;
-        res.clearCookie('oauth_state_google');
-        if (!state || state !== savedState) {
-            return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent('Authentication security state mismatch. Please try again.')}`);
+        const isProd = process.env.NODE_ENV === 'production';
+        res.clearCookie('oauth_state_google', {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax'
+        });
+
+        // Verify CSRF state
+        if (!stateCsrf || (savedState && stateCsrf !== savedState)) {
+            return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent('Authentication security state mismatch. Please try again.')}`);
         }
 
         const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -527,7 +585,7 @@ exports.googleCallback = async (req, res, next) => {
         const googleId = payload.sub;
 
         if (!email) {
-            return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent('Google account did not return a verified email address')}`);
+            return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent('Google account did not return a verified email address')}`);
         }
 
         // Safe Account Linking or New User Creation
@@ -564,7 +622,7 @@ exports.googleCallback = async (req, res, next) => {
         }
 
         if (!user.isActive) {
-            return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent('Your academic account is deactivated')}`);
+            return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent('Your academic account is deactivated')}`);
         }
 
         // Set Auth JWT tokens
@@ -573,17 +631,17 @@ exports.googleCallback = async (req, res, next) => {
 
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 48 * 60 * 60 * 1000 // 48 hours
         };
 
         res.cookie('token', accessToken, cookieOptions);
         res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 48 * 60 * 60 * 1000 });
 
-        return res.redirect(`${frontendUrl}/oauth/callback?success=true&token=${accessToken}&refreshToken=${refreshToken}`);
+        return res.redirect(`${targetFrontendUrl}/oauth/callback?success=true&token=${accessToken}&refreshToken=${refreshToken}`);
     } catch (err) {
         console.error('Google Callback Error:', err.response?.data || err.message);
-        return res.redirect(`${frontendUrl}/oauth/callback?error=${encodeURIComponent(err.response?.data?.error_description || err.message || 'Google authentication failed')}`);
+        return res.redirect(`${targetFrontendUrl}/oauth/callback?error=${encodeURIComponent(err.response?.data?.error_description || err.message || 'Google authentication failed')}`);
     }
 };
