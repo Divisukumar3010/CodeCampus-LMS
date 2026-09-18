@@ -99,18 +99,18 @@ const MyCourses = () => {
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="animate-fade-up p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6" style={{ animationDuration: '0.4s' }}>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text">
                         My Academic Curriculum
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                         Track your enrolled courses, lesson completion milestones, and graduation certificates.
                     </p>
                 </div>
-                <Link to="/courses" className="btn-primary text-xs sm:text-sm py-2 px-4 self-start md:self-auto">
+                <Link to="/courses" className="btn-glow text-xs sm:text-sm py-2 px-4 self-start md:self-auto">
                     <FiBookOpen size={15} />
                     Register New Course
                 </Link>

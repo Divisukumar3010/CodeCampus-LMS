@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../context/AuthModalContext';
 import { FiMenu, FiX, FiUser, FiLogOut, FiSettings, FiBook } from 'react-icons/fi';
@@ -10,8 +10,22 @@ const Navbar = () => {
     const { user, isAuthenticated, logout } = useAuth();
     const { openModal } = useAuthModal();
     const navigate = useNavigate();
+    const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => {
+            if (window.scrollY > 48) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -22,7 +36,11 @@ const Navbar = () => {
     return (
         <nav className="sticky top-3 sm:top-4 md:top-5 z-50 flex justify-center px-2 sm:px-3 md:px-4">
             {/* Glass Pill Container */}
-            <div className="w-full sm:w-[98%] md:w-[98%] max-w-[95%] rounded-full bg-white/40 dark:bg-gray-800/50 backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+            <div className={`w-full sm:w-[98%] md:w-[98%] max-w-[95%] rounded-full backdrop-blur-xl border transition-all duration-300 ${
+                isScrolled
+                    ? 'bg-white/85 dark:bg-slate-950/90 border-slate-200/80 dark:border-indigo-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)]'
+                    : 'bg-white/70 dark:bg-slate-900/50 border-white/80 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]'
+            }`}>
 
                 <div className="flex justify-between items-center h-16 sm:h-18 md:h-20 px-4 sm:px-6 md:px-8">
 
@@ -188,14 +206,14 @@ const Navbar = () => {
                                     <button
                                         type="button"
                                         onClick={() => openModal('login')}
-                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors cursor-pointer"
+                                        className="text-sm lg:text-base text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition-colors cursor-pointer px-3 py-1.5"
                                     >
                                         Login
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => openModal('register')}
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-4 lg:px-6 py-2 lg:py-3 text-sm lg:text-base rounded-full transition-all shadow-lg dark:shadow-purple-500/20 hover:scale-105 cursor-pointer"
+                                        className="btn-glow text-sm lg:text-base cursor-pointer py-2 px-5"
                                     >
                                         Get Started
                                     </button>

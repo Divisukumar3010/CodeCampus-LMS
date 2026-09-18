@@ -204,7 +204,7 @@ export default function AuthModal() {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/45 backdrop-blur-sm animate-modal-backdrop"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-modal-backdrop"
             onClick={closeModal}
             role="dialog"
             aria-modal="true"
@@ -214,7 +214,7 @@ export default function AuthModal() {
             <div
                 ref={modalRef}
                 tabIndex={-1}
-                className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 outline-none animate-modal-card"
+                className="relative w-full max-w-md max-h-[92vh] overflow-y-auto glass-card border border-indigo-500/20 p-6 sm:p-8 outline-none animate-modal-card shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
@@ -319,7 +319,7 @@ export default function AuthModal() {
                             <button
                                 type="submit"
                                 disabled={loginLoading}
-                                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-sm shadow-md shadow-blue-500/20 hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="btn-glow w-full py-2.5 px-4 text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {loginLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -457,7 +457,7 @@ export default function AuthModal() {
                             <button
                                 type="submit"
                                 disabled={registerLoading}
-                                className="w-full mt-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-sm shadow-md shadow-blue-500/20 hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="btn-glow w-full mt-2 py-2.5 px-4 text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {registerLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

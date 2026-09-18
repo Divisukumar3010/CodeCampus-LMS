@@ -23,6 +23,7 @@ import {
     FiCompass
 } from 'react-icons/fi';
 import ThemeToggle from '../ThemeToggle';
+import D3WeeklySparkline from '../d3/D3WeeklySparkline';
 
 const LMSLayout = ({ children }) => {
     const { user, logout } = useAuth();
@@ -237,17 +238,19 @@ const LMSLayout = ({ children }) => {
 
                     {/* Bottom Quick Card / System Meta */}
                     {!isCollapsed && (
-                        <div className="p-4 m-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs">
-                            <p className="font-semibold text-slate-800 dark:text-slate-200 mb-1">CodeCampus Academic</p>
-                            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed mb-2.5">
-                                Academic Year 2026-27 • Active Term
-                            </p>
-                            <Link
-                                to="/courses"
-                                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-medium hover:underline text-[11px]"
-                            >
-                                Explore Catalog →
-                            </Link>
+                        <div className="p-3.5 m-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+                            <D3WeeklySparkline />
+                            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                                <span className="text-slate-500 dark:text-slate-400 text-[10px]">
+                                    Term Active
+                                </span>
+                                <Link
+                                    to="/courses"
+                                    className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-semibold hover:underline text-[10px]"
+                                >
+                                    Catalog →
+                                </Link>
+                            </div>
                         </div>
                     )}
                 </aside>

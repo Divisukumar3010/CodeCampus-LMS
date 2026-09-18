@@ -19,6 +19,7 @@ import CourseCard from '../course/CourseCard';
 import toast from 'react-hot-toast';
 import D3ProgressRing from '../d3/D3ProgressRing';
 import D3CurriculumDistributionChart from '../d3/D3CurriculumDistributionChart';
+import D3MicroBar from '../d3/D3MicroBar';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -136,45 +137,69 @@ const StudentDashboard = () => {
                 </div>
             </div>
 
-            {/* Academic KPI Metric Cards */}
+            {/* Academic KPI Metric Cards with D3 Micro Sparklines */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="card p-4 sm:p-5 flex items-center justify-between border-l-4 border-indigo-600">
-                    <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Enrolled Courses</p>
-                        <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">{stats.totalEnrolled}</p>
+                <div className="glass-card p-4 sm:p-5 flex flex-col justify-between border-l-4 border-indigo-600 hover:scale-[1.02] transition-transform">
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Enrolled Courses</p>
+                            <p className="text-2xl sm:text-3xl font-extrabold gradient-text mt-1">{stats.totalEnrolled}</p>
+                        </div>
+                        <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-sm">
+                            <FiBookOpen size={22} />
+                        </div>
                     </div>
-                    <div className="w-11 h-11 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <FiBookOpen size={22} />
-                    </div>
-                </div>
-
-                <div className="card p-4 sm:p-5 flex items-center justify-between border-l-4 border-amber-500">
-                    <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">In Progress</p>
-                        <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">{stats.inProgress}</p>
-                    </div>
-                    <div className="w-11 h-11 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                        <FiClock size={22} />
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">Weekly Pace</span>
+                        <D3MicroBar data={[1, 2, 2, 3, 2, 4, stats.totalEnrolled]} color="#6366f1" />
                     </div>
                 </div>
 
-                <div className="card p-4 sm:p-5 flex items-center justify-between border-l-4 border-emerald-500">
-                    <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completed</p>
-                        <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">{stats.completed}</p>
+                <div className="glass-card p-4 sm:p-5 flex flex-col justify-between border-l-4 border-amber-500 hover:scale-[1.02] transition-transform">
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">In Progress</p>
+                            <p className="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1">{stats.inProgress}</p>
+                        </div>
+                        <div className="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-sm">
+                            <FiClock size={22} />
+                        </div>
                     </div>
-                    <div className="w-11 h-11 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                        <FiAward size={22} />
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">Active Syllabus</span>
+                        <D3MicroBar data={[2, 1, 3, 2, 4, 3, stats.inProgress]} color="#f59e0b" />
                     </div>
                 </div>
 
-                <div className="card p-4 sm:p-5 flex items-center justify-between border-l-4 border-sky-500">
-                    <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Curriculum Hours</p>
-                        <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">{stats.learningHours} hrs</p>
+                <div className="glass-card p-4 sm:p-5 flex flex-col justify-between border-l-4 border-emerald-500 hover:scale-[1.02] transition-transform">
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completed</p>
+                            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-500 mt-1">{stats.completed}</p>
+                        </div>
+                        <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-sm">
+                            <FiAward size={22} />
+                        </div>
                     </div>
-                    <div className="w-11 h-11 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                        <FiTrendingUp size={22} />
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">Graduation Goal</span>
+                        <D3MicroBar data={[0, 0, 1, 1, 2, 2, stats.completed]} color="#10b981" />
+                    </div>
+                </div>
+
+                <div className="glass-card p-4 sm:p-5 flex flex-col justify-between border-l-4 border-sky-500 hover:scale-[1.02] transition-transform">
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Curriculum Hours</p>
+                            <p className="text-2xl sm:text-3xl font-extrabold text-sky-500 mt-1">{stats.learningHours} hrs</p>
+                        </div>
+                        <div className="w-11 h-11 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shadow-sm">
+                            <FiTrendingUp size={22} />
+                        </div>
+                    </div>
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">Study Velocity</span>
+                        <D3MicroBar data={[3, 5, 4, 6, 7, 5, Math.min(10, stats.learningHours)]} color="#38bdf8" />
                     </div>
                 </div>
             </div>

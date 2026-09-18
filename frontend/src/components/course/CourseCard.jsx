@@ -40,18 +40,24 @@ const CourseCard = ({ course, onDelete, currentUser, isEnrolled, progressPercent
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 overflow-hidden flex flex-col h-full group">
+        <div className="glass-card hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col h-full group">
             {/* Thumbnail Header */}
             <div className="relative overflow-hidden bg-slate-100 dark:bg-slate-800 aspect-video">
-                <Link to={`/courses/${course._id}`} className="block w-full h-full">
+                <Link to={`/courses/${course._id}`} className="block w-full h-full relative">
                     <img
                         src={course.thumbnail?.url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80'}
                         alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                             e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80';
                         }}
                     />
+                    {/* Thumbnail overlay on hover */}
+                    <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold bg-indigo-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                            {isEnrolled ? 'Continue Learning →' : 'View Course →'}
+                        </span>
+                    </div>
                 </Link>
 
                 {/* Level / Category Tag */}
