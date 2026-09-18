@@ -145,16 +145,16 @@ const CourseView = () => {
     const sections = course.sections || [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+        <div className="animate-fade-up min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900" style={{ animationDuration: '0.4s' }}>
             <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-4 lg:py-8">
                 <div className="mb-6 flex flex-col gap-2">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Course Player</p>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{course.title}</h1>
+                    <p className="text-xs uppercase tracking-[0.2em] text-indigo-500 font-semibold">Course Player</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text">{course.title}</h1>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl dark:shadow-slate-800 overflow-hidden border border-slate-100 dark:border-slate-800">
+                        <div className="glass-card rounded-2xl overflow-hidden ring-1 ring-indigo-500/30 shadow-2xl shadow-indigo-900/20 border border-slate-100 dark:border-slate-800 transition-all">
                             {currentLesson ? (
                                 <div>
                                     <div className="bg-black aspect-video">
@@ -391,25 +391,31 @@ const CourseView = () => {
                                                                     sectionId: section._id,
                                                                     sectionTitle: section.title
                                                                 })}
-                                                                className={`w-full p-3 sm:p-4 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition border-l-4 ${isCurrent
-                                                                    ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-600'
-                                                                    : 'border-transparent'
-                                                                    }`}
+                                                                className={`w-full p-3 sm:p-4 flex items-center gap-3 transition duration-200 border-l-4 ${
+                                                                    isCurrent
+                                                                        ? 'bg-indigo-500/10 dark:bg-indigo-950/40 border-indigo-500'
+                                                                        : isCompleted
+                                                                        ? 'bg-emerald-500/5 hover:bg-emerald-500/10 border-transparent'
+                                                                        : 'border-transparent hover:bg-gray-50 dark:hover:bg-slate-800'
+                                                                }`}
                                                             >
                                                                 <div className="flex-shrink-0">
                                                                     {isCompleted ? (
-                                                                        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                                                                            <FiCheckCircle className="text-white" size={16} />
+                                                                        <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center animate-scale-in shadow-sm shadow-emerald-500/40">
+                                                                            <FiCheckCircle className="text-white" size={15} />
                                                                         </div>
                                                                     ) : (
                                                                         <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-slate-600" />
                                                                     )}
                                                                 </div>
                                                                 <div className="flex-grow text-left">
-                                                                    <p className={`text-sm ${isCurrent
-                                                                        ? 'font-semibold text-primary-600 dark:text-primary-400'
-                                                                        : 'text-gray-700 dark:text-slate-300'
-                                                                        }`}>
+                                                                    <p className={`text-sm ${
+                                                                        isCurrent
+                                                                            ? 'font-bold text-indigo-600 dark:text-indigo-400'
+                                                                            : isCompleted
+                                                                            ? 'font-medium text-slate-800 dark:text-slate-200'
+                                                                            : 'text-gray-700 dark:text-slate-300'
+                                                                    }`}>
                                                                         {lesson.title}
                                                                     </p>
                                                                     <p className="text-xs text-gray-500 dark:text-slate-400">

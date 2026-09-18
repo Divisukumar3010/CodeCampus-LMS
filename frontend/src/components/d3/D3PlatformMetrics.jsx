@@ -74,10 +74,50 @@ export default function D3PlatformMetrics({ isDarkMode = true }) {
         const g = svg.append('g')
             .attr('transform', `translate(${radius}, ${radius})`);
 
+        // Check reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Ambient particles
+        const particleG = g.append('g').attr('class', 'particles');
+        const particleData = d3.range(36).map(() => ({
+            x: (Math.random() - 0.5) * 220,
+            y: (Math.random() - 0.5) * 220,
+            r: 0.8 + Math.random() * 1.4,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.3,
+            opacity: 0.15 + Math.random() * 0.3
+        }));
+
+        const particles = particleG.selectAll('circle')
+            .data(particleData)
+            .enter()
+            .append('circle')
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => d.r)
+            .attr('fill', '#818cf8')
+            .attr('opacity', d => d.opacity);
+
+        let timer = null;
+        if (!prefersReducedMotion) {
+            timer = d3.timer(() => {
+                particleData.forEach(d => {
+                    d.x += d.speedX;
+                    d.y += d.speedY;
+                    if (d.x > 120) d.x = -120;
+                    if (d.x < -120) d.x = 120;
+                    if (d.y > 120) d.y = -120;
+                    if (d.y < -120) d.y = 120;
+                });
+                particles.attr('cx', d => d.x).attr('cy', d => d.y);
+            });
+        }
+
         // Outer track circles for each metric (concentric rings)
         metrics.forEach((m, idx) => {
-            const ringRadius = 60 + idx * 16;
-            const ringStroke = 9;
+            const isHovered = activeMetric === idx;
+            const ringRadius = 58 + idx * 16;
+            const ringStroke = isHovered ? 11 : 8.5;
 
             // Background subtle track
             const bgArc = d3.arc()
@@ -88,7 +128,7 @@ export default function D3PlatformMetrics({ isDarkMode = true }) {
 
             g.append('path')
                 .attr('d', bgArc())
-                .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.05)');
+                .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)');
 
             // Foreground animated arc
             const fgArc = d3.arc()
@@ -100,23 +140,28 @@ export default function D3PlatformMetrics({ isDarkMode = true }) {
             const arcPath = g.append('path')
                 .attr('fill', m.color)
                 .style('cursor', 'pointer')
-                .style('opacity', activeMetric === idx ? 1 : 0.45)
-                .style('filter', activeMetric === idx ? `drop-shadow(0 0 8px ${m.color}88)` : 'none')
+                .style('opacity', activeMetric === null ? 0.9 : isHovered ? 1 : 0.25)
+                .style('filter', isHovered ? `drop-shadow(0 0 12px ${m.color})` : 'none')
                 .on('mouseenter', () => setActiveMetric(idx));
 
-            arcPath
-                .transition()
-                .duration(1000)
-                .delay(idx * 150)
-                .ease(d3.easeCubicOut)
-                .attrTween('d', () => {
-                    const interpolate = d3.interpolate(0, (m.pct / 100) * 1.75 * Math.PI);
-                    return (t) => {
-                        return fgArc({ endAngle: interpolate(t) });
-                    };
-                });
+            if (!prefersReducedMotion) {
+                arcPath
+                    .transition()
+                    .duration(1600)
+                    .delay(idx * 180)
+                    .ease(d3.easeCubicOut)
+                    .attrTween('d', () => {
+                        const interpolate = d3.interpolate(0, (m.pct / 100) * 1.75 * Math.PI);
+                        return (t) => fgArc({ endAngle: interpolate(t) });
+                    });
+            } else {
+                arcPath.attr('d', fgArc({ endAngle: (m.pct / 100) * 1.75 * Math.PI }));
+            }
         });
 
+        return () => {
+            if (timer) timer.stop();
+        };
     }, [isDarkMode, activeMetric]);
 
     return (
@@ -125,7 +170,7 @@ export default function D3PlatformMetrics({ isDarkMode = true }) {
                 ? 'bg-slate-900/60 border-slate-700/60 shadow-indigo-950/40'
                 : 'bg-white/90 border-slate-200/80 shadow-blue-500/10'
         }`}>
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/40">
+            {/* <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/40">
                 <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span className="text-xs font-bold tracking-wider uppercase text-slate-300">
@@ -135,7 +180,7 @@ export default function D3PlatformMetrics({ isDarkMode = true }) {
                 <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                     D3 Interactive Ring Hub
                 </span>
-            </div>
+            </div> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                 {/* D3 Concentric Radial Chart */}

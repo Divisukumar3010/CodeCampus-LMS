@@ -89,14 +89,14 @@ const CalendarPage = () => {
     ];
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="animate-fade-up p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6" style={{ animationDuration: '0.4s' }}>
             {/* Header */}
             <div className="pb-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                         Syllabus Timetable
                     </span>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-0.5">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text mt-0.5">
                         Academic Calendar & Deadlines
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -108,17 +108,17 @@ const CalendarPage = () => {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={prevMonth}
-                        className="p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                        className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
                         title="Previous Month"
                     >
                         <FiChevronLeft size={16} />
                     </button>
-                    <span className="px-4 py-2 font-bold text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white min-w-[140px] text-center">
+                    <span className="px-4 py-2 font-bold text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white min-w-[140px] text-center shadow-sm">
                         {monthNames[month]} {year}
                     </span>
                     <button
                         onClick={nextMonth}
-                        className="p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                        className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
                         title="Next Month"
                     >
                         <FiChevronRight size={16} />
@@ -129,17 +129,17 @@ const CalendarPage = () => {
             {/* Split layout: Calendar Grid + Upcoming Milestone List */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Calendar Grid (2 Cols) */}
-                <div className="lg:col-span-2 card p-5 overflow-hidden">
-                    <div className="grid grid-cols-7 gap-1 text-center font-semibold text-xs text-slate-500 dark:text-slate-400 pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="lg:col-span-2 glass-card p-5 overflow-hidden">
+                    <div className="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-500 dark:text-slate-400 pb-3 border-b border-slate-200 dark:border-slate-800">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
                             <div key={d}>{d}</div>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1 pt-2">
+                    <div className="grid grid-cols-7 gap-1.5 pt-3">
                         {/* Empty padding days */}
                         {Array.from({ length: firstDayIndex }).map((_, i) => (
-                            <div key={`empty-${i}`} className="h-20 sm:h-24 p-1 text-slate-300 dark:text-slate-700 text-xs bg-slate-50/50 dark:bg-slate-950/30 rounded-lg" />
+                            <div key={`empty-${i}`} className="h-20 sm:h-24 p-1 text-slate-300 dark:text-slate-700 text-xs bg-slate-50/30 dark:bg-slate-950/20 rounded-xl" />
                         ))}
 
                         {/* Month Days */}
@@ -151,10 +151,10 @@ const CalendarPage = () => {
                             return (
                                 <div
                                     key={dayNumber}
-                                    className={`h-20 sm:h-24 p-1.5 border border-slate-100 dark:border-slate-800/80 rounded-lg flex flex-col justify-between transition-colors ${
+                                    className={`h-20 sm:h-24 p-2 rounded-xl flex flex-col justify-between transition-all duration-200 ${
                                         isToday
-                                            ? 'bg-indigo-50/60 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 ring-1 ring-indigo-500/50'
-                                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                                            ? 'border-2 border-indigo-500 bg-indigo-500/10 animate-border-glow shadow-md shadow-indigo-500/20'
+                                            : 'border border-slate-200/60 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/40'
                                     }`}
                                 >
                                     <div className="flex items-center justify-between">

@@ -70,28 +70,26 @@ const Home = () => {
                 border
                 flex justify-center transition-colors duration-300`}>
 
-                {/* Decorative Elements */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className={`absolute top-0 right-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-indigo-500' : 'bg-white'} rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2`}></div>
-                    <div className={`absolute bottom-0 left-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2`}></div>
-                </div>
+                {/* Ambient Blobs */}
+                <div className="ambient-blob w-[500px] h-[500px] bg-indigo-600 top-0 right-0 animate-float" />
+                <div className="ambient-blob w-[380px] h-[380px] bg-sky-400 bottom-0 left-0 animate-float delay-700" />
 
-                <div className="relative container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 lg:py-5">
+                <div className="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 lg:py-5">
                     <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-10 lg:gap-12 items-center">
                         {/* Left Column - Content */}
-                        <div className="text-white animate-fade-in">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 md:mb-6 leading-tight">
+                        <div className="text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 md:mb-6 leading-tight animate-fade-up">
                                 Empower Your Future with
                                 <span className="block mt-1 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
                                     World-Class Learning
                                 </span>
                             </h1>
-                            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-7 md:mb-8 leading-relaxed`}>
+                            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-7 md:mb-8 leading-relaxed animate-fade-up delay-150`}>
                                 Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12">
-                                <Link to="/courses" className="group inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
+                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12 animate-fade-up delay-300">
+                                <Link to="/courses" className="btn-glow inline-flex items-center justify-center gap-2 text-base sm:text-lg">
                                     Explore Courses
                                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -111,7 +109,7 @@ const Home = () => {
                             </div>
 
                             {/* Stats */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 animate-fade-up delay-500">
                                 <div className="text-center">
                                     <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">50K+</div>
                                     <div className="text-blue-100 text-xs sm:text-sm">Active Learners</div>

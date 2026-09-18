@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import D3GradePerformanceBar from '../components/d3/D3GradePerformanceBar';
+import D3ProgressRing from '../components/d3/D3ProgressRing';
 
 const GradesPage = () => {
     const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -53,29 +54,33 @@ const GradesPage = () => {
         ? Math.round(passedExams.reduce((acc, p) => acc + (p.exam?.bestScore || 0), 0) / passedExams.length)
         : 0;
 
+    const passRate = totalExamsAttempted.length > 0
+        ? Math.round((passedExams.length / totalExamsAttempted.length) * 100)
+        : 0;
+
     if (loading) {
         return (
-            <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6 animate-pulse">
-                <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/3" />
+            <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+                <div className="glass-card animate-shimmer-bg h-12 w-1/3" />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[1, 2, 3].map(n => (
-                        <div key={n} className="h-24 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+                        <div key={n} className="glass-card animate-shimmer-bg h-28" />
                     ))}
                 </div>
-                <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+                <div className="glass-card animate-shimmer-bg h-64" />
             </div>
         );
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="animate-fade-up p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6" style={{ animationDuration: '0.4s' }}>
             {/* Header */}
             <div className="pb-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                         Academic Standing
                     </span>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-0.5">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text mt-0.5">
                         Grades & Examination Records
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -83,7 +88,7 @@ const GradesPage = () => {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="badge badge-success py-1 px-3 text-xs">
+                    <span className="badge badge-success py-1 px-3 text-xs animate-scale-in">
                         <FiCheckCircle size={13} />
                         Good Academic Standing
                     </span>
@@ -92,49 +97,56 @@ const GradesPage = () => {
 
             {/* Academic KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="card p-5 border-l-4 border-indigo-600 flex items-center justify-between">
+                <div className="glass-card p-5 border-l-4 border-indigo-600 flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Assessment Average
                         </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">
+                        <p className="text-3xl font-extrabold gradient-text mt-1">
                             {averageScore > 0 ? `${averageScore}%` : 'N/A'}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">Across passed qualifying exams</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <FiTrendingUp size={24} />
+                    <div className="w-14 h-14 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                        <FiTrendingUp size={26} />
                     </div>
                 </div>
 
-                <div className="card p-5 border-l-4 border-emerald-500 flex items-center justify-between">
+                <div className="glass-card p-5 border-l-4 border-emerald-500 flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Credentials Conferred
                         </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">
+                        <p className="text-3xl font-extrabold text-emerald-500 mt-1">
                             {certificates.length || passedExams.length}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">Verified certificates earned</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                        <FiAward size={24} />
+                    <div className="w-14 h-14 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <FiAward size={26} />
                     </div>
                 </div>
 
-                <div className="card p-5 border-l-4 border-sky-500 flex items-center justify-between">
+                <div className="glass-card p-5 border-l-4 border-sky-500 flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                            Exams Attempted
+                            Exams Pass Rate
                         </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">
-                            {totalExamsAttempted.length} / {enrolledCourses.length}
+                        <p className="text-3xl font-extrabold text-sky-500 mt-1">
+                            {totalExamsAttempted.length > 0 ? `${passRate}%` : '0%'}
                         </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">Active curriculum modules</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                            {passedExams.length} passed of {totalExamsAttempted.length} attempted
+                        </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                        <FiFileText size={24} />
-                    </div>
+                    <D3ProgressRing
+                        percent={passRate}
+                        size={56}
+                        strokeWidth={5}
+                        color="#38bdf8"
+                        trackColor="rgba(56, 189, 248, 0.15)"
+                        textColor="#38bdf8"
+                    />
                 </div>
             </div>
 

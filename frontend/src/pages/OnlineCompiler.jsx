@@ -382,13 +382,13 @@ int main() {
     const selectedLanguage = languages.find(lang => lang.id === language);
 
     return (
-        <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+        <div className={`animate-fade-up min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`} style={{ animationDuration: '0.4s' }}>
             {/* Top Control Bar */}
-            <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b sticky top-0 z-30 shadow-sm`}>
+            <div className={`${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-md border-b sticky top-0 z-30 shadow-sm`}>
                 <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-3.5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <h1 className="text-xl sm:text-2xl font-extrabold gradient-text tracking-tight">
                                 Online Compiler
                             </h1>
                             <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-500/10 text-primary-500 border border-primary-500/20">
@@ -416,11 +416,15 @@ int main() {
                             <button
                                 onClick={handleRun}
                                 disabled={loading}
-                                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800/60 text-white px-3 sm:px-5 py-2 rounded-lg font-semibold text-sm transition-all shadow-md active:scale-95"
+                                className="btn-glow flex items-center gap-2 py-2 px-4 text-sm font-semibold shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Execute code"
                             >
-                                <Play size={16} fill="white" />
-                                {loading ? 'Running...' : 'Run'}
+                                {loading ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <Play size={16} fill="white" />
+                                )}
+                                {loading ? 'Running...' : 'Run Code'}
                             </button>
                             <button
                                 onClick={handleReset}
