@@ -13,6 +13,7 @@ import {
     FiHelpCircle
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import D3GradePerformanceBar from '../components/d3/D3GradePerformanceBar';
 
 const GradesPage = () => {
     const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -136,6 +137,39 @@ const GradesPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* D3 Assessment Performance Chart */}
+            {enrolledCourses.length > 0 && (
+                <div className="card p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <FiTrendingUp className="text-indigo-600 dark:text-indigo-400" size={18} />
+                                Examination Performance Distribution
+                            </h2>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Real examination scores benchmarked against the 70% institutional passing threshold
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs">
+                            <span className="flex items-center gap-1.5">
+                                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
+                                <span className="text-slate-600 dark:text-slate-300">Passed (≥70%)</span>
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                                <span className="w-2.5 h-2.5 rounded-sm bg-amber-500" />
+                                <span className="text-slate-600 dark:text-slate-300">Under Review</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <D3GradePerformanceBar
+                        records={enrolledCourses}
+                        height={240}
+                        passingScore={70}
+                    />
+                </div>
+            )}
 
             {/* Official Gradebook Table */}
             <div className="card overflow-hidden">

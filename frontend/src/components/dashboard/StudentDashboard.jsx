@@ -17,6 +17,8 @@ import {
 } from 'react-icons/fi';
 import CourseCard from '../course/CourseCard';
 import toast from 'react-hot-toast';
+import D3ProgressRing from '../d3/D3ProgressRing';
+import D3CurriculumDistributionChart from '../d3/D3CurriculumDistributionChart';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -185,38 +187,51 @@ const StudentDashboard = () => {
                 return (
                     <div className="card overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-6 shadow-md border-indigo-800">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div className="space-y-2 flex-1">
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-                                    {isCourseComplete ? (
-                                        <>
-                                            <FiCheckCircle className="text-emerald-400" size={12} />
-                                            <span>Curriculum Completed</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                            <span>Active Learning Session</span>
-                                        </>
-                                    )}
+                            <div className="flex items-center gap-5 flex-1">
+                                <div className="hidden sm:block flex-shrink-0">
+                                    <D3ProgressRing
+                                        percent={activeCourseProgress.percentComplete || 0}
+                                        size={92}
+                                        strokeWidth={8}
+                                        color={isCourseComplete ? '#10b981' : '#6366f1'}
+                                        trackColor="rgba(255, 255, 255, 0.12)"
+                                        textColor="#ffffff"
+                                        label="Curriculum"
+                                    />
                                 </div>
-                                <h2 className="text-xl sm:text-2xl font-bold leading-tight">
-                                    {activeCourseProgress.course.title}
-                                </h2>
-                                <p className="text-xs text-indigo-200/80">
-                                    Faculty Instructor: {activeCourseProgress.course.trainer?.name || 'Lead Department Faculty'}
-                                </p>
-
-                                {/* Progress tracking */}
-                                <div className="pt-2 max-w-md">
-                                    <div className="flex justify-between text-xs font-medium text-indigo-200 mb-1.5">
-                                        <span>Syllabus Progress</span>
-                                        <span>{activeCourseProgress.percentComplete || 0}% Complete</span>
+                                <div className="space-y-1.5 flex-1">
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                                        {isCourseComplete ? (
+                                            <>
+                                                <FiCheckCircle className="text-emerald-400" size={12} />
+                                                <span>Curriculum Completed</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                                <span>Active Learning Session</span>
+                                            </>
+                                        )}
                                     </div>
-                                    <div className="w-full bg-indigo-950 rounded-full h-2 overflow-hidden border border-indigo-700/50">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-indigo-400 to-emerald-400 rounded-full transition-all duration-500"
-                                            style={{ width: `${activeCourseProgress.percentComplete || 0}%` }}
-                                        />
+                                    <h2 className="text-xl sm:text-2xl font-bold leading-tight">
+                                        {activeCourseProgress.course.title}
+                                    </h2>
+                                    <p className="text-xs text-indigo-200/80">
+                                        Faculty Instructor: {activeCourseProgress.course.trainer?.name || 'Lead Department Faculty'}
+                                    </p>
+
+                                    {/* Progress tracking */}
+                                    <div className="pt-2 max-w-md">
+                                        <div className="flex justify-between text-xs font-medium text-indigo-200 mb-1.5">
+                                            <span>Syllabus Progress</span>
+                                            <span>{activeCourseProgress.percentComplete || 0}% Complete</span>
+                                        </div>
+                                        <div className="w-full bg-indigo-950 rounded-full h-2 overflow-hidden border border-indigo-700/50">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-indigo-400 to-emerald-400 rounded-full transition-all duration-500"
+                                                style={{ width: `${activeCourseProgress.percentComplete || 0}%` }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -269,6 +284,34 @@ const StudentDashboard = () => {
                     </div>
                 );
             })()}
+
+            {/* D3 Curriculum Progression Visualizer */}
+            {enrolledCourses.length > 0 && (
+                <div className="card p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <FiTrendingUp className="text-indigo-600 dark:text-indigo-400" size={18} />
+                                Curriculum Progress Breakdown
+                            </h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Interactive distribution of your active courses across progression stages
+                            </p>
+                        </div>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 self-start sm:self-auto">
+                            D3 Live Analytics
+                        </span>
+                    </div>
+
+                    <D3CurriculumDistributionChart
+                        completed={stats.completed}
+                        inProgress={stats.inProgress}
+                        notStarted={Math.max(0, stats.totalEnrolled - stats.completed - stats.inProgress)}
+                        total={stats.totalEnrolled}
+                        size={170}
+                    />
+                </div>
+            )}
 
             {/* Split Grid: Enrolled Courses & Academic Assessments/Announcements */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

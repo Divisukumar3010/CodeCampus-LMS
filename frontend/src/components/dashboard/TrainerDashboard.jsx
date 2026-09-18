@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { userAPI } from '../../services/api';
-import { FiBook, FiUsers, FiDollarSign, FiStar, FiPlus, FiEdit, FiEye, FiUser } from 'react-icons/fi';
+import { FiBook, FiUsers, FiDollarSign, FiStar, FiPlus, FiEdit, FiEye, FiUser, FiBarChart2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import D3CoursePerformanceBar from '../d3/D3CoursePerformanceBar';
 
 const TrainerDashboard = () => {
     const location = useLocation();
@@ -156,6 +157,27 @@ const TrainerDashboard = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* D3 Course Enrollment Distribution Analytics */}
+                {courses.length > 0 && (
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 mb-8 border border-gray-200 dark:border-slate-800">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-gray-100 dark:border-slate-800">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <FiBarChart2 className="text-primary-600 dark:text-primary-400" size={22} />
+                                    Student Enrollment Analytics by Course
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-slate-400">
+                                    Interactive enrollment comparison across your published courses
+                                </p>
+                            </div>
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 self-start sm:self-auto">
+                                D3 Interactive
+                            </span>
+                        </div>
+                        <D3CoursePerformanceBar courses={courses} height={250} />
                     </div>
                 )}
 

@@ -5,6 +5,8 @@ import { FiUsers, FiBook, FiDollarSign, FiTrendingUp, FiCheckCircle, FiClock, Fi
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import toast from 'react-hot-toast';
 import CoursesTable from './CoursesTable';
+import D3RevenueAreaChart from '../d3/D3RevenueAreaChart';
+import D3UserDistributionDonut from '../d3/D3UserDistributionDonut';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -331,23 +333,61 @@ const AdminDashboard = () => {
                         )}
 
                         {activeTab === 'overview' && (
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Revenue Trend</h3>
-                                {chartData.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <LineChart data={chartData}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" />
-                                            <XAxis dataKey="month" stroke="#9ca3af" />
-                                            <YAxis stroke="#9ca3af" />
-                                            <Tooltip />
-                                            <Legend />
-                                            <Line type="monotone" dataKey="revenue" stroke="#3B82F6" name="Revenue (₹)" />
-                                            <Line type="monotone" dataKey="orders" stroke="#8B5CF6" name="Orders" />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <p className="text-gray-500 dark:text-slate-400 text-center py-8">No revenue data available</p>
-                                )}
+                            <div className="space-y-8">
+                                <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 bg-white dark:bg-slate-900/50">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                <FiTrendingUp className="text-indigo-600 dark:text-indigo-400" />
+                                                Revenue & Transaction Trends
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400">
+                                                Interactive D3 transaction timeline with hover inspection and volume breakdown
+                                            </p>
+                                        </div>
+                                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 self-start sm:self-auto">
+                                            D3 Smooth Spline
+                                        </span>
+                                    </div>
+                                    {chartData.length > 0 ? (
+                                        <D3RevenueAreaChart data={chartData} height={300} />
+                                    ) : (
+                                        <p className="text-gray-500 dark:text-slate-400 text-center py-8">No revenue data available</p>
+                                    )}
+                                </div>
+
+                                {/* D3 User Demographics Breakdown */}
+                                <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 bg-white dark:bg-slate-900/50">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                <FiUsers className="text-primary-600 dark:text-primary-400" />
+                                                Community Demographics
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400">
+                                                Role distribution across Students, Trainers, and System Administrators
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => setActiveTab('users')}
+                                            className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+                                        >
+                                            View User Directory →
+                                        </button>
+                                    </div>
+
+                                    <D3UserDistributionDonut
+                                        students={stats?.users?.totalStudents || 0}
+                                        trainers={stats?.users?.totalTrainers || 0}
+                                        admins={stats?.users?.totalAdmins || 0}
+                                        size={190}
+                                        onSelectRole={(role) => {
+                                            setSelectedRoleFilter(role);
+                                            setActiveTab('users');
+                                            fetchUsers();
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
 

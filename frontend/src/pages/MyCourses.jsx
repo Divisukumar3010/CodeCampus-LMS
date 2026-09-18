@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi';
 import CourseCard from '../components/course/CourseCard';
 import toast from 'react-hot-toast';
+import D3ProgressRing from '../components/d3/D3ProgressRing';
 
 const MyCourses = () => {
     const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -268,16 +269,18 @@ const MyCourses = () => {
                                                 {c?.trainer?.name || 'Academic Faculty'}
                                             </td>
                                             <td className="px-5 py-4">
-                                                <div className="w-28">
-                                                    <div className="flex justify-between text-[11px] mb-1">
-                                                        <span>{progress.percentComplete || 0}%</span>
-                                                    </div>
-                                                    <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-indigo-600 rounded-full"
-                                                            style={{ width: `${progress.percentComplete || 0}%` }}
-                                                        />
-                                                    </div>
+                                                <div className="flex items-center gap-3">
+                                                    <D3ProgressRing
+                                                        percent={progress.percentComplete || 0}
+                                                        size={44}
+                                                        strokeWidth={4.5}
+                                                        color={isComplete ? '#10b981' : '#6366f1'}
+                                                        trackColor="rgba(148, 163, 184, 0.2)"
+                                                        textColor="currentColor"
+                                                    />
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                                                        {isComplete ? 'Complete' : 'In Progress'}
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td className="px-5 py-4">
