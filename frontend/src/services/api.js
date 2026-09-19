@@ -168,6 +168,7 @@ export const compilerAPI = {
     execute: (data) => api.post('/compiler/execute', data),
     getLanguages: () => api.get('/compiler/languages'),
     getHistory: () => api.get('/compiler/history'),
+    deleteHistoryItem: (id) => api.delete(`/compiler/history/${id}`),
     clearHistory: () => api.delete('/compiler/history'),
 };
 

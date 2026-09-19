@@ -3,6 +3,7 @@ const {
     executeCode,
     getLanguages,
     getExecutionHistory,
+    deleteExecutionHistory,
     clearExecutionHistory
 } = require('../controllers/compilerController');
 const { optionalAuth } = require('../middleware/auth');
@@ -17,6 +18,7 @@ router.get('/languages', getLanguages);
 
 // Execution history routes
 router.get('/history', optionalAuth, getExecutionHistory);
+router.delete('/history/:id', optionalAuth, deleteExecutionHistory);
 router.delete('/history', optionalAuth, clearExecutionHistory);
 
 module.exports = router;

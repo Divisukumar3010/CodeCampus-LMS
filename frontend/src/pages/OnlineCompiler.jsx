@@ -247,8 +247,8 @@ int main() {
                 setOutput('(No output)');
             }
 
-            // Also keep local history synchronized
-            const historyEntry = {
+            // Also keep local history synchronized with real MongoDB ID if returned
+            const historyEntry = response.data.historyItem || {
                 _id: `exec-${Date.now()}`,
                 language,
                 code,
@@ -289,12 +289,10 @@ int main() {
 
         try {
             const res = await compilerAPI.getHistory();
-            if (res.data?.history && res.data.history.length > 0) {
+            if (res.data?.history) {
                 setHistoryList(res.data.history);
                 localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(res.data.history));
-                setSelectedHistoryItem(res.data.history[0]);
-            } else if (historyList.length > 0) {
-                setSelectedHistoryItem(historyList[0]);
+                setSelectedHistoryItem(res.data.history.length > 0 ? res.data.history[0] : null);
             }
         } catch (err) {
             console.warn('API history fetch fallback to local storage:', err.message);
@@ -317,6 +315,33 @@ int main() {
 
         setIsHistoryOpen(false);
         toast.success(`Restored ${item.language.toUpperCase()} code from history!`);
+    };
+
+    // Delete a single execution history item
+    const handleDeleteHistoryItem = async (e, itemToDelete) => {
+        e.stopPropagation();
+        if (!itemToDelete) return;
+
+        const itemId = itemToDelete._id;
+
+        // Optimistically remove from state and localStorage immediately
+        const updatedList = historyList.filter(item => (item._id || item) !== itemId);
+        setHistoryList(updatedList);
+        localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(updatedList));
+
+        // Adjust selected item if the deleted one was selected
+        if (selectedHistoryItem?._id === itemId) {
+            setSelectedHistoryItem(updatedList.length > 0 ? updatedList[0] : null);
+        }
+
+        // Delete from database
+        try {
+            await compilerAPI.deleteHistoryItem(itemId);
+        } catch (err) {
+            console.warn('Backend history item deletion note:', err?.response?.data?.error || err.message);
+        }
+
+        toast.success('Execution entry removed');
     };
 
     // Clear execution history
@@ -699,10 +724,10 @@ int main() {
                                     historyList.map((item, idx) => {
                                         const isSelected = selectedHistoryItem?._id === item._id;
                                         return (
-                                            <button
+                                            <div
                                                 key={item._id || idx}
                                                 onClick={() => setSelectedHistoryItem(item)}
-                                                className={`w-full text-left p-3 rounded-xl transition-all border ${isSelected
+                                                className={`group relative w-full text-left p-3 rounded-xl transition-all border cursor-pointer ${isSelected
                                                     ? 'bg-primary-600 text-white border-primary-600 shadow-sm'
                                                     : isDarkMode
                                                         ? 'bg-slate-900 hover:bg-slate-800/80 border-slate-800/80 text-slate-300'
@@ -716,23 +741,38 @@ int main() {
                                                         }`}>
                                                         {item.language}
                                                     </span>
-                                                    <span className={`text-[10px] flex items-center gap-1 ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
-                                                        {item.status === 'error' ? (
-                                                            <AlertCircle size={12} className="text-red-400" />
-                                                        ) : (
-                                                            <CheckCircle2 size={12} className={isSelected ? 'text-white' : 'text-emerald-500'} />
-                                                        )}
-                                                        {item.executionTime ? `${item.executionTime}ms` : ''}
-                                                    </span>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className={`text-[10px] flex items-center gap-1 ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
+                                                            {item.status === 'error' ? (
+                                                                <AlertCircle size={12} className="text-red-400" />
+                                                            ) : (
+                                                                <CheckCircle2 size={12} className={isSelected ? 'text-white' : 'text-emerald-500'} />
+                                                            )}
+                                                            {item.executionTime ? `${item.executionTime}ms` : ''}
+                                                        </span>
+                                                        <button
+                                                            onClick={(e) => handleDeleteHistoryItem(e, item)}
+                                                            className={`p-1 rounded-md transition ml-1 ${isSelected
+                                                                ? 'text-white/70 hover:text-white hover:bg-white/20'
+                                                                : 'text-slate-400 hover:text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20'
+                                                                }`}
+                                                            title="Delete this execution"
+                                                            aria-label="Delete this execution"
+                                                        >
+                                                            <Trash2 size={13} />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className={`text-xs font-mono line-clamp-1 ${isSelected ? 'text-white/90' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                <div className={`text-xs font-mono line-clamp-1 pr-1 ${isSelected ? 'text-white/90' : 'text-slate-500 dark:text-slate-400'}`}>
                                                     {item.code.slice(0, 45)}
                                                 </div>
-                                                <div className={`text-[10px] mt-1.5 flex items-center gap-1 ${isSelected ? 'text-white/70' : 'text-slate-400'}`}>
-                                                    <Clock size={10} />
-                                                    {item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Recent'}
+                                                <div className={`text-[10px] mt-1.5 flex items-center justify-between ${isSelected ? 'text-white/70' : 'text-slate-400'}`}>
+                                                    <span className="flex items-center gap-1">
+                                                        <Clock size={10} />
+                                                        {item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Recent'}
+                                                    </span>
                                                 </div>
-                                            </button>
+                                            </div>
                                         );
                                     })
                                 )}
@@ -753,6 +793,14 @@ int main() {
                                             </div>
 
                                             <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={(e) => handleDeleteHistoryItem(e, selectedHistoryItem)}
+                                                    className="p-2 rounded-lg text-xs font-medium text-red-500 bg-red-500/10 hover:bg-red-500/20 transition inline-flex items-center gap-1"
+                                                    title="Delete this execution entry"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    Delete
+                                                </button>
                                                 <button
                                                     onClick={() => {
                                                         navigator.clipboard.writeText(selectedHistoryItem.code);
