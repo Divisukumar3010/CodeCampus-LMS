@@ -386,8 +386,9 @@ exports.executeCode = async (req, res, next) => {
         const duration = Date.now() - startTime;
 
         // Asynchronously save to CodeExecutionHistory
+        let savedHistoryItem = null;
         try {
-            await CodeExecutionHistory.create({
+            savedHistoryItem = await CodeExecutionHistory.create({
                 user: req.user ? req.user.id : null,
                 language,
                 code,
@@ -405,7 +406,8 @@ exports.executeCode = async (req, res, next) => {
             success: true,
             output: finalOutput,
             error: finalError,
-            executionTime: duration
+            executionTime: duration,
+            historyItem: savedHistoryItem
         });
     } catch (error) {
         next(error);
@@ -427,6 +429,37 @@ exports.getExecutionHistory = async (req, res, next) => {
             success: true,
             count: history.length,
             history
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete single execution history item
+// @route   DELETE /api/compiler/history/:id
+// @access  Public (deletes own or guest history item)
+exports.deleteExecutionHistory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        let query = { _id: id };
+        if (req.user) {
+            // Allow user to delete their own item, or any guest/unassociated item they are viewing
+            query = { _id: id, $or: [{ user: req.user.id }, { user: null }] };
+        }
+
+        const deleted = await CodeExecutionHistory.findOneAndDelete(query);
+
+        if (!deleted) {
+            return res.status(404).json({
+                success: false,
+                error: 'Execution history item not found or already deleted'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Execution history item deleted successfully'
         });
     } catch (error) {
         next(error);
