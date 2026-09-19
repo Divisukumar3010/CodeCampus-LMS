@@ -220,57 +220,57 @@ const Home = () => {
                                 </div>
 
                                 {/* Stats Bar (Live DB Metrics) */}
-                                <div className="grid grid-cols-3 gap-6 sm:gap-10 pt-8 mt-2 border-t border-slate-200 dark:border-slate-800/80 w-full max-w-lg">
-                                    <div>
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                <div className="grid grid-cols-3 gap-3 sm:gap-8 pt-6 sm:pt-8 mt-2 border-t border-slate-200 dark:border-slate-800/80 w-full max-w-lg">
+                                    <div className="pr-1 sm:pr-0">
+                                        <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                             {platformStats?.totalLearners
                                                 ? platformStats.totalLearners >= 1000
                                                     ? `${(platformStats.totalLearners / 1000).toFixed(1)}K+`
                                                     : `${platformStats.totalLearners}+`
                                                 : '50+'}
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Active Learners</div>
+                                        <div className="text-[11px] sm:text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Active Learners</div>
                                     </div>
-                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-6 sm:pl-10">
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-3 sm:pl-8 pr-1 sm:pr-0">
+                                        <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                             {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '10+'}
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Curriculum Courses</div>
+                                        <div className="text-[11px] sm:text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Courses Live</div>
                                     </div>
-                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-6 sm:pl-10">
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight flex items-center gap-1">
+                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-3 sm:pl-8">
+                                        <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight flex items-center gap-1">
                                             {platformStats?.averageRating ? platformStats.averageRating.toFixed(1) : '4.8'}
-                                            <span className="text-xl">★</span>
+                                            <span className="text-base sm:text-xl">★</span>
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Avg Rating</div>
+                                        <div className="text-[11px] sm:text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Avg Rating</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Right Column: Institutional Hero Dashboard Card */}
-                            <div className="lg:col-span-5" data-purpose="institutional-dashboard-card">
-                                <div className="relative rounded-3xl p-6 sm:p-7 bg-white/85 dark:bg-slate-900/35 backdrop-blur-md border border-slate-200/80 dark:border-indigo-500/20 shadow-xl dark:shadow-2xl shadow-slate-300/40 dark:shadow-indigo-950/40 transition-all duration-300 hover:border-indigo-500/40">
+                            <div className="lg:col-span-5 w-full max-w-full" data-purpose="institutional-dashboard-card">
+                                <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-7 bg-white/85 dark:bg-slate-900/35 backdrop-blur-md border border-slate-200/80 dark:border-indigo-500/20 shadow-xl dark:shadow-2xl shadow-slate-300/40 dark:shadow-indigo-950/40 transition-all duration-300 hover:border-indigo-500/40 w-full overflow-hidden">
                                     {/* Corner ambient glow */}
                                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
-                                    <div className="flex items-center justify-between pb-5 mb-5 border-b border-slate-200 dark:border-white/[0.08]">
+                                    <div className="flex items-center justify-between pb-4 sm:pb-5 mb-4 sm:mb-5 border-b border-slate-200 dark:border-white/[0.08]">
                                         <div>
-                                            <span className="text-[11px] font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
+                                            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
                                                 Institutional Dashboard
                                             </span>
-                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight mt-0.5">
+                                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight mt-0.5">
                                                 Academic Cohort Performance
                                             </h3>
                                         </div>
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 backdrop-blur-md">
-                                            Session 2024–2026
+                                        <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 backdrop-blur-md">
+                                            2024–2026
                                         </span>
                                     </div>
 
                                     {/* Top Visual: Radial Gauge + Live Mini Stats */}
-                                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-5 mb-5 border-b border-slate-200 dark:border-white/[0.08]">
+                                    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 pb-4 sm:pb-5 mb-4 sm:mb-5 border-b border-slate-200 dark:border-white/[0.08]">
                                         {/* Circular Radial Gauge */}
-                                        <div className="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
+                                        <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 flex items-center justify-center">
                                             <svg className="w-full h-full" viewBox="0 0 200 200">
                                                 <circle cx="100" cy="100" fill="none" r="85" stroke="currentColor" className="text-slate-200 dark:text-slate-800/80" strokeWidth="14" />
                                                 <circle
@@ -292,27 +292,27 @@ const Home = () => {
                                                 </defs>
                                             </svg>
                                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                                <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
+                                                <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
                                                     {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '15+'}
                                                 </span>
-                                                <span className="text-[10px] font-bold tracking-widest text-indigo-600 dark:text-indigo-300 uppercase mt-0.5">
+                                                <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-indigo-600 dark:text-indigo-300 uppercase mt-0.5">
                                                     CURRICULUM COURSES
                                                 </span>
-                                                <span className="text-[11px] text-slate-500 dark:text-slate-300/80 mt-1">75% Capacity</span>
+                                                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-300/80 mt-0.5 sm:mt-1">75% Capacity</span>
                                             </div>
                                         </div>
 
                                         {/* Details Rows */}
                                         <div className="space-y-2 w-full">
-                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                            <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
                                                 <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Enrolled Intake</span>
                                                 <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+34% vs last yr</span>
                                             </div>
-                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                            <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
                                                 <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Completion Rate</span>
                                                 <span className="text-xs font-bold text-indigo-600 dark:text-indigo-300">92.4%</span>
                                             </div>
-                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                            <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
                                                 <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Accreditation</span>
                                                 <span className="text-xs font-bold text-cyan-600 dark:text-cyan-300">ISO 9001:2020</span>
                                             </div>
@@ -651,32 +651,32 @@ const Home = () => {
                                 {/* Right compiler simulated console card */}
                                 <div className="lg:col-span-7">
                                     <div className="rounded-2xl border border-slate-700/80 bg-[#060913] shadow-2xl overflow-hidden">
-                                        <div className="px-4 py-2.5 bg-[#090e1c] border-b border-slate-800 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-1.5 mr-2">
-                                                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
-                                                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                                                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                                        <div className="px-3 sm:px-4 py-2.5 bg-[#090e1c] border-b border-slate-800 flex items-center justify-between overflow-x-auto">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <div className="flex items-center gap-1.5 mr-2 flex-shrink-0">
+                                                    <span className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-red-500/80" />
+                                                    <span className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-amber-500/80" />
+                                                    <span className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-emerald-500/80" />
                                                 </div>
                                                 <div className="flex items-center gap-1 text-xs">
-                                                    <span className="px-2.5 py-1 rounded-md bg-indigo-600/20 text-indigo-300 font-mono font-medium border border-indigo-500/30">
+                                                    <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-indigo-600/20 text-indigo-300 font-mono font-medium border border-indigo-500/30 whitespace-nowrap">
                                                         script.py
                                                     </span>
-                                                    <span className="px-2.5 py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono">
+                                                    <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono whitespace-nowrap">
                                                         app.js
                                                     </span>
-                                                    <span className="px-2.5 py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono">
+                                                    <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono whitespace-nowrap">
                                                         main.cpp
                                                     </span>
                                                 </div>
                                             </div>
-                                            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                                            <span className="text-[10px] sm:text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1 flex-shrink-0 ml-2">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                                 CPU: 1.2%
                                             </span>
                                         </div>
 
-                                        <div className="p-4 font-mono text-xs text-slate-300 leading-relaxed bg-[#060913] space-y-1">
+                                        <div className="p-3 sm:p-4 font-mono text-[11px] sm:text-xs text-slate-300 leading-relaxed bg-[#060913] space-y-1 overflow-x-auto">
                                             <div className="text-slate-500"># Cloud Compiler Session :: Python 3.12</div>
                                             <div>
                                                 <span className="text-purple-400">import</span>{' '}

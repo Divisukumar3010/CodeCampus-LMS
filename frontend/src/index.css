@@ -52,8 +52,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
-
 
   html.dark {
     @apply bg-slate-950;
@@ -69,12 +71,24 @@
     @apply bg-slate-50 dark:bg-[#060913] text-slate-900 dark:text-slate-100;
     background-color: inherit !important;
     transition: background-color 0.3s ease, color 0.3s ease;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* Ensure the root element also gets the right background */
+  /* Ensure the root element also gets the right background and prevents horizontal blowout */
   #root {
     @apply bg-slate-50 dark:bg-[#060913];
     background-color: inherit !important;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   html.dark #root {
@@ -83,6 +97,12 @@
 
   html:not(.dark) #root {
     background-color: #f8fafc !important;
+  }
+
+  /* Make sure images and media never exceed their parent container */
+  img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
   }
 }
 
