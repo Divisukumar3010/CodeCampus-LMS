@@ -57,32 +57,32 @@
 
   html.dark {
     @apply bg-slate-950;
-    background-color: #0f172a !important;
+    background-color: #060913 !important;
   }
 
   html:not(.dark) {
-    @apply bg-white;
-    background-color: #ffffff !important;
+    @apply bg-slate-50;
+    background-color: #f8fafc !important;
   }
 
   body {
-    @apply bg-white dark:bg-slate-950;
+    @apply bg-slate-50 dark:bg-[#060913] text-slate-900 dark:text-slate-100;
     background-color: inherit !important;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   /* Ensure the root element also gets the right background */
   #root {
-    @apply bg-white dark:bg-slate-950;
+    @apply bg-slate-50 dark:bg-[#060913];
     background-color: inherit !important;
   }
 
   html.dark #root {
-    background-color: #0f172a !important;
+    background-color: #060913 !important;
   }
 
   html:not(.dark) #root {
-    background-color: #ffffff !important;
+    background-color: #f8fafc !important;
   }
 }
 
@@ -487,8 +487,10 @@ img {
   }
   html:not(.dark) .glass-panel {
     background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
   }
 
   /* Stitch Glass card styling */
@@ -501,9 +503,9 @@ img {
     position: relative;
   }
   html:not(.dark) .glass-card {
-    background: rgba(255, 255, 255, 0.82);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
   }
   .glass-card:hover {
     background: rgba(18, 28, 52, 0.85);
@@ -512,9 +514,9 @@ img {
     box-shadow: 0 18px 40px -10px rgba(99, 102, 241, 0.25), 0 0 20px rgba(99, 102, 241, 0.1);
   }
   html:not(.dark) .glass-card:hover {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow: 0 18px 40px -10px rgba(99, 102, 241, 0.15);
+    background: #ffffff;
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 16px 32px -8px rgba(99, 102, 241, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
   }
 
   /* Subtle glowing border badge */
@@ -524,9 +526,9 @@ img {
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
   }
   html:not(.dark) .glow-pill {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(56, 189, 248, 0.1));
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(56, 189, 248, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
   }
 
   /* Circular SVG Gauge Animation */
@@ -547,8 +549,8 @@ img {
   }
   html:not(.dark) .bg-grid-pattern {
     background-image: 
-      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
   }
 
   /* Gradient text */

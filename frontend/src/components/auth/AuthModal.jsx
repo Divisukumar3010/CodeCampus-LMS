@@ -214,7 +214,7 @@ export default function AuthModal() {
             <div
                 ref={modalRef}
                 tabIndex={-1}
-                className="relative w-full max-w-md max-h-[92vh] overflow-y-auto glass-card border border-indigo-500/20 p-6 sm:p-8 outline-none animate-modal-card shadow-2xl"
+                className="relative w-full max-w-md max-h-[92vh] overflow-y-auto glass-card rounded-3xl border border-indigo-500/20 p-6 sm:p-8 outline-none animate-modal-card shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}

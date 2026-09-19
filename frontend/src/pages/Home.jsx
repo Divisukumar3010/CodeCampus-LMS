@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAuthModal } from '../context/AuthModalContext';
 import { useTheme } from '../hooks/useTheme';
 import ThreeHeroCanvas from '../components/common/ThreeHeroCanvas';
-import ThreeAmbientParticles from '../components/common/ThreeAmbientParticles';
+import ThreeBackgroundCanvas from '../components/common/ThreeBackgroundCanvas';
 
 const Home = () => {
     const { user, isAuthenticated } = useAuth();
@@ -147,44 +147,47 @@ const Home = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#060913] text-slate-800 dark:text-slate-100 antialiased selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden transition-colors duration-300">
             {/* Subtle Ambient Glow Background */}
             <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/15 blur-[140px] rounded-full" />
-                <div className="absolute top-[35%] -left-32 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full" />
-                <div className="absolute top-[65%] -right-32 w-[550px] h-[550px] bg-indigo-500/10 blur-[130px] rounded-full" />
+                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500/10 dark:bg-indigo-600/15 blur-[140px] rounded-full" />
+                <div className="absolute top-[35%] -left-32 w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-600/10 blur-[120px] rounded-full" />
+                <div className="absolute top-[65%] -right-32 w-[550px] h-[550px] bg-indigo-500/10 dark:bg-indigo-500/10 blur-[130px] rounded-full" />
             </div>
 
             {/* MAIN CONTENT */}
             <main className="relative z-10">
                 {/* 1. HERO SECTION WITH THREE.JS 3D CONSTELLATION & TECH CORE */}
-                <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32 bg-grid-pattern" data-purpose="hero-section">
+                <section className="relative overflow-hidden pt-12 pb-24 md:pt-20 md:pb-36 bg-grid-pattern" data-purpose="hero-section">
                     {/* Three.js Interactive 3D Background */}
                     <ThreeHeroCanvas />
 
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Smooth Bottom Fade-Out Blend to eliminate sharp cut */}
+                    <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-slate-50 via-slate-50/70 to-transparent dark:from-[#060913] dark:via-[#060913]/70 dark:to-transparent pointer-events-none z-10" />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
                             {/* Left Column: Copy & Actions */}
                             <div className="lg:col-span-7 flex flex-col items-start space-y-6">
                                 {/* Cohort Status Pill */}
-                                <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glow-pill text-indigo-200 text-xs font-medium backdrop-blur-md">
+                                <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glow-pill text-indigo-700 dark:text-indigo-200 text-xs font-semibold backdrop-blur-md">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500 dark:bg-cyan-400" />
                                     </span>
                                     <span>Next Cohort Open for Enrollment</span>
                                 </div>
 
                                 {/* Primary Headline */}
-                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
+                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] text-slate-900 dark:text-white">
                                     Empower Your Future with <br className="hidden sm:inline" />
-                                    <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
+                                    <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 dark:from-amber-300 dark:via-yellow-400 dark:to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
                                         World-Class Learning
                                     </span>
                                 </h1>
 
                                 {/* Subtitle */}
-                                <p className="text-base sm:text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
+                                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl font-normal leading-relaxed">
                                     Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
                                 </p>
 
@@ -192,7 +195,7 @@ const Home = () => {
                                 <div className="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
                                     <Link
                                         to="/courses"
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-xl shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] border border-indigo-400/30"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-xl shadow-indigo-600/25 transition-all hover:scale-[1.02] active:scale-[0.98] border border-indigo-400/30"
                                     >
                                         <span>Explore Courses</span>
                                         <FiArrowRight className="w-4 h-4 text-white translate-x-0 group-hover:translate-x-1 transition-transform" />
@@ -201,7 +204,7 @@ const Home = () => {
                                     {isAuthenticated ? (
                                         <Link
                                             to="/dashboard"
-                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-200 bg-surface-900/80 hover:bg-surface-800/90 border border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-500 shadow-lg shadow-black/20"
+                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-surface-900/80 hover:bg-slate-50 dark:hover:bg-surface-800/90 border border-slate-300 dark:border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-400 dark:hover:border-slate-500 shadow-md shadow-slate-200/50 dark:shadow-black/20"
                                         >
                                             My Dashboard
                                         </Link>
@@ -209,7 +212,7 @@ const Home = () => {
                                         <button
                                             type="button"
                                             onClick={() => openModal('register')}
-                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-200 bg-surface-900/80 hover:bg-surface-800/90 border border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-500 shadow-lg shadow-black/20 cursor-pointer"
+                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-surface-900/80 hover:bg-slate-50 dark:hover:bg-surface-800/90 border border-slate-300 dark:border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-400 dark:hover:border-slate-500 shadow-md shadow-slate-200/50 dark:shadow-black/20 cursor-pointer"
                                         >
                                             Start Free Trial
                                         </button>
@@ -217,59 +220,59 @@ const Home = () => {
                                 </div>
 
                                 {/* Stats Bar (Live DB Metrics) */}
-                                <div className="grid grid-cols-3 gap-6 sm:gap-10 pt-8 mt-2 border-t border-slate-800/80 w-full max-w-lg">
+                                <div className="grid grid-cols-3 gap-6 sm:gap-10 pt-8 mt-2 border-t border-slate-200 dark:border-slate-800/80 w-full max-w-lg">
                                     <div>
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                             {platformStats?.totalLearners
                                                 ? platformStats.totalLearners >= 1000
                                                     ? `${(platformStats.totalLearners / 1000).toFixed(1)}K+`
                                                     : `${platformStats.totalLearners}+`
                                                 : '50+'}
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Active Learners</div>
+                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Active Learners</div>
                                     </div>
-                                    <div className="border-l border-slate-800 pl-6 sm:pl-10">
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-6 sm:pl-10">
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                             {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '10+'}
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Curriculum Courses</div>
+                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Curriculum Courses</div>
                                     </div>
-                                    <div className="border-l border-slate-800 pl-6 sm:pl-10">
-                                        <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight flex items-center gap-1">
+                                    <div className="border-l border-slate-200 dark:border-slate-800 pl-6 sm:pl-10">
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight flex items-center gap-1">
                                             {platformStats?.averageRating ? platformStats.averageRating.toFixed(1) : '4.8'}
                                             <span className="text-xl">★</span>
                                         </div>
-                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Avg Rating</div>
+                                        <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Avg Rating</div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Column: Institutional Hero Dashboard Card (Translucent glass so 3D animated background shines through) */}
+                            {/* Right Column: Institutional Hero Dashboard Card */}
                             <div className="lg:col-span-5" data-purpose="institutional-dashboard-card">
-                                <div className="relative rounded-3xl p-6 sm:p-7 bg-slate-900/30 dark:bg-slate-900/35 backdrop-blur-md border border-white/10 dark:border-indigo-500/20 shadow-2xl shadow-indigo-950/40 transition-all duration-300 hover:border-indigo-500/40 hover:bg-slate-900/45">
+                                <div className="relative rounded-3xl p-6 sm:p-7 bg-white/85 dark:bg-slate-900/35 backdrop-blur-md border border-slate-200/80 dark:border-indigo-500/20 shadow-xl dark:shadow-2xl shadow-slate-300/40 dark:shadow-indigo-950/40 transition-all duration-300 hover:border-indigo-500/40">
                                     {/* Corner ambient glow */}
-                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
-                                    <div className="flex items-center justify-between pb-5 mb-5 border-b border-white/[0.08]">
+                                    <div className="flex items-center justify-between pb-5 mb-5 border-b border-slate-200 dark:border-white/[0.08]">
                                         <div>
-                                            <span className="text-[11px] font-bold tracking-wider text-indigo-400 uppercase">
+                                            <span className="text-[11px] font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
                                                 Institutional Dashboard
                                             </span>
-                                            <h3 className="text-lg font-bold text-white tracking-tight mt-0.5">
+                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight mt-0.5">
                                                 Academic Cohort Performance
                                             </h3>
                                         </div>
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 backdrop-blur-md">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 backdrop-blur-md">
                                             Session 2024–2026
                                         </span>
                                     </div>
 
                                     {/* Top Visual: Radial Gauge + Live Mini Stats */}
-                                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-5 mb-5 border-b border-white/[0.08]">
+                                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-5 mb-5 border-b border-slate-200 dark:border-white/[0.08]">
                                         {/* Circular Radial Gauge */}
                                         <div className="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
                                             <svg className="w-full h-full" viewBox="0 0 200 200">
-                                                <circle cx="100" cy="100" fill="none" r="85" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="14" />
+                                                <circle cx="100" cy="100" fill="none" r="85" stroke="currentColor" className="text-slate-200 dark:text-slate-800/80" strokeWidth="14" />
                                                 <circle
                                                     className="gauge-progress"
                                                     cx="100"
@@ -289,83 +292,83 @@ const Home = () => {
                                                 </defs>
                                             </svg>
                                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                                <span className="text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">
+                                                <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
                                                     {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '15+'}
                                                 </span>
-                                                <span className="text-[10px] font-bold tracking-widest text-indigo-300 uppercase mt-0.5">
+                                                <span className="text-[10px] font-bold tracking-widest text-indigo-600 dark:text-indigo-300 uppercase mt-0.5">
                                                     CURRICULUM COURSES
                                                 </span>
-                                                <span className="text-[11px] text-slate-300/80 mt-1">75% Capacity</span>
+                                                <span className="text-[11px] text-slate-500 dark:text-slate-300/80 mt-1">75% Capacity</span>
                                             </div>
                                         </div>
 
-                                        {/* Details Rows (Translucent) */}
+                                        {/* Details Rows */}
                                         <div className="space-y-2 w-full">
-                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
-                                                <span className="text-xs text-slate-200 font-medium">Enrolled Intake</span>
-                                                <span className="text-xs font-bold text-emerald-400">+34% vs last yr</span>
+                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Enrolled Intake</span>
+                                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+34% vs last yr</span>
                                             </div>
-                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
-                                                <span className="text-xs text-slate-200 font-medium">Completion Rate</span>
-                                                <span className="text-xs font-bold text-indigo-300">92.4%</span>
+                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Completion Rate</span>
+                                                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-300">92.4%</span>
                                             </div>
-                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
-                                                <span className="text-xs text-slate-200 font-medium">Accreditation</span>
-                                                <span className="text-xs font-bold text-cyan-300">ISO 9001:2020</span>
+                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">Accreditation</span>
+                                                <span className="text-xs font-bold text-cyan-600 dark:text-cyan-300">ISO 9001:2020</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Metric Rows (Translucent pills) */}
+                                    {/* Metric Rows */}
                                     <div className="space-y-2.5" data-purpose="dashboard-metrics-list">
-                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-900/50 hover:border-slate-300 dark:hover:border-white/20 transition-all">
                                             <div className="flex items-center gap-3">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400" />
+                                                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-400" />
                                                 <div>
-                                                    <div className="text-sm font-semibold text-white">Curriculum Courses</div>
-                                                    <div className="text-xs text-slate-300/80">Industry-standard programs</div>
+                                                    <div className="text-sm font-semibold text-slate-900 dark:text-white">Curriculum Courses</div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-300/80">Industry-standard programs</div>
                                                 </div>
                                             </div>
-                                            <div className="text-base font-bold text-indigo-300">
+                                            <div className="text-base font-bold text-indigo-600 dark:text-indigo-300">
                                                 {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '15+'}
                                             </div>
                                         </div>
 
-                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-900/50 hover:border-slate-300 dark:hover:border-white/20 transition-all">
                                             <div className="flex items-center gap-3">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-sm shadow-purple-400" />
+                                                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-400" />
                                                 <div>
-                                                    <div className="text-sm font-semibold text-white">Faculty Instructors</div>
-                                                    <div className="text-xs text-slate-300/80">Experienced professionals</div>
+                                                    <div className="text-sm font-semibold text-slate-900 dark:text-white">Faculty Instructors</div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-300/80">Experienced professionals</div>
                                                 </div>
                                             </div>
-                                            <div className="text-base font-bold text-indigo-300">
+                                            <div className="text-base font-bold text-indigo-600 dark:text-indigo-300">
                                                 {platformStats?.totalInstructors ? `${platformStats.totalInstructors}+` : '20+'}
                                             </div>
                                         </div>
 
-                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-900/50 hover:border-slate-300 dark:hover:border-white/20 transition-all">
                                             <div className="flex items-center gap-3">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
+                                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-400" />
                                                 <div>
-                                                    <div className="text-sm font-semibold text-white">Certificates Conferred</div>
-                                                    <div className="text-xs text-slate-300/80">Verified credentials</div>
+                                                    <div className="text-sm font-semibold text-slate-900 dark:text-white">Certificates Conferred</div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-300/80">Verified credentials</div>
                                                 </div>
                                             </div>
-                                            <div className="text-base font-bold text-indigo-300">
+                                            <div className="text-base font-bold text-indigo-600 dark:text-indigo-300">
                                                 {platformStats?.totalCertificates ? `${platformStats.totalCertificates}+` : '10+'}
                                             </div>
                                         </div>
 
-                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/35 border border-slate-200 dark:border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-900/50 hover:border-slate-300 dark:hover:border-white/20 transition-all">
                                             <div className="flex items-center gap-3">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400" />
+                                                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-400" />
                                                 <div>
-                                                    <div className="text-sm font-semibold text-white">Student Rating</div>
-                                                    <div className="text-xs text-slate-300/80">Institutional excellence</div>
+                                                    <div className="text-sm font-semibold text-slate-900 dark:text-white">Student Rating</div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-300/80">Institutional excellence</div>
                                                 </div>
                                             </div>
-                                            <div className="text-base font-bold text-amber-400 flex items-center gap-1">
+                                            <div className="text-base font-bold text-amber-500 dark:text-amber-400 flex items-center gap-1">
                                                 {platformStats?.averageRating ? platformStats.averageRating.toFixed(1) : '4.8'}
                                                 <span className="text-xs">★</span>
                                             </div>
@@ -377,83 +380,87 @@ const Home = () => {
                     </div>
                 </section>
 
-                {/* POST-HERO SECTIONS CONTAINER WITH CONTINUOUS 3D AMBIENT BACKGROUND */}
-                <div className="relative overflow-hidden">
-                    {/* Continuous 3D Ambient Particles & Geometric Crystals Canvas */}
-                    <ThreeAmbientParticles />
+                {/* 2. WHY CHOOSE CODECAMPUS SECTION */}
+                <section className="py-24 bg-slate-100/50 dark:bg-surface-950/40 relative transition-colors duration-300 overflow-hidden" data-purpose="why-choose-us">
+                    {/* Top smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
 
-                    {/* 2. WHY CHOOSE CODECAMPUS SECTION */}
-                    <section className="py-20 bg-surface-950/40 relative border-t border-slate-800/50" data-purpose="why-choose-us">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Interactive 3D Background effect */}
+                    <ThreeBackgroundCanvas />
+
+                    {/* Bottom smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
                         <div className="text-center max-w-2xl mx-auto mb-16">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-300 text-xs font-semibold mb-4 backdrop-blur-md">
-                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-4 backdrop-blur-md">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400" />
                                 <span>ENGINEERED FOR EXCELLENCE</span>
                             </div>
-                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                                Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400">CodeCampus</span>?
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-400">CodeCampus</span>?
                             </h2>
-                            <p className="text-slate-400 mt-3 text-base leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-400 mt-3 text-base leading-relaxed">
                                 Industry-leading infrastructure built specifically for immersive software engineering and computer science mastery.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {/* Card 1 */}
-                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-blue-500/20 hover:border-blue-500/40 relative overflow-hidden">
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-blue-500/20 hover:border-blue-500/40 relative overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
                                 <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
                                 <div>
-                                    <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] transition-all">
-                                        <FiBook className="w-7 h-7 text-blue-400" />
+                                    <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all">
+                                        <FiBook className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Expert-Led Courses</h3>
-                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Expert-Led Courses</h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
                                         Curated syllabi designed by staff architects from Fortune 500 tech companies with live code telemetry.
                                     </p>
                                 </div>
-                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                                    <span className="text-slate-400">Mentorship ratio</span>
-                                    <span className="font-bold font-mono text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                                <div className="pt-4 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-500 dark:text-slate-400">Mentorship ratio</span>
+                                    <span className="font-bold font-mono text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-200 dark:border-cyan-500/20">
                                         1:8 Live
                                     </span>
                                 </div>
                             </div>
 
                             {/* Card 2 */}
-                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-purple-500/20 hover:border-purple-500/40 relative overflow-hidden">
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-purple-500/20 hover:border-purple-500/40 relative overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
                                 <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/20 transition-all" />
                                 <div>
-                                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.35)] transition-all">
-                                        <FiCode className="w-7 h-7 text-purple-400" />
+                                    <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.25)] transition-all">
+                                        <FiCode className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Lifetime Cloud Access</h3>
-                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Lifetime Cloud Access</h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
                                         Perpetual access to all future course revisions, cloud workspace clusters, recorded sessions, and cheat sheets.
                                     </p>
                                 </div>
-                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                                    <span className="text-slate-400">Workspace uptime</span>
-                                    <span className="font-bold font-mono text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                                <div className="pt-4 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-500 dark:text-slate-400">Workspace uptime</span>
+                                    <span className="font-bold font-mono text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-500/20">
                                         99.98% SLA
                                     </span>
                                 </div>
                             </div>
 
                             {/* Card 3 */}
-                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-emerald-500/20 hover:border-emerald-500/40 relative overflow-hidden">
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-emerald-500/20 hover:border-emerald-500/40 relative overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
                                 <div className="absolute -top-10 -right-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
                                 <div>
-                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all">
-                                        <FiLayers className="w-7 h-7 text-emerald-400" />
+                                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] transition-all">
+                                        <FiLayers className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Accredited Credentials</h3>
-                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Accredited Credentials</h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
                                         Cryptographically signed digital credentials with automated one-click LinkedIn and GitHub profile integration.
                                     </p>
                                 </div>
-                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                                    <span className="text-slate-400">Verification rate</span>
-                                    <span className="font-bold font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                <div className="pt-4 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-500 dark:text-slate-400">Verification rate</span>
+                                    <span className="font-bold font-mono text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
                                         Instant CID
                                     </span>
                                 </div>
@@ -463,17 +470,23 @@ const Home = () => {
                 </section>
 
                 {/* 3. EXPLORE TOP CATEGORIES SECTION */}
-                <section className="py-24 relative" data-purpose="categories-section">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section className="py-24 relative overflow-hidden" data-purpose="categories-section">
+                    {/* Top smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-slate-50 via-slate-50/50 to-transparent dark:from-[#060913] dark:via-[#060913]/50 dark:to-transparent pointer-events-none z-10" />
+
+                    {/* Interactive 3D Background effect */}
+                    <ThreeBackgroundCanvas />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
                         <div className="text-center max-w-2xl mx-auto mb-14">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-cyan-300 text-xs font-semibold mb-4 backdrop-blur-md">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-cyan-700 dark:text-cyan-300 text-xs font-semibold mb-4 backdrop-blur-md">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
                                 <span>DISCOVER DOMAINS</span>
                             </div>
-                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                                Explore Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Categories</span>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                Explore Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-cyan-300">Categories</span>
                             </h2>
-                            <p className="text-slate-400 mt-3 text-base">
+                            <p className="text-slate-600 dark:text-slate-400 mt-3 text-base">
                                 Browse modern engineering disciplines verified by industry hiring pipelines
                             </p>
                         </div>
@@ -485,7 +498,7 @@ const Home = () => {
                                     <Link
                                         key={idx}
                                         to="/courses"
-                                        className={`glass-card rounded-2xl p-6 flex flex-col items-center justify-between text-center group cursor-pointer border ${cat.borderColor} relative overflow-hidden`}
+                                        className={`glass-card rounded-2xl p-6 flex flex-col items-center justify-between text-center group cursor-pointer border ${cat.borderColor} relative overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md`}
                                     >
                                         <div className="w-full flex items-center justify-between mb-4">
                                             <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${cat.tagColor}`}>
@@ -505,10 +518,10 @@ const Home = () => {
                                             <IconComponent className={`w-7 h-7 ${cat.iconColor}`} />
                                         </div>
 
-                                        <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-cyan-300 transition-colors">
                                             {cat.name}
                                         </h4>
-                                        <span className="text-xs text-slate-400 mt-1 font-mono">
+                                        <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
                                             {cat.countText}
                                         </span>
                                     </Link>
@@ -516,28 +529,40 @@ const Home = () => {
                             })}
                         </div>
                     </div>
+
+                    {/* Bottom smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
                 </section>
 
                 {/* 4. FEATURED COURSES SECTION */}
-                <section className="py-20 bg-surface-950/70 border-t border-slate-800/60" data-purpose="featured-courses" id="courses">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section className="py-24 bg-slate-100/40 dark:bg-surface-950/40 relative transition-colors duration-300 overflow-hidden" data-purpose="featured-courses" id="courses">
+                    {/* Top smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
+
+                    {/* Interactive 3D Background effect */}
+                    <ThreeBackgroundCanvas />
+
+                    {/* Bottom smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
                         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-12 gap-4">
                             <div>
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-300 text-xs font-semibold mb-3 backdrop-blur-md">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-3 backdrop-blur-md">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                                     <span>PRODUCTION CURRICULUM</span>
                                 </div>
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                                    Featured <span className="text-indigo-400">Courses</span>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    Featured <span className="text-indigo-600 dark:text-indigo-400">Courses</span>
                                 </h2>
-                                <p className="text-slate-400 mt-2 text-base">
+                                <p className="text-slate-600 dark:text-slate-400 mt-2 text-base">
                                     Handpicked cohorts with interactive cloud sandbox environments
                                 </p>
                             </div>
 
                             <Link
                                 to="/courses"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-300 bg-indigo-600/15 hover:bg-indigo-600/25 border border-indigo-500/30 transition-all group"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-600/15 hover:bg-indigo-100 dark:hover:bg-indigo-600/25 border border-indigo-200 dark:border-indigo-500/30 transition-all group shadow-sm"
                             >
                                 <span>View All Courses</span>
                                 <FiArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
@@ -547,14 +572,14 @@ const Home = () => {
                         {loading ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {[...Array(4)].map((_, i) => (
-                                    <div key={i} className="h-72 rounded-2xl bg-surface-900/60 animate-pulse border border-slate-800" />
+                                    <div key={i} className="h-72 rounded-2xl bg-white dark:bg-surface-900/60 animate-pulse border border-slate-200 dark:border-slate-800 shadow-sm" />
                                 ))}
                             </div>
                         ) : featuredCourses.length === 0 ? (
-                            <div className="glass-card rounded-3xl p-12 text-center max-w-lg mx-auto border border-slate-800">
-                                <FiBook className="text-4xl text-indigo-400 mx-auto mb-3" />
-                                <h3 className="text-lg font-bold text-white mb-2">No Courses Published Yet</h3>
-                                <p className="text-sm text-slate-400 mb-6">
+                            <div className="glass-card rounded-3xl p-12 text-center max-w-lg mx-auto border border-slate-200 dark:border-slate-800">
+                                <FiBook className="text-4xl text-indigo-500 dark:text-indigo-400 mx-auto mb-3" />
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Courses Published Yet</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
                                     Run the seed command in the backend to populate production cohorts.
                                 </p>
                                 <Link
@@ -575,9 +600,18 @@ const Home = () => {
                 </section>
 
                 {/* 5. ONLINE CLOUD COMPILER BANNER */}
-                <section className="py-16 relative" data-purpose="compiler-cta" id="compiler">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="rounded-3xl p-6 sm:p-10 relative overflow-hidden bg-gradient-to-r from-indigo-950/60 via-[#0b1022] to-[#070b16] border border-indigo-500/30 shadow-2xl">
+                <section className="py-24 relative overflow-hidden" data-purpose="compiler-cta" id="compiler">
+                    {/* Top smooth blending gradient */}
+                    <div aria-hidden="true" className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-slate-50 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
+
+                    {/* Interactive 3D Background effect */}
+                    <ThreeBackgroundCanvas />
+
+                    {/* Bottom smooth blending gradient into Footer */}
+                    <div aria-hidden="true" className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-100 to-transparent dark:from-[#060913] dark:to-transparent pointer-events-none z-10" />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+                        <div className="rounded-3xl p-6 sm:p-10 relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 border border-slate-700/60 dark:border-indigo-500/30 shadow-2xl text-white">
                             <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
@@ -680,7 +714,6 @@ const Home = () => {
                         </div>
                     </div>
                 </section>
-                </div>
             </main>
         </div>
     );

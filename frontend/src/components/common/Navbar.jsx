@@ -35,8 +35,8 @@ const Navbar = () => {
     return (
         <header className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
             isScrolled
-                ? 'bg-[#060913]/90 dark:bg-[#060913]/90 bg-white/90 backdrop-blur-xl border-white/[0.08] dark:border-white/[0.08] border-slate-200 shadow-lg'
-                : 'bg-[#060913]/75 dark:bg-[#060913]/75 bg-white/75 backdrop-blur-md border-transparent'
+                ? 'bg-white/95 dark:bg-[#060913]/90 backdrop-blur-xl border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-lg'
+                : 'bg-white/80 dark:bg-[#060913]/75 backdrop-blur-md border-slate-200/60 dark:border-transparent'
         }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 {/* Brand Logo & Slogan */}
@@ -44,18 +44,14 @@ const Navbar = () => {
                     to="/"
                     className="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
                 >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 p-[1.5px] shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
-                        <div className="w-full h-full bg-[#090e1c] rounded-[10px] flex items-center justify-center">
-                            {/* Graduation Cap / Code SVG icon */}
-                            <svg className="w-5 h-5 text-indigo-400 group-hover:text-cyan-300 transition-colors" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
-                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-                            </svg>
-                        </div>
-                    </div>
+                    <img
+                        src="/CodeCampus.png"
+                        alt="CodeCampus Logo"
+                        className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300"
+                    />
                     <div className="flex flex-col">
                         <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
-                            Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Campus</span>
+                            Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Campus</span>
                         </span>
                         <span className="text-[9px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase -mt-0.5">
                             LEARN WITHOUT LIMITS
@@ -241,29 +237,29 @@ const Navbar = () => {
                         className="fixed inset-0 top-20 bg-black/60 z-40 md:hidden backdrop-blur-sm"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    <div className="relative z-50 md:hidden bg-[#060913] border-b border-white/[0.08] px-5 py-6 space-y-4 shadow-2xl">
+                    <div className="relative z-50 md:hidden bg-white dark:bg-[#060913] border-b border-slate-200 dark:border-white/[0.08] px-5 py-6 space-y-4 shadow-2xl transition-colors">
                         <nav className="flex flex-col space-y-3">
                             <Link
                                 to="/courses"
-                                className="text-base font-medium text-slate-200 hover:text-indigo-400 transition-colors"
+                                className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Courses
                             </Link>
                             <Link
                                 to="/online-compiler"
-                                className="text-base font-medium text-slate-200 hover:text-indigo-400 transition-colors flex items-center justify-between"
+                                className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center justify-between"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 <span>Online Compiler</span>
-                                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">
+                                <span className="text-[10px] bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">
                                     LIVE
                                 </span>
                             </Link>
                             {isAuthenticated && user?.role === 'student' && (
                                 <Link
                                     to="/my-courses"
-                                    className="text-base font-medium text-slate-200 hover:text-indigo-400 transition-colors"
+                                    className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     My Courses
@@ -272,7 +268,7 @@ const Navbar = () => {
                             {isAuthenticated && (
                                 <Link
                                     to="/dashboard"
-                                    className="text-base font-medium text-slate-200 hover:text-indigo-400 transition-colors"
+                                    className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Dashboard
@@ -280,7 +276,7 @@ const Navbar = () => {
                             )}
                         </nav>
 
-                        <div className="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
+                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2.5">
                             {isAuthenticated ? (
                                 <button
                                     onClick={() => {
