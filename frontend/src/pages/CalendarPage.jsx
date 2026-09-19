@@ -152,43 +152,43 @@ const CalendarPage = () => {
     }
 
     return (
-        <div className="animate-fade-up p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6" style={{ animationDuration: '0.4s' }}>
+        <div className="animate-fade-up p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 w-full max-w-full overflow-x-hidden" style={{ animationDuration: '0.4s' }}>
             {/* Header */}
             <div className="pb-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                         Academic Calendar
                     </span>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text mt-0.5">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold gradient-text mt-0.5">
                         Academic Schedule & Deadlines
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                         Live real-time dates for lesson milestones, course qualification exams, and graduation deadlines.
                     </p>
                 </div>
 
                 {/* Month Navigator & Today Button */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <button
                         onClick={jumpToToday}
-                        className="px-3 py-2 text-xs font-semibold rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition shadow-sm"
+                        className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition shadow-sm"
                         title="Jump to Current Month"
                     >
                         Today
                     </button>
                     <button
                         onClick={prevMonth}
-                        className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
+                        className="p-1.5 sm:p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
                         title="Previous Month"
                     >
                         <FiChevronLeft size={16} />
                     </button>
-                    <span className="px-4 py-2 font-bold text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white min-w-[150px] text-center shadow-sm">
+                    <span className="px-3 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white min-w-[120px] sm:min-w-[150px] text-center shadow-sm">
                         {monthNames[month]} {year}
                     </span>
                     <button
                         onClick={nextMonth}
-                        className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
+                        className="p-1.5 sm:p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-sm"
                         title="Next Month"
                     >
                         <FiChevronRight size={16} />
@@ -199,17 +199,17 @@ const CalendarPage = () => {
             {/* Split layout: Calendar Grid + Upcoming Milestone List */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Calendar Grid (2 Cols) */}
-                <div className="lg:col-span-2 glass-card p-5 overflow-hidden">
-                    <div className="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-500 dark:text-slate-400 pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="lg:col-span-2 glass-card p-3 sm:p-5 overflow-hidden">
+                    <div className="grid grid-cols-7 gap-1 text-center font-bold text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 pb-2 sm:pb-3 border-b border-slate-200 dark:border-slate-800">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
                             <div key={d}>{d}</div>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1.5 pt-3">
+                    <div className="grid grid-cols-7 gap-1 sm:gap-1.5 pt-2 sm:pt-3">
                         {/* Empty padding days */}
                         {Array.from({ length: firstDayIndex }).map((_, i) => (
-                            <div key={`empty-${i}`} className="h-20 sm:h-24 p-1 text-slate-300 dark:text-slate-700 text-xs bg-slate-50/30 dark:bg-slate-950/20 rounded-xl" />
+                            <div key={`empty-${i}`} className="h-14 sm:h-20 md:h-24 p-0.5 sm:p-1 text-slate-300 dark:text-slate-700 text-xs bg-slate-50/30 dark:bg-slate-950/20 rounded-lg sm:rounded-xl" />
                         ))}
 
                         {/* Month Days */}
@@ -226,9 +226,9 @@ const CalendarPage = () => {
                             return (
                                 <div
                                     key={dayNumber}
-                                    className={`h-20 sm:h-24 p-1.5 sm:p-2 rounded-xl flex flex-col justify-between transition-all duration-200 cursor-pointer ${
+                                    className={`h-14 sm:h-20 md:h-24 p-1 sm:p-2 rounded-lg sm:rounded-xl flex flex-col justify-between transition-all duration-200 cursor-pointer overflow-hidden ${
                                         isToday
-                                            ? 'border-2 border-indigo-500 bg-indigo-500/10 shadow-md shadow-indigo-500/20 ring-2 ring-indigo-400/30'
+                                            ? 'border-2 border-indigo-500 bg-indigo-500/10 shadow-md shadow-indigo-500/20 ring-1 sm:ring-2 ring-indigo-400/30'
                                             : 'border border-slate-200/60 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/40'
                                     }`}
                                     onClick={() => {

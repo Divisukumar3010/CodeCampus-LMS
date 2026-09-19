@@ -127,30 +127,30 @@ const LMSLayout = ({ children }) => {
     const breadcrumbs = getBreadcrumb();
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200 w-full max-w-full overflow-x-hidden">
             {/* Top Academic Header */}
-            <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 transition-colors duration-200">
-                <div className="flex items-center gap-3">
+            <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-3 sm:px-6 transition-colors duration-200 w-full max-w-full">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                     {/* Mobile Hamburger */}
                     <button
                         onClick={() => setMobileOpen(true)}
-                        className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex-shrink-0 touch-manipulation min-w-[38px] min-h-[38px] flex items-center justify-center"
                         aria-label="Open navigation menu"
                     >
                         <FiMenu size={20} />
                     </button>
 
                     {/* Logo & Portal Identity */}
-                    <Link to="/dashboard" className="flex items-center gap-2.5 group">
+                    <Link to="/dashboard" className="flex items-center gap-2 sm:gap-2.5 group flex-shrink-0">
                         <img
                             src="/CodeCampus.png"
                             alt="CodeCampus"
-                            className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-300"
+                            className="w-7 h-7 sm:w-8 sm:h-8 object-contain group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="flex flex-col">
-                            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1 sm:gap-1.5">
                                 Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Campus</span>
-                                <span className="text-[9px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20">
+                                <span className="text-[8px] sm:text-[9px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20">
                                     LMS
                                 </span>
                             </span>
@@ -158,16 +158,16 @@ const LMSLayout = ({ children }) => {
                     </Link>
 
                     {/* Desktop Breadcrumbs */}
-                    <div className="hidden md:flex items-center gap-1.5 ml-6 pl-6 border-l border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <div className="hidden xl:flex items-center gap-1.5 ml-4 pl-4 border-l border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
                         {breadcrumbs.map((crumb, idx) => (
-                            <div key={idx} className="flex items-center gap-1.5">
+                            <div key={idx} className="flex items-center gap-1.5 truncate">
                                 {idx > 0 && <span className="text-slate-300 dark:text-slate-600">/</span>}
                                 {crumb.path ? (
-                                    <Link to={crumb.path} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                    <Link to={crumb.path} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
                                         {crumb.label}
                                     </Link>
                                 ) : (
-                                    <span className="text-slate-800 dark:text-slate-200 font-semibold">{crumb.label}</span>
+                                    <span className="text-slate-800 dark:text-slate-200 font-semibold truncate">{crumb.label}</span>
                                 )}
                             </div>
                         ))}
@@ -175,7 +175,7 @@ const LMSLayout = ({ children }) => {
                 </div>
 
                 {/* Right controls: Theme, Role Pill, User avatar menu */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
                     <ThemeToggle />
 
                     <div className="hidden sm:flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 capitalize">
@@ -186,16 +186,16 @@ const LMSLayout = ({ children }) => {
 
                     <Link
                         to="/profile"
-                        className="flex items-center gap-2.5 p-1.5 pr-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-left"
+                        className="flex items-center gap-1.5 sm:gap-2.5 p-1 sm:p-1.5 pr-1.5 sm:pr-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-left"
                     >
                         {user?.avatar?.url ? (
                             <img
                                 src={user.avatar.url}
                                 alt={user.name}
-                                className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+                                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
                             />
                         ) : (
-                            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-semibold text-xs flex items-center justify-center">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-600 text-white font-semibold text-xs flex items-center justify-center">
                                 {user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                         )}
@@ -212,7 +212,7 @@ const LMSLayout = ({ children }) => {
                     <button
                         onClick={handleLogout}
                         title="Sign Out"
-                        className="p-2 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        className="p-1.5 sm:p-2 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                     >
                         <FiLogOut size={17} />
                     </button>
@@ -220,7 +220,7 @@ const LMSLayout = ({ children }) => {
             </header>
 
             {/* Main Shell Body (Sidebar + Content) */}
-            <div className="flex flex-1 relative">
+            <div className="flex flex-1 relative w-full max-w-full min-w-0">
                 {/* Desktop Left Sidebar */}
                 <aside
                     className={`hidden lg:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'
@@ -347,7 +347,7 @@ const LMSLayout = ({ children }) => {
                 )}
 
                 {/* Main Content Workspace */}
-                <main className="flex-1 w-full min-w-0 overflow-y-auto">
+                <main className="flex-1 w-full min-w-0 max-w-full overflow-y-auto overflow-x-hidden">
                     {children}
                 </main>
             </div>

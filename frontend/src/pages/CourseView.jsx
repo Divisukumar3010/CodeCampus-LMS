@@ -145,19 +145,19 @@ const CourseView = () => {
     const sections = course.sections || [];
 
     return (
-        <div className="animate-fade-up min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900" style={{ animationDuration: '0.4s' }}>
-            <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-4 lg:py-8">
-                <div className="mb-6 flex flex-col gap-2">
-                    <p className="text-xs uppercase tracking-[0.2em] text-indigo-500 font-semibold">Course Player</p>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold gradient-text">{course.title}</h1>
+        <div className="animate-fade-up min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 w-full max-w-full overflow-x-hidden" style={{ animationDuration: '0.4s' }}>
+            <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-4 lg:py-8 w-full max-w-full">
+                <div className="mb-4 sm:mb-6 flex flex-col gap-1 sm:gap-2">
+                    <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-indigo-500 font-semibold">Course Player</p>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold gradient-text leading-tight">{course.title}</h1>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Video Player Section */}
-                    <div className="lg:col-span-2">
+                    <div className="lg:col-span-2 min-w-0">
                         <div className="glass-card rounded-2xl overflow-hidden ring-1 ring-indigo-500/30 shadow-2xl shadow-indigo-900/20 border border-slate-100 dark:border-slate-800 transition-all">
                             {currentLesson ? (
                                 <div>
-                                    <div className="bg-black aspect-video">
+                                    <div className="bg-black aspect-video w-full">
                                         {currentLesson.videoUrl ? (
                                             <VideoPlayer
                                                 url={currentLesson.videoUrl}

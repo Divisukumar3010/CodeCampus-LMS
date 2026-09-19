@@ -416,21 +416,22 @@ const ExamPage = () => {
                 </div>
             </div>
 
-            {/* Mobile Question Navigation Dots */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
-                <div className={`border-t px-4 py-3 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
-                    <div className="flex flex-wrap gap-1.5 justify-center max-w-md mx-auto">
+            {/* Mobile Question Navigation Dock */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-md">
+                <div className={`border-t px-3 py-2.5 shadow-lg ${isDarkMode ? 'bg-slate-900/95 border-slate-800' : 'bg-white/95 border-gray-200'}`}>
+                    <div className="flex items-center gap-1.5 overflow-x-auto py-1 px-1 scrollbar-thin max-w-full justify-start sm:justify-center">
                         {questions.map((q, index) => (
                             <button
                                 key={q._id}
                                 onClick={() => {
                                     document.getElementById(`question-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }}
-                                className={`w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-bold ${answers[q._id]
-                                    ? 'bg-primary-500 text-white'
+                                aria-label={`Jump to question ${index + 1}`}
+                                className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center text-xs font-bold transition active:scale-95 ${answers[q._id]
+                                    ? 'bg-primary-600 text-white shadow-sm'
                                     : isDarkMode
-                                        ? 'bg-slate-800 text-gray-400'
-                                        : 'bg-gray-100 text-gray-500'
+                                        ? 'bg-slate-800 text-gray-300 border border-slate-700'
+                                        : 'bg-gray-100 text-gray-700 border border-gray-200'
                                     }`}
                             >
                                 {index + 1}

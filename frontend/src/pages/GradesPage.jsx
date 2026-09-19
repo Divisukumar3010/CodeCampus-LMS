@@ -124,27 +124,27 @@ const GradesPage = () => {
                     </div>
                 </div>
 
-                <div className="glass-card p-5 border-l-4 border-emerald-500 flex items-center justify-between">
+                <div className="glass-card p-4 sm:p-5 border-l-4 border-emerald-500 flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Credentials Conferred
                         </p>
-                        <p className="text-3xl font-extrabold text-emerald-500 mt-1">
+                        <p className="text-2xl sm:text-3xl font-extrabold text-emerald-500 mt-1">
                             {certificates.length || passedExams.length}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">Verified certificates earned</p>
                     </div>
-                    <div className="w-14 h-14 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                        <FiAward size={26} />
+                    <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                        <FiAward size={24} />
                     </div>
                 </div>
 
-                <div className="glass-card p-5 border-l-4 border-sky-500 flex items-center justify-between">
+                <div className="glass-card p-4 sm:p-5 border-l-4 border-sky-500 flex items-center justify-between sm:col-span-2 lg:col-span-1">
                     <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Exams Pass Rate
                         </p>
-                        <p className="text-3xl font-extrabold text-sky-500 mt-1">
+                        <p className="text-2xl sm:text-3xl font-extrabold text-sky-500 mt-1">
                             {totalExamsAttempted.length > 0 ? `${passRate}%` : '0%'}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">

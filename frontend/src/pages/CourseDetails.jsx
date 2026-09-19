@@ -138,18 +138,18 @@ const CourseDetailsPage = () => {
         : 0;
 
     return (
-        <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className={`min-h-screen w-full max-w-full overflow-x-hidden ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
             {/* Hero Section */}
             <div className={`
                 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900
                 text-white
-                w-full px-4 sm:w-[95%] md:w-[90%] mx-auto
-                rounded-xl sm:rounded-2xl md:rounded-[2rem]
-                sm:px-6 md:px-8 py-4 mt-4 sm:mt-6 md:mt-10 lg:mt-12
+                w-full px-3 sm:px-6 sm:w-[95%] md:w-[90%] mx-auto
+                rounded-none sm:rounded-2xl md:rounded-[2rem]
+                py-4 sm:py-6 mt-0 sm:mt-6 md:mt-10 lg:mt-12
                 ${isDarkMode ? 'shadow-slate-800' : 'shadow-lg'}
             `}>
-                <div className="py-6 sm:py-8 md:py-12 lg:py-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="py-4 sm:py-8 md:py-12 lg:py-16">
+                    <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                             {/* Left Column - Course Info */}
                             <div className="lg:col-span-2">
@@ -300,8 +300,8 @@ const CourseDetailsPage = () => {
             </div>
 
             {/* Main Content */}
-            <div className="py-6 sm:py-8 md:py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6 sm:py-8 md:py-12 w-full max-w-full">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                         {/* Left Column - Course Details */}
                         <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">

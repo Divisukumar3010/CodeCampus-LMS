@@ -26,9 +26,22 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
+    // Lock body scroll when mobile menu is open
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileMenuOpen]);
+
     const handleLogout = async () => {
         await logout();
         setProfileMenuOpen(false);
+        setMobileMenuOpen(false);
         navigate('/');
     };
 
@@ -38,22 +51,22 @@ const Navbar = () => {
                 ? 'bg-white/95 dark:bg-[#060913]/90 backdrop-blur-xl border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-lg'
                 : 'bg-white/80 dark:bg-[#060913]/75 backdrop-blur-md border-slate-200/60 dark:border-transparent'
         }`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
                 {/* Brand Logo & Slogan */}
                 <Link
                     to="/"
-                    className="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
+                    className="flex items-center gap-2 sm:gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg flex-shrink-0"
                 >
                     <img
                         src="/CodeCampus.png"
                         alt="CodeCampus Logo"
-                        className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300"
+                        className="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="flex flex-col">
-                        <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
+                        <span className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-0.5 sm:gap-1">
                             Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Campus</span>
                         </span>
-                        <span className="text-[9px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase -mt-0.5">
+                        <span className="text-[8px] sm:text-[9px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase -mt-0.5 hidden xs:inline-block">
                             LEARN WITHOUT LIMITS
                         </span>
                     </div>
@@ -101,12 +114,12 @@ const Navbar = () => {
                 </nav>
 
                 {/* Right Actions: Theme toggle, Login, Get Started / Profile */}
-                <div className="flex items-center gap-3.5">
+                <div className="flex items-center gap-2 sm:gap-3.5">
                     {/* Theme Toggle */}
                     <ThemeToggle />
 
                     {isAuthenticated ? (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                             <Link
                                 to="/dashboard"
                                 className="hidden sm:inline-flex text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 transition-colors"
@@ -117,25 +130,25 @@ const Navbar = () => {
                             <div className="relative">
                                 <button
                                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                                    className="flex items-center gap-2.5 bg-slate-100 dark:bg-surface-900 border border-slate-200 dark:border-slate-700/60 p-1.5 pr-3 rounded-full hover:border-indigo-500/40 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    className="flex items-center gap-1.5 sm:gap-2.5 bg-slate-100 dark:bg-surface-900 border border-slate-200 dark:border-slate-700/60 p-1 sm:p-1.5 pr-2 sm:pr-3 rounded-full hover:border-indigo-500/40 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 >
                                     {user?.avatar?.url ? (
                                         <img
                                             src={user.avatar.url}
                                             alt={user.name}
-                                            className="w-7 h-7 rounded-full object-cover border border-indigo-500"
+                                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-indigo-500"
                                             onError={(e) => {
                                                 e.target.onerror = null;
                                                 e.target.src = '/CodeCampus.png';
                                             }}
                                         />
                                     ) : (
-                                        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-xs">
+                                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-xs">
                                             {user?.name?.charAt(0).toUpperCase() || 'U'}
                                         </div>
                                     )}
-                                    <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm max-w-[90px] truncate">
-                                        {user?.name || 'Account'}
+                                    <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm max-w-[70px] sm:max-w-[90px] truncate">
+                                        {user?.name?.split(' ')[0] || 'Account'}
                                     </span>
                                 </button>
 
@@ -198,12 +211,12 @@ const Navbar = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
                             {/* Login Button */}
                             <button
                                 type="button"
                                 onClick={() => openModal('login')}
-                                className="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 transition-colors cursor-pointer"
+                                className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white px-2 sm:px-3 py-1.5 sm:py-2 transition-colors cursor-pointer"
                             >
                                 Login
                             </button>
@@ -212,7 +225,7 @@ const Navbar = () => {
                             <button
                                 type="button"
                                 onClick={() => openModal('register')}
-                                className="relative inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white transition-all bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer"
+                                className="relative inline-flex items-center justify-center px-3 sm:px-5 py-1.5 sm:py-2.5 text-xs sm:text-sm font-semibold text-white transition-all bg-indigo-600 hover:bg-indigo-500 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer"
                             >
                                 Get Started
                             </button>
@@ -222,7 +235,7 @@ const Navbar = () => {
                     {/* Mobile Hamburger Toggle */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors touch-manipulation min-w-[40px] min-h-[40px] flex items-center justify-center"
                         aria-label="Toggle navigation menu"
                     >
                         {mobileMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
@@ -234,10 +247,10 @@ const Navbar = () => {
             {mobileMenuOpen && (
                 <>
                     <div
-                        className="fixed inset-0 top-20 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+                        className="fixed inset-0 top-16 sm:top-20 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    <div className="relative z-50 md:hidden bg-white dark:bg-[#060913] border-b border-slate-200 dark:border-white/[0.08] px-5 py-6 space-y-4 shadow-2xl transition-colors">
+                    <div className="fixed top-16 sm:top-20 left-0 right-0 z-50 md:hidden bg-white dark:bg-[#060913] border-b border-slate-200 dark:border-white/[0.08] px-5 py-6 space-y-4 shadow-2xl max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-5rem)] overflow-y-auto transition-colors">
                         <nav className="flex flex-col space-y-3">
                             <Link
                                 to="/courses"

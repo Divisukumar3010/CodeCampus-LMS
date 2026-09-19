@@ -41,6 +41,9 @@ const OnlineCompiler = () => {
     const [historyLoading, setHistoryLoading] = useState(false);
     const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
 
+    // Mobile View Tab state ('editor' | 'output' | 'input')
+    const [mobileTab, setMobileTab] = useState('editor');
+
     const editorRef = useRef(null);
     const iframeRef = useRef(null);
 
@@ -63,10 +66,16 @@ const OnlineCompiler = () => {
         }
     }, [code, language]);
 
-    // Responsive editor height
+    // Responsive editor height & layout adjustment
     useEffect(() => {
         const updateHeight = () => {
-            setEditorHeight(window.innerWidth < 1024 ? '350px' : '600px');
+            if (window.innerWidth < 640) {
+                setEditorHeight('380px');
+            } else if (window.innerWidth < 1024) {
+                setEditorHeight('480px');
+            } else {
+                setEditorHeight('600px');
+            }
         };
         updateHeight();
         window.addEventListener('resize', updateHeight);
@@ -407,70 +416,70 @@ int main() {
     const selectedLanguage = languages.find(lang => lang.id === language);
 
     return (
-        <div className={`animate-fade-up min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`} style={{ animationDuration: '0.4s' }}>
+        <div className={`animate-fade-up min-h-screen w-full max-w-full overflow-x-hidden ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`} style={{ animationDuration: '0.4s' }}>
             {/* Top Control Bar */}
-            <div className={`${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-md border-b sticky top-0 z-30 shadow-sm`}>
-                <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-3.5">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-xl sm:text-2xl font-extrabold gradient-text tracking-tight">
+            <div className={`${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-md border-b sticky top-0 z-30 shadow-sm w-full max-w-full`}>
+                <div className="max-w-full lg:max-w-[1800px] mx-auto px-2.5 sm:px-4 lg:px-6 py-2.5 sm:py-3.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center justify-between sm:justify-start gap-3">
+                            <h1 className="text-lg sm:text-2xl font-extrabold gradient-text tracking-tight">
                                 Online Compiler
                             </h1>
-                            <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-500/10 text-primary-500 border border-primary-500/20">
-                                Live Execution
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-primary-500/10 text-primary-500 border border-primary-500/20">
+                                Live
                             </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
                             <button
                                 onClick={handleOpenFile}
-                                className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm active:scale-95"
+                                className="flex items-center gap-1 sm:gap-1.5 bg-purple-600 hover:bg-purple-700 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-all shadow-sm active:scale-95 touch-manipulation"
                                 title="Open file from computer"
                             >
-                                <FolderOpen size={16} />
-                                <span className="hidden sm:inline">Open File</span>
+                                <FolderOpen size={15} />
+                                <span className="hidden md:inline">Open</span>
                             </button>
                             <button
                                 onClick={handleSaveFile}
-                                className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm active:scale-95"
+                                className="flex items-center gap-1 sm:gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-all shadow-sm active:scale-95 touch-manipulation"
                                 title="Download code to local file"
                             >
-                                <Save size={16} />
-                                <span className="hidden sm:inline">Save File</span>
+                                <Save size={15} />
+                                <span className="hidden md:inline">Save</span>
                             </button>
                             <button
                                 onClick={handleRun}
                                 disabled={loading}
-                                className="btn-glow flex items-center gap-2 py-2 px-4 text-sm font-semibold shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="btn-glow flex items-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                                 title="Execute code"
                             >
                                 {loading ? (
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 ) : (
-                                    <Play size={16} fill="white" />
+                                    <Play size={15} fill="white" />
                                 )}
-                                {loading ? 'Running...' : 'Run Code'}
+                                <span>{loading ? 'Running...' : 'Run'}</span>
                             </button>
                             <button
                                 onClick={handleReset}
-                                className="flex items-center gap-1.5 bg-orange-600 hover:bg-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm active:scale-95"
+                                className="flex items-center gap-1 sm:gap-1.5 bg-orange-600 hover:bg-orange-700 text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-all shadow-sm active:scale-95 touch-manipulation"
                                 title="Reset editor to template"
                             >
-                                <RotateCcw size={16} />
-                                <span className="hidden sm:inline">Reset</span>
+                                <RotateCcw size={15} />
+                                <span className="hidden md:inline">Reset</span>
                             </button>
                             <button
                                 onClick={handleOpenHistory}
-                                className={`flex items-center gap-1.5 ${isDarkMode
+                                className={`flex items-center gap-1 sm:gap-1.5 ${isDarkMode
                                     ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
                                     : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300'
-                                    } px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm active:scale-95`}
+                                    } px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-all shadow-sm active:scale-95 touch-manipulation`}
                                 title="View execution history"
                             >
-                                <History size={16} />
-                                <span>History</span>
+                                <History size={15} />
+                                <span className="hidden sm:inline">History</span>
                                 {historyList.length > 0 && (
-                                    <span className="w-5 h-5 rounded-full bg-primary-600 text-white text-[11px] flex items-center justify-center font-bold">
+                                    <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-600 text-white text-[10px] sm:text-[11px] flex items-center justify-center font-bold">
                                         {historyList.length > 9 ? '9+' : historyList.length}
                                     </span>
                                 )}
@@ -480,62 +489,85 @@ int main() {
                             <div className="relative">
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className={`flex items-center gap-2 ${isDarkMode
-                                        ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white'
-                                        : 'bg-white hover:bg-gray-100 border-gray-300 text-gray-900'
-                                        } px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all min-w-[150px] sm:min-w-[200px] justify-between border shadow-sm`}
+                                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm border transition-all ${isDarkMode
+                                        ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700'
+                                        : 'bg-white hover:bg-gray-50 text-gray-800 border-gray-300'
+                                        }`}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <span>{selectedLanguage?.name}</span>
-                                        {selectedLanguage?.version && (
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-700'}`}>
-                                                {selectedLanguage.version}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <ChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} size={16} />
+                                    <span className="font-semibold">{selectedLanguage?.name}</span>
+                                    <ChevronDown size={14} className={`transform transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {isDropdownOpen && (
-                                    <div className={`absolute right-0 top-full mt-1.5 w-full min-w-[220px] ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
-                                        } rounded-xl border shadow-2xl z-50 overflow-hidden py-1`}>
-                                        {languages.map((lang) => (
-                                            <button
-                                                key={lang.id}
-                                                onClick={() => handleLanguageChange(lang.id)}
-                                                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${language === lang.id
-                                                    ? 'bg-primary-600 text-white'
-                                                    : isDarkMode
-                                                        ? 'hover:bg-slate-800 text-slate-200'
-                                                        : 'hover:bg-gray-100 text-gray-800'
-                                                    }`}
-                                            >
-                                                <span>{lang.name}</span>
-                                                {lang.version && (
-                                                    <span className={`text-[11px] px-1.5 py-0.5 rounded font-mono ${language === lang.id
-                                                        ? 'bg-primary-700/80 text-white'
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
+                                        <div className={`absolute right-0 top-full mt-1.5 w-48 sm:w-56 ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
+                                            } rounded-xl border shadow-2xl z-50 overflow-hidden py-1`}>
+                                            {languages.map((lang) => (
+                                                <button
+                                                    key={lang.id}
+                                                    onClick={() => handleLanguageChange(lang.id)}
+                                                    className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${language === lang.id
+                                                        ? 'bg-primary-600 text-white'
                                                         : isDarkMode
-                                                            ? 'bg-slate-800 text-slate-400'
-                                                            : 'bg-gray-100 text-gray-600'
-                                                        }`}>
-                                                        {lang.version}
-                                                    </span>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
+                                                            ? 'hover:bg-slate-800 text-slate-200'
+                                                            : 'hover:bg-gray-100 text-gray-800'
+                                                        }`}
+                                                >
+                                                    <span>{lang.name}</span>
+                                                    {lang.version && (
+                                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${language === lang.id
+                                                            ? 'bg-primary-700/80 text-white'
+                                                            : isDarkMode
+                                                                ? 'bg-slate-800 text-slate-400'
+                                                                : 'bg-gray-100 text-gray-600'
+                                                            }`}>
+                                                            {lang.version}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Mobile Switch Tabs: Editor / Output Preview */}
+                    <div className="flex lg:hidden items-center mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800 gap-2">
+                        <button
+                            onClick={() => setMobileTab('editor')}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                mobileTab === 'editor'
+                                    ? 'bg-primary-600 text-white shadow-sm'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                            }`}
+                        >
+                            Code Editor
+                        </button>
+                        <button
+                            onClick={() => setMobileTab('output')}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                mobileTab === 'output'
+                                    ? 'bg-primary-600 text-white shadow-sm'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                            }`}
+                        >
+                            {language === 'html' ? 'Live Preview' : 'Output & Console'}
+                            {(output || error) && (
+                                <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Main Editor Area */}
-            <div className="max-w-full lg:max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-6">
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr,420px] xl:grid-cols-[1fr,520px] gap-6">
+            <div className="max-w-full lg:max-w-[1800px] mx-auto px-2.5 sm:px-4 lg:px-6 py-4 sm:py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr,420px] xl:grid-cols-[1fr,520px] gap-4 sm:gap-6">
                     {/* Editor Panel */}
-                    <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} rounded-2xl overflow-hidden border shadow-md flex flex-col`}>
+                    <div className={`${mobileTab !== 'editor' ? 'hidden lg:flex' : 'flex'} ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} rounded-2xl overflow-hidden border shadow-md flex-col min-w-0`}>
                         <div className={`${isDarkMode ? 'bg-slate-800/80 border-slate-700/60' : 'bg-gray-100/80 border-gray-200'} px-4 py-2.5 border-b flex items-center justify-between`}>
                             <div className="flex items-center gap-2">
                                 <span className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-red-500/80' : 'bg-red-400'}`} />
@@ -586,12 +618,12 @@ int main() {
                     {/* Right Panel */}
                     {language === 'html' ? (
                         // HTML Preview Panel
-                        <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} rounded-2xl overflow-hidden border shadow-md flex flex-col`}>
+                        <div className={`${mobileTab !== 'output' ? 'hidden lg:flex' : 'flex'} ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} rounded-2xl overflow-hidden border shadow-md flex-col min-w-0`}>
                             <div className={`${isDarkMode ? 'bg-slate-800/80 border-slate-700/60' : 'bg-gray-100/80 border-gray-200'} px-4 py-2.5 border-b flex items-center justify-between`}>
                                 <span className={`${isDarkMode ? 'text-slate-300' : 'text-slate-700'} text-xs font-bold uppercase tracking-wider`}>Live Web Preview</span>
                                 <span className="text-[11px] text-emerald-500 font-mono">Sandboxed</span>
                             </div>
-                            <div className="flex-1 overflow-hidden">
+                            <div className="flex-1 overflow-hidden min-h-[350px]">
                                 {loading ? (
                                     <div className="flex items-center justify-center h-full text-blue-400">
                                         Rendering...
@@ -610,7 +642,7 @@ int main() {
                         </div>
                     ) : (
                         // Input & Output Panels
-                        <div className="flex flex-col gap-6">
+                        <div className={`${mobileTab !== 'output' ? 'hidden lg:flex' : 'flex'} flex-col gap-4 sm:gap-6 min-w-0`}>
                             {/* Standard Input Panel */}
                             <div className={`${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} rounded-2xl overflow-hidden border shadow-md flex flex-col`}>
                                 <div className={`${isDarkMode ? 'bg-slate-800/80 border-slate-700/60' : 'bg-gray-100/80 border-gray-200'} px-4 py-2.5 border-b flex items-center justify-between`}>
