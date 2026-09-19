@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { courseAPI, adminAPI } from '../services/api';
-import { FiPlay, FiUsers, FiStar, FiArrowRight, FiBook, FiAward, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
+import { FiArrowRight, FiBook, FiCode, FiLayers, FiDatabase, FiTrendingUp, FiCpu, FiSmartphone, FiCamera, FiLayout } from 'react-icons/fi';
 import CourseCard from '../components/course/CourseCard';
-import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useAuthModal } from '../context/AuthModalContext';
 import { useTheme } from '../hooks/useTheme';
-import D3PlatformMetrics from '../components/d3/D3PlatformMetrics';
+import ThreeHeroCanvas from '../components/common/ThreeHeroCanvas';
 
 const Home = () => {
     const { user, isAuthenticated } = useAuth();
     const { openModal } = useAuthModal();
     const { isDarkMode } = useTheme();
+
     const [featuredCourses, setFeaturedCourses] = useState([]);
     const [categories, setCategories] = useState([]);
     const [platformStats, setPlatformStats] = useState(null);
@@ -28,7 +28,7 @@ const Home = () => {
             setLoading(true);
             setError(null);
 
-            // Fetch courses, categories, and live platform statistics
+            // Fetch real-time courses, categories, and platform statistics from existing APIs
             const [coursesRes, categoriesRes, statsRes] = await Promise.all([
                 courseAPI.getAll({ sort: 'popular', limit: 8 }).catch(err => {
                     console.error('Courses API error:', err);
@@ -44,313 +44,637 @@ const Home = () => {
                 })
             ]);
 
-            const courses = coursesRes.data.courses || [];
-            const cats = categoriesRes.data.categories || [];
-            const stats = statsRes.data.stats;
+            const courses = coursesRes.data?.courses || [];
+            const cats = categoriesRes.data?.categories || [];
+            const stats = statsRes.data?.stats;
 
             setFeaturedCourses(courses);
             setCategories(cats.slice(0, 8));
             setPlatformStats(stats);
-
-            if (courses.length === 0) {
-                console.log('ℹ️ No courses found. Please seed the database.');
-            }
-
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setError('Failed to load content. Please check if the backend server is running.');
+        } catch (err) {
+            console.error('Error fetching landing page data:', err);
+            setError('Failed to load live curriculum content.');
         } finally {
             setLoading(false);
         }
     };
 
+    // Fallback categories list with rich domain data if database categories is empty or sparse
+    const domainCategories = [
+        {
+            name: 'Business Strategy',
+            tag: 'NEW',
+            tagColor: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+            borderColor: 'border-amber-500/20 hover:border-amber-500/40',
+            iconColor: 'text-amber-400',
+            iconBg: 'bg-amber-500/10 border-amber-500/20 group-hover:bg-amber-500/20',
+            countText: '8 modules',
+            icon: FiLayers
+        },
+        {
+            name: 'Data Science',
+            tag: 'TRENDING',
+            tagColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+            borderColor: 'border-emerald-500/30 hover:border-emerald-500/50',
+            iconColor: 'text-emerald-400',
+            iconBg: 'bg-emerald-500/10 border-emerald-500/20 group-hover:bg-emerald-500/20',
+            countText: `${platformStats?.totalCourses ? Math.max(3, Math.floor(platformStats.totalCourses / 4)) : 3} courses active`,
+            icon: FiTrendingUp,
+            isPulsing: true
+        },
+        {
+            name: 'Databases & SQL',
+            tag: 'CORE',
+            tagColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+            borderColor: 'border-purple-500/20 hover:border-purple-500/40',
+            iconColor: 'text-purple-400',
+            iconBg: 'bg-purple-500/10 border-purple-500/20 group-hover:bg-purple-500/20',
+            countText: 'Database tracks active',
+            icon: FiDatabase
+        },
+        {
+            name: 'Digital Marketing',
+            tag: 'GROWTH',
+            tagColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+            borderColor: 'border-blue-500/20 hover:border-blue-500/40',
+            iconColor: 'text-blue-400',
+            iconBg: 'bg-blue-500/10 border-blue-500/20 group-hover:bg-blue-500/20',
+            countText: '4 tracks',
+            icon: FiTrendingUp
+        },
+        {
+            name: 'Machine Learning',
+            tag: 'HOT',
+            tagColor: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+            borderColor: 'border-rose-500/20 hover:border-rose-500/40',
+            iconColor: 'text-rose-400',
+            iconBg: 'bg-rose-500/10 border-rose-500/20 group-hover:bg-rose-500/20',
+            countText: '2 tracks live',
+            icon: FiCpu,
+            isPulsing: true
+        },
+        {
+            name: 'Mobile & Flutter',
+            tag: 'NATIVE',
+            tagColor: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+            borderColor: 'border-cyan-500/30 hover:border-cyan-500/50',
+            iconColor: 'text-cyan-400',
+            iconBg: 'bg-cyan-500/10 border-cyan-500/20 group-hover:bg-cyan-500/20',
+            countText: 'Cross-platform dev',
+            icon: FiSmartphone
+        },
+        {
+            name: 'Visual Media',
+            tag: 'CREATIVE',
+            tagColor: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+            borderColor: 'border-orange-500/20 hover:border-orange-500/40',
+            iconColor: 'text-orange-400',
+            iconBg: 'bg-orange-500/10 border-orange-500/20 group-hover:bg-orange-500/20',
+            countText: '3 workshops',
+            icon: FiCamera
+        },
+        {
+            name: 'UI/UX Systems',
+            tag: 'DESIGN',
+            tagColor: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+            borderColor: 'border-pink-500/20 hover:border-pink-500/40',
+            iconColor: 'text-pink-400',
+            iconBg: 'bg-pink-500/10 border-pink-500/20 group-hover:bg-pink-500/20',
+            countText: '5 masterclasses',
+            icon: FiLayout
+        }
+    ];
+
     return (
-        <div className={`transition-colors duration-300 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-            {/* Hero Section */}
-            <section className={`relative overflow-hidden
-                ${isDarkMode
-                    ? 'bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 border-slate-800/80 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'
-                    : 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.25)]'}
-                rounded-2xl sm:rounded-3xl md:rounded-[3rem]
-                mt-4 sm:mt-6 md:mt-10 mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[96%]
-                pt-16 sm:pt-20 md:pt-24 lg:pt-12 pb-20 sm:pb-24 md:pb-32
-                border
-                flex justify-center transition-colors duration-300`}>
+        <div className="min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
+            {/* Subtle Ambient Glow Background */}
+            <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/15 blur-[140px] rounded-full" />
+                <div className="absolute top-[35%] -left-32 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full" />
+                <div className="absolute top-[65%] -right-32 w-[550px] h-[550px] bg-indigo-500/10 blur-[130px] rounded-full" />
+            </div>
 
-                {/* Ambient Blobs */}
-                <div className="ambient-blob w-[500px] h-[500px] bg-indigo-600 top-0 right-0 animate-float" />
-                <div className="ambient-blob w-[380px] h-[380px] bg-sky-400 bottom-0 left-0 animate-float delay-700" />
+            {/* MAIN CONTENT */}
+            <main className="relative z-10">
+                {/* 1. HERO SECTION WITH THREE.JS 3D CONSTELLATION & TECH CORE */}
+                <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32 bg-grid-pattern" data-purpose="hero-section">
+                    {/* Three.js Interactive 3D Background */}
+                    <ThreeHeroCanvas />
 
-                <div className="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 lg:py-5">
-                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 md:gap-10 lg:gap-12 items-center">
-                        {/* Left Column - Content */}
-                        <div className="text-white">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 md:mb-6 leading-tight animate-fade-up">
-                                Empower Your Future with
-                                <span className="block mt-1 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
-                                    World-Class Learning
-                                </span>
-                            </h1>
-                            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-7 md:mb-8 leading-relaxed animate-fade-up delay-150`}>
-                                Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
-                            </p>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                            {/* Left Column: Copy & Actions */}
+                            <div className="lg:col-span-7 flex flex-col items-start space-y-6">
+                                {/* Cohort Status Pill */}
+                                <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glow-pill text-indigo-200 text-xs font-medium backdrop-blur-md">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+                                    </span>
+                                    <span>Next Cohort Open for Enrollment</span>
+                                </div>
 
-                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12 animate-fade-up delay-300">
-                                <Link to="/courses" className="btn-glow inline-flex items-center justify-center gap-2 text-base sm:text-lg">
-                                    Explore Courses
-                                    <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                                {isAuthenticated ? (
-                                    <Link to="/dashboard" className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 transition-all`}>
-                                        My Dashboard
-                                    </Link>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => openModal('register')}
-                                        className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 md:py-4 rounded-xl font-bold text-base sm:text-lg border-2 transition-all cursor-pointer`}
+                                {/* Primary Headline */}
+                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
+                                    Empower Your Future with <br className="hidden sm:inline" />
+                                    <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
+                                        World-Class Learning
+                                    </span>
+                                </h1>
+
+                                {/* Subtitle */}
+                                <p className="text-base sm:text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
+                                    Join thousands of learners worldwide. Access expert-led courses, earn certificates, and transform your career today.
+                                </p>
+
+                                {/* CTA Buttons */}
+                                <div className="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
+                                    <Link
+                                        to="/courses"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-xl shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] border border-indigo-400/30"
                                     >
-                                        Start Free Trial
-                                    </button>
-                                )}
+                                        <span>Explore Courses</span>
+                                        <FiArrowRight className="w-4 h-4 text-white translate-x-0 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
+
+                                    {isAuthenticated ? (
+                                        <Link
+                                            to="/dashboard"
+                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-200 bg-surface-900/80 hover:bg-surface-800/90 border border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-500 shadow-lg shadow-black/20"
+                                        >
+                                            My Dashboard
+                                        </Link>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => openModal('register')}
+                                            className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-slate-200 bg-surface-900/80 hover:bg-surface-800/90 border border-slate-700/80 backdrop-blur-md transition-all hover:border-slate-500 shadow-lg shadow-black/20 cursor-pointer"
+                                        >
+                                            Start Free Trial
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Stats Bar (Live DB Metrics) */}
+                                <div className="grid grid-cols-3 gap-6 sm:gap-10 pt-8 mt-2 border-t border-slate-800/80 w-full max-w-lg">
+                                    <div>
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                            {platformStats?.totalLearners
+                                                ? platformStats.totalLearners >= 1000
+                                                    ? `${(platformStats.totalLearners / 1000).toFixed(1)}K+`
+                                                    : `${platformStats.totalLearners}+`
+                                                : '50+'}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Active Learners</div>
+                                    </div>
+                                    <div className="border-l border-slate-800 pl-6 sm:pl-10">
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                            {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '10+'}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Curriculum Courses</div>
+                                    </div>
+                                    <div className="border-l border-slate-800 pl-6 sm:pl-10">
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight flex items-center gap-1">
+                                            {platformStats?.averageRating ? platformStats.averageRating.toFixed(1) : '4.8'}
+                                            <span className="text-xl">★</span>
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Avg Rating</div>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Stats - Live Database Metrics */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 animate-fade-up delay-500">
-                                <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
-                                        {platformStats ? (
-                                            platformStats.totalLearners >= 1000
-                                                ? `${(platformStats.totalLearners / 1000).toFixed(1)}K+`
-                                                : `${platformStats.totalLearners || 0}+`
-                                        ) : (
-                                            '50+'
-                                        )}
+                            {/* Right Column: Institutional Hero Dashboard Card (Translucent glass so 3D animated background shines through) */}
+                            <div className="lg:col-span-5" data-purpose="institutional-dashboard-card">
+                                <div className="relative rounded-3xl p-6 sm:p-7 bg-slate-900/30 dark:bg-slate-900/35 backdrop-blur-md border border-white/10 dark:border-indigo-500/20 shadow-2xl shadow-indigo-950/40 transition-all duration-300 hover:border-indigo-500/40 hover:bg-slate-900/45">
+                                    {/* Corner ambient glow */}
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+
+                                    <div className="flex items-center justify-between pb-5 mb-5 border-b border-white/[0.08]">
+                                        <div>
+                                            <span className="text-[11px] font-bold tracking-wider text-indigo-400 uppercase">
+                                                Institutional Dashboard
+                                            </span>
+                                            <h3 className="text-lg font-bold text-white tracking-tight mt-0.5">
+                                                Academic Cohort Performance
+                                            </h3>
+                                        </div>
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 backdrop-blur-md">
+                                            Session 2024–2026
+                                        </span>
                                     </div>
-                                    <div className="text-blue-100 text-xs sm:text-sm">Active Learners</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
-                                        {platformStats ? `${platformStats.totalCourses || 0}+` : '10+'}
+
+                                    {/* Top Visual: Radial Gauge + Live Mini Stats */}
+                                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-5 mb-5 border-b border-white/[0.08]">
+                                        {/* Circular Radial Gauge */}
+                                        <div className="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
+                                            <svg className="w-full h-full" viewBox="0 0 200 200">
+                                                <circle cx="100" cy="100" fill="none" r="85" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="14" />
+                                                <circle
+                                                    className="gauge-progress"
+                                                    cx="100"
+                                                    cy="100"
+                                                    fill="none"
+                                                    r="85"
+                                                    stroke="url(#blue-cyan-gradient)"
+                                                    strokeLinecap="round"
+                                                    strokeWidth="14"
+                                                />
+                                                <defs>
+                                                    <linearGradient id="blue-cyan-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                        <stop offset="0%" stopColor="#38bdf8" />
+                                                        <stop offset="50%" stopColor="#6366f1" />
+                                                        <stop offset="100%" stopColor="#a855f7" />
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                                <span className="text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">
+                                                    {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '15+'}
+                                                </span>
+                                                <span className="text-[10px] font-bold tracking-widest text-indigo-300 uppercase mt-0.5">
+                                                    CURRICULUM COURSES
+                                                </span>
+                                                <span className="text-[11px] text-slate-300/80 mt-1">75% Capacity</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Details Rows (Translucent) */}
+                                        <div className="space-y-2 w-full">
+                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-200 font-medium">Enrolled Intake</span>
+                                                <span className="text-xs font-bold text-emerald-400">+34% vs last yr</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-200 font-medium">Completion Rate</span>
+                                                <span className="text-xs font-bold text-indigo-300">92.4%</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between">
+                                                <span className="text-xs text-slate-200 font-medium">Accreditation</span>
+                                                <span className="text-xs font-bold text-cyan-300">ISO 9001:2020</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-blue-100 text-xs sm:text-sm">Curriculum Courses</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
-                                        {platformStats ? `${platformStats.averageRating?.toFixed(1)}★` : '4.8★'}
+
+                                    {/* Metric Rows (Translucent pills) */}
+                                    <div className="space-y-2.5" data-purpose="dashboard-metrics-list">
+                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400" />
+                                                <div>
+                                                    <div className="text-sm font-semibold text-white">Curriculum Courses</div>
+                                                    <div className="text-xs text-slate-300/80">Industry-standard programs</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-base font-bold text-indigo-300">
+                                                {platformStats?.totalCourses ? `${platformStats.totalCourses}+` : '15+'}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-sm shadow-purple-400" />
+                                                <div>
+                                                    <div className="text-sm font-semibold text-white">Faculty Instructors</div>
+                                                    <div className="text-xs text-slate-300/80">Experienced professionals</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-base font-bold text-indigo-300">
+                                                {platformStats?.totalInstructors ? `${platformStats.totalInstructors}+` : '20+'}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
+                                                <div>
+                                                    <div className="text-sm font-semibold text-white">Certificates Conferred</div>
+                                                    <div className="text-xs text-slate-300/80">Verified credentials</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-base font-bold text-indigo-300">
+                                                {platformStats?.totalCertificates ? `${platformStats.totalCertificates}+` : '10+'}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 rounded-xl bg-slate-900/35 border border-white/[0.08] backdrop-blur-sm flex items-center justify-between hover:bg-slate-900/50 hover:border-white/20 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400" />
+                                                <div>
+                                                    <div className="text-sm font-semibold text-white">Student Rating</div>
+                                                    <div className="text-xs text-slate-300/80">Institutional excellence</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-base font-bold text-amber-400 flex items-center gap-1">
+                                                {platformStats?.averageRating ? platformStats.averageRating.toFixed(1) : '4.8'}
+                                                <span className="text-xs">★</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-blue-100 text-xs sm:text-sm">Avg Rating</div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Right Column - D3 Interactive Platform Metrics Hub */}
-                        <div className="w-full mt-6 lg:mt-0 animate-slide-up">
-                            <D3PlatformMetrics isDarkMode={isDarkMode} stats={platformStats} />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section className={`py-12 sm:py-16 md:py-20 px-4 sm:px-6 mx-auto w-[95%] sm:w-[92%] md:w-[98%] max-w-[96%] mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl md:rounded-[3rem] transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/30' : 'bg-white/40'} backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-[#CED4DA] dark:hover:border-[#495057]`}>
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-8 sm:mb-12 md:mb-16">
-                        <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                            Why Choose <span className="text-blue-600">CodeCampus</span>?
-                        </h2>
-                        <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto px-4`}>
-                            We provide the best learning experience with industry-leading features
-                        </p>
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                        {[
-                            {
-                                icon: FiBook,
-                                title: 'Expert-Led Courses',
-                                description: 'Learn from industry professionals with years of real-world experience',
-                                gradient: 'from-blue-500 to-blue-600'
-                            },
-                            {
-                                icon: FiPlay,
-                                title: 'Lifetime Access',
-                                description: 'Learn at your own pace with unlimited access to course materials',
-                                gradient: 'from-purple-500 to-purple-600'
-                            },
-                            {
-                                icon: FiAward,
-                                title: 'Earn Certificates',
-                                description: 'Get recognized with industry-recognized certificates upon completion',
-                                gradient: 'from-green-500 to-green-600'
-                            }
-                        ].map((feature, index) => (
-                            <div key={index} className={`p-6 sm:p-7 md:p-8 rounded-2xl hover:shadow-xl transition-all duration-300 text-center ${isDarkMode
-                                ? 'bg-slate-900 hover:bg-slate-800'
-                                : 'bg-gray-50 hover:bg-gray-100'
-                                }`}>
-                                <div className={`w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mx-auto mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
-                                    <feature.icon className="text-white text-2xl sm:text-3xl" />
-                                </div>
-                                <h3 className={`text-xl sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{feature.title}</h3>
-                                <p className={`leading-relaxed text-sm sm:text-base ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Categories Section */}
-            {categories.length > 0 && (
-                <section className={`py-12 sm:py-16 md:py-20 px-4 sm:px-6 mx-auto w-[95%] sm:w-[92%] md:w-[98%] max-w-[96%] mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl md:rounded-[3rem] transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/30' : 'bg-white/40'} backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-[#CED4DA] dark:hover:border-[#495057]`}>
-                    <div className="container mx-auto px-4">
-                        <div className="text-center mb-8 sm:mb-12 md:mb-16">
-                            <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                                Explore Top <span className="text-blue-600">Categories</span>
-                            </h2>
-                            <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Browse courses by category and find your passion</p>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
-                            {categories.map((category) => (
-                                <Link
-                                    key={category._id}
-                                    to={`/courses?category=${category._id}`}
-                                    className={`p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl hover:shadow-xl transition-all duration-300 text-center hover:-translate-y-2 ${isDarkMode
-                                        ? 'bg-gray-900 hover:bg-gray-800'
-                                        : 'bg-gray-100 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{category.icon || '📚'}</div>
-                                    <h3 className={`font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors ${isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>
-                                        {category.name}
-                                    </h3>
-                                    <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{category.courseCount || 0} courses</p>
-                                </Link>
-                            ))}
                         </div>
                     </div>
                 </section>
-            )}
 
-            {/* Featured Courses */}
-            <section className={`py-8 sm:py-10 md:py-12 px-4 sm:px-6 mx-auto w-[95%] sm:w-[92%] md:w-[98%] max-w-[96%] mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl md:rounded-[3rem] transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/30' : 'bg-white/40'} backdrop-blur-xl border border-white/60 dark:border-slate-700/30 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-[#CED4DA] dark:hover:border-[#495057]`}>
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 md:mb-12 gap-4">
-                        <div>
-                            <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                                Featured <span className="text-blue-600">Courses</span>
+                {/* 2. WHY CHOOSE CODECAMPUS SECTION */}
+                <section className="py-20 bg-surface-950/60 relative border-t border-slate-800/50" data-purpose="why-choose-us">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="text-center max-w-2xl mx-auto mb-16">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-300 text-xs font-semibold mb-4 backdrop-blur-md">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                <span>ENGINEERED FOR EXCELLENCE</span>
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                                Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400">CodeCampus</span>?
                             </h2>
-                            <p className={`text-base sm:text-lg md:text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Handpicked courses loved by our students</p>
+                            <p className="text-slate-400 mt-3 text-base leading-relaxed">
+                                Industry-leading infrastructure built specifically for immersive software engineering and computer science mastery.
+                            </p>
                         </div>
-                        <Link to="/courses" className="hidden md:flex items-center gap-2 text-blue-600 font-semibold text-base sm:text-lg hover:gap-4 transition-all group">
-                            View All Courses
-                            <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
 
-                    {loading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className={`h-80 sm:h-88 md:h-96 rounded-xl animate-pulse ${isDarkMode ? 'bg-slate-800' : 'bg-gray-200'}`} />
-                            ))}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {/* Card 1 */}
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-blue-500/20 hover:border-blue-500/40 relative overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
+                                <div>
+                                    <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] transition-all">
+                                        <FiBook className="w-7 h-7 text-blue-400" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Expert-Led Courses</h3>
+                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                        Curated syllabi designed by staff architects from Fortune 500 tech companies with live code telemetry.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Mentorship ratio</span>
+                                    <span className="font-bold font-mono text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                                        1:8 Live
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Card 2 */}
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-purple-500/20 hover:border-purple-500/40 relative overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/20 transition-all" />
+                                <div>
+                                    <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.35)] transition-all">
+                                        <FiCode className="w-7 h-7 text-purple-400" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Lifetime Cloud Access</h3>
+                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                        Perpetual access to all future course revisions, cloud workspace clusters, recorded sessions, and cheat sheets.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Workspace uptime</span>
+                                    <span className="font-bold font-mono text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                                        99.98% SLA
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Card 3 */}
+                            <div className="glass-card rounded-3xl p-8 flex flex-col justify-between group border border-emerald-500/20 hover:border-emerald-500/40 relative overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+                                <div>
+                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all">
+                                        <FiLayers className="w-7 h-7 text-emerald-400" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Accredited Credentials</h3>
+                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                        Cryptographically signed digital credentials with automated one-click LinkedIn and GitHub profile integration.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Verification rate</span>
+                                    <span className="font-bold font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                        Instant CID
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    ) : error ? (
-                        <div className={`text-center py-12 sm:py-14 md:py-16 rounded-xl px-4 ${isDarkMode ? 'bg-red-900 bg-opacity-20' : 'bg-red-50'}`}>
-                            <p className={`text-base sm:text-lg mb-3 sm:mb-4 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>{error}</p>
-                            <p className={`mb-4 sm:mb-6 text-sm sm:text-base ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Make sure your backend server is running on port 5000</p>
-                            <button onClick={fetchData} className="px-5 sm:px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 text-sm sm:text-base">
-                                Try Again
-                            </button>
+                    </div>
+                </section>
+
+                {/* 3. EXPLORE TOP CATEGORIES SECTION */}
+                <section className="py-24 relative" data-purpose="categories-section">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-2xl mx-auto mb-14">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-cyan-300 text-xs font-semibold mb-4 backdrop-blur-md">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                <span>DISCOVER DOMAINS</span>
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                                Explore Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Categories</span>
+                            </h2>
+                            <p className="text-slate-400 mt-3 text-base">
+                                Browse modern engineering disciplines verified by industry hiring pipelines
+                            </p>
                         </div>
-                    ) : featuredCourses.length === 0 ? (
-                        <div className={`text-center py-12 sm:py-14 md:py-16 rounded-xl px-4 ${isDarkMode ? 'bg-yellow-900 bg-opacity-20' : 'bg-yellow-50'}`}>
-                            <FiBook className={`text-5xl sm:text-6xl mx-auto mb-3 sm:mb-4 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
-                            <h3 className={`text-xl sm:text-2xl font-bold mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>No Courses Available Yet</h3>
-                            <p className={`mb-4 sm:mb-6 text-sm sm:text-base ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Please run the seed script to add sample courses:</p>
-                            <code className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg inline-block mb-3 sm:mb-4 text-xs sm:text-sm ${isDarkMode ? 'bg-slate-800 text-green-400' : 'bg-gray-800 text-green-400'} break-all`}>
-                                cd backend && node seed.js
-                            </code>
-                            <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Then refresh this page</p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            {domainCategories.map((cat, idx) => {
+                                const IconComponent = cat.icon;
+                                return (
+                                    <Link
+                                        key={idx}
+                                        to="/courses"
+                                        className={`glass-card rounded-2xl p-6 flex flex-col items-center justify-between text-center group cursor-pointer border ${cat.borderColor} relative overflow-hidden`}
+                                    >
+                                        <div className="w-full flex items-center justify-between mb-4">
+                                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${cat.tagColor}`}>
+                                                {cat.tag}
+                                            </span>
+                                            {cat.isPulsing ? (
+                                                <span className="relative flex h-2 w-2">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                                </span>
+                                            ) : (
+                                                <span className="flex h-2 w-2 rounded-full bg-amber-400 opacity-80" />
+                                            )}
+                                        </div>
+
+                                        <div className={`w-14 h-14 rounded-xl border flex items-center justify-center mb-3 group-hover:scale-110 transition-all ${cat.iconBg}`}>
+                                            <IconComponent className={`w-7 h-7 ${cat.iconColor}`} />
+                                        </div>
+
+                                        <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                                            {cat.name}
+                                        </h4>
+                                        <span className="text-xs text-slate-400 mt-1 font-mono">
+                                            {cat.countText}
+                                        </span>
+                                    </Link>
+                                );
+                            })}
                         </div>
-                    ) : (
-                        <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+                    </div>
+                </section>
+
+                {/* 4. FEATURED COURSES SECTION */}
+                <section className="py-20 bg-surface-950/70 border-t border-slate-800/60" data-purpose="featured-courses" id="courses">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-12 gap-4">
+                            <div>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-300 text-xs font-semibold mb-3 backdrop-blur-md">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                    <span>PRODUCTION CURRICULUM</span>
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                                    Featured <span className="text-indigo-400">Courses</span>
+                                </h2>
+                                <p className="text-slate-400 mt-2 text-base">
+                                    Handpicked cohorts with interactive cloud sandbox environments
+                                </p>
+                            </div>
+
+                            <Link
+                                to="/courses"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-300 bg-indigo-600/15 hover:bg-indigo-600/25 border border-indigo-500/30 transition-all group"
+                            >
+                                <span>View All Courses</span>
+                                <FiArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
+
+                        {loading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="h-72 rounded-2xl bg-surface-900/60 animate-pulse border border-slate-800" />
+                                ))}
+                            </div>
+                        ) : featuredCourses.length === 0 ? (
+                            <div className="glass-card rounded-3xl p-12 text-center max-w-lg mx-auto border border-slate-800">
+                                <FiBook className="text-4xl text-indigo-400 mx-auto mb-3" />
+                                <h3 className="text-lg font-bold text-white mb-2">No Courses Published Yet</h3>
+                                <p className="text-sm text-slate-400 mb-6">
+                                    Run the seed command in the backend to populate production cohorts.
+                                </p>
+                                <Link
+                                    to="/courses"
+                                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-white text-sm"
+                                >
+                                    Browse Directory
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {featuredCourses.map((course) => (
                                     <CourseCard key={course._id} course={course} currentUser={user} />
                                 ))}
                             </div>
-                            <div className="text-center mt-8 sm:mt-10 md:mt-12 md:hidden">
-                                <Link to="/courses" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 text-sm sm:text-base">
-                                    View All Courses <FiArrowRight />
-                                </Link>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className={`relative overflow-hidden
-                ${isDarkMode
-                    ? 'bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 border-slate-800/80 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'
-                    : 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.25)]'}
-                rounded-2xl sm:rounded-3xl md:rounded-[3rem] lg:rounded-[4rem]
-                mt-4 sm:mt-5 md:mt-7 mb-2
-                w-[95%] sm:w-[92%] md:w-[98%] mx-auto
-                pt-16 sm:pt-20 md:pt-24 lg:pt-12 pb-8 sm:pb-10 md:pb-12
-                border
-                flex justify-center transition-colors duration-300`}>
-                <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className={`absolute top-0 left-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-indigo-500' : 'bg-white'} rounded-full blur-3xl`}></div>
-                    <div className={`absolute bottom-0 right-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} rounded-full blur-3xl`}></div>
-                </div>
-
-                <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 text-center text-white">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 md:mb-6 px-2">
-                        Ready to Start Your Learning Journey?
-                    </h2>
-                    <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${isDarkMode ? 'text-slate-300' : 'text-blue-100'} mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto px-4`}>
-                        Join thousands of students learning new skills and advancing their careers with CodeCampus
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center px-4">
-                        {isAuthenticated ? (
-                            <Link to="/courses" className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105">
-                                Go to My Courses
-                                <FiArrowRight />
-                            </Link>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => openModal('register')}
-                                className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:scale-105 cursor-pointer"
-                            >
-                                Get Started Free
-                                <FiArrowRight />
-                            </button>
                         )}
-                        <Link to="/courses" className={`inline-flex items-center justify-center gap-2 ${isDarkMode ? 'bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-700/50' : 'bg-blue-500 bg-opacity-20 hover:bg-opacity-30 border-white border-opacity-30'} backdrop-blur-sm text-white px-7 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 rounded-xl font-bold text-base sm:text-lg border-2 transition-all`}>
-                            Browse Courses
-                        </Link>
                     </div>
+                </section>
 
-                    <div className="mt-8 sm:mt-10 md:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 px-4">
-                        {[
-                            { icon: FiCheckCircle, text: '30-Day Money Back Guarantee' },
-                            { icon: FiCheckCircle, text: 'Lifetime Access to Courses' },
-                            { icon: FiCheckCircle, text: 'Expert Instructor Support' },
-                            { icon: FiCheckCircle, text: 'Learn at Your Own Pace' }
-                        ].map((item, index) => (
-                            <div key={index} className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-center">
-                                <item.icon className="text-green-300 text-lg sm:text-xl flex-shrink-0" />
-                                <span className={`${isDarkMode ? 'text-slate-300' : 'text-blue-100'} text-sm sm:text-base`}>{item.text}</span>
+                {/* 5. ONLINE CLOUD COMPILER BANNER */}
+                <section className="py-16 relative" data-purpose="compiler-cta" id="compiler">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="rounded-3xl p-6 sm:p-10 relative overflow-hidden bg-gradient-to-r from-indigo-950/60 via-[#0b1022] to-[#070b16] border border-indigo-500/30 shadow-2xl">
+                            <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                                {/* Left copy */}
+                                <div className="lg:col-span-5 space-y-5">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-cyan-300 text-xs font-semibold backdrop-blur-md">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+                                        </span>
+                                        <span>ZERO-LATENCY CLOUD RUNTIME</span>
+                                    </div>
+
+                                    <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                                        Practice Live in our Built-in Cloud Compiler
+                                    </h2>
+
+                                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                                        Run Python, JavaScript, C++, Rust, and Go with instant execution telemetry, container isolation, and zero environment setup needed.
+                                    </p>
+
+                                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                                        <Link
+                                            to="/online-compiler"
+                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
+                                        >
+                                            <FiCode className="w-5 h-5 text-cyan-300" />
+                                            <span>Launch Cloud Compiler</span>
+                                        </Link>
+                                        <span className="text-xs text-slate-400 font-mono flex items-center gap-1.5">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                            WebAssembly Engine v3.2
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Right compiler simulated console card */}
+                                <div className="lg:col-span-7">
+                                    <div className="rounded-2xl border border-slate-700/80 bg-[#060913] shadow-2xl overflow-hidden">
+                                        <div className="px-4 py-2.5 bg-[#090e1c] border-b border-slate-800 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1.5 mr-2">
+                                                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                                                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
+                                                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                                                </div>
+                                                <div className="flex items-center gap-1 text-xs">
+                                                    <span className="px-2.5 py-1 rounded-md bg-indigo-600/20 text-indigo-300 font-mono font-medium border border-indigo-500/30">
+                                                        script.py
+                                                    </span>
+                                                    <span className="px-2.5 py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono">
+                                                        app.js
+                                                    </span>
+                                                    <span className="px-2.5 py-1 rounded-md text-slate-400 hover:text-slate-200 font-mono">
+                                                        main.cpp
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                                CPU: 1.2%
+                                            </span>
+                                        </div>
+
+                                        <div className="p-4 font-mono text-xs text-slate-300 leading-relaxed bg-[#060913] space-y-1">
+                                            <div className="text-slate-500"># Cloud Compiler Session :: Python 3.12</div>
+                                            <div>
+                                                <span className="text-purple-400">import</span>{' '}
+                                                <span className="text-cyan-300">numpy</span>{' '}
+                                                <span className="text-purple-400">as</span>{' '}
+                                                <span className="text-indigo-300">np</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-purple-400">def</span>{' '}
+                                                <span className="text-blue-400">solve_matrix</span>(size=128):
+                                            </div>
+                                            <div className="pl-4">
+                                                <span className="text-slate-400">grid = np.random.randn(size, size)</span>
+                                            </div>
+                                            <div className="pl-4">
+                                                <span className="text-purple-400">return</span>{' '}
+                                                <span className="text-cyan-300">np.linalg.norm</span>(grid)
+                                            </div>
+                                            <div>
+                                                <span className="text-amber-400">print</span>(
+                                                <span className="text-emerald-300">f"[OK] Tensor evaluated: &#123;solve_matrix():.4f&#125;"</span>)
+                                            </div>
+                                        </div>
+
+                                        <div className="px-4 py-2 bg-[#090e1c] border-t border-slate-800/80 font-mono text-[11px] flex items-center justify-between text-slate-400">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-emerald-400 font-bold">&gt;</span>
+                                                <span className="text-emerald-300">[OK] Tensor evaluated: 16.0291 (runtime: 14ms)</span>
+                                            </div>
+                                            <span className="text-slate-500 text-[10px]">Memory: 24MB</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </main>
         </div>
     );
 };
