@@ -11,14 +11,16 @@ const {
     getRevenueByCourse,
     getRevenueByTrainer,
     createCategory,
-    getCategories
+    getCategories,
+    getPublicPlatformStats
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ⭐ MAKE CATEGORIES PUBLIC - No auth required
+// ⭐ PUBLIC ROUTES - No auth required
 router.get('/categories', getCategories);
+router.get('/platform-stats', getPublicPlatformStats);
 
 // All other admin routes require authentication
 router.use(protect, authorize('admin'));

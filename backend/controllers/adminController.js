@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const Order = require('../models/Order');
 const Category = require('../models/Category');
+const Progress = require('../models/Progress');
 
 // @desc    Get admin dashboard stats
 // @route   GET /api/admin/dashboard
@@ -454,6 +455,51 @@ exports.getCategories = async (req, res, next) => {
             success: true,
             count: categories.length,
             categories
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get public real-time platform metrics
+// @route   GET /api/admin/platform-stats
+// @access  Public
+exports.getPublicPlatformStats = async (req, res, next) => {
+    try {
+        const [
+            totalLearners,
+            totalInstructors,
+            totalCourses,
+            totalCertificates,
+            courseRatingAgg
+        ] = await Promise.all([
+            User.countDocuments({ role: 'student' }),
+            User.countDocuments({ role: 'trainer' }),
+            Course.countDocuments({ status: 'published', isApproved: true }),
+            Progress.countDocuments({ 'certificate.isGenerated': true }),
+            Course.aggregate([
+                { $match: { status: 'published', isApproved: true, averageRating: { $gt: 0 } } },
+                {
+                    $group: {
+                        _id: null,
+                        avgRating: { $avg: '$averageRating' }
+                    }
+                }
+            ])
+        ]);
+
+        const rawRating = courseRatingAgg[0]?.avgRating;
+        const averageRating = rawRating ? Math.round(rawRating * 10) / 10 : 5.0;
+
+        res.status(200).json({
+            success: true,
+            stats: {
+                totalLearners,
+                totalInstructors,
+                totalCourses,
+                totalCertificates,
+                averageRating
+            }
         });
     } catch (error) {
         next(error);

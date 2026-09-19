@@ -12,54 +12,59 @@ import * as d3 from 'd3';
  * - Certificates Issued (10K+)
  * - Average Rating (4.8★)
  */
-export default function D3PlatformMetrics({ isDarkMode = true }) {
+export default function D3PlatformMetrics({ isDarkMode = true, stats = null }) {
     const svgRef = useRef(null);
     const [activeMetric, setActiveMetric] = useState(0);
+
+    const totalCourses = stats?.totalCourses ?? 15;
+    const totalInstructors = stats?.totalInstructors ?? 20;
+    const totalCertificates = stats?.totalCertificates ?? 10;
+    const averageRating = stats?.averageRating ?? 4.8;
 
     const metrics = [
         {
             key: 'courses',
             label: 'Curriculum Courses',
-            value: 15,
-            display: '15+',
+            value: totalCourses,
+            display: totalCourses > 0 ? `${totalCourses}+` : '0',
             subtitle: 'Industry-standard programs',
-            max: 20,
+            max: Math.max(20, totalCourses),
             color: '#6366f1', // Indigo
-            pct: 75
+            pct: Math.min(100, Math.round((totalCourses / Math.max(20, totalCourses)) * 100))
         },
         {
             key: 'instructors',
             label: 'Faculty Instructors',
-            value: 20,
-            display: '20+',
+            value: totalInstructors,
+            display: totalInstructors > 0 ? `${totalInstructors}+` : '0',
             subtitle: 'Experienced professionals',
-            max: 25,
+            max: Math.max(25, totalInstructors),
             color: '#a855f7', // Purple
-            pct: 80
+            pct: Math.min(100, Math.round((totalInstructors / Math.max(25, totalInstructors)) * 100))
         },
         {
             key: 'certificates',
             label: 'Certificates Conferred',
-            value: 10,
-            display: '10K+',
+            value: totalCertificates,
+            display: totalCertificates >= 1000 ? `${(totalCertificates / 1000).toFixed(0)}K+` : `${totalCertificates}+`,
             subtitle: 'Verified credentials',
-            max: 12,
+            max: Math.max(12, totalCertificates),
             color: '#10b981', // Emerald
-            pct: 85
+            pct: Math.min(100, Math.round((totalCertificates / Math.max(12, totalCertificates)) * 100))
         },
         {
             key: 'rating',
             label: 'Student Rating',
-            value: 4.8,
-            display: '4.8 ★',
+            value: averageRating,
+            display: `${averageRating.toFixed(1)} ★`,
             subtitle: 'Institutional excellence',
             max: 5,
             color: '#f59e0b', // Amber
-            pct: 96
+            pct: Math.min(100, Math.round((averageRating / 5) * 100))
         }
     ];
 
-    const current = metrics[activeMetric];
+    const current = metrics[activeMetric] || metrics[0];
 
     useEffect(() => {
         if (!svgRef.current) return;

@@ -15,6 +15,7 @@ const Home = () => {
     const { isDarkMode } = useTheme();
     const [featuredCourses, setFeaturedCourses] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [platformStats, setPlatformStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -27,8 +28,8 @@ const Home = () => {
             setLoading(true);
             setError(null);
 
-            // Fetch courses and categories
-            const [coursesRes, categoriesRes] = await Promise.all([
+            // Fetch courses, categories, and live platform statistics
+            const [coursesRes, categoriesRes, statsRes] = await Promise.all([
                 courseAPI.getAll({ sort: 'popular', limit: 8 }).catch(err => {
                     console.error('Courses API error:', err);
                     return { data: { courses: [] } };
@@ -36,14 +37,20 @@ const Home = () => {
                 adminAPI.getCategories().catch(err => {
                     console.error('Categories API error:', err);
                     return { data: { categories: [] } };
+                }),
+                adminAPI.getPublicPlatformStats().catch(err => {
+                    console.error('Platform stats API error:', err);
+                    return { data: { stats: null } };
                 })
             ]);
 
             const courses = coursesRes.data.courses || [];
             const cats = categoriesRes.data.categories || [];
+            const stats = statsRes.data.stats;
 
             setFeaturedCourses(courses);
             setCategories(cats.slice(0, 8));
+            setPlatformStats(stats);
 
             if (courses.length === 0) {
                 console.log('ℹ️ No courses found. Please seed the database.');
@@ -108,18 +115,30 @@ const Home = () => {
                                 )}
                             </div>
 
-                            {/* Stats */}
+                            {/* Stats - Live Database Metrics */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 animate-fade-up delay-500">
                                 <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">50K+</div>
+                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
+                                        {platformStats ? (
+                                            platformStats.totalLearners >= 1000
+                                                ? `${(platformStats.totalLearners / 1000).toFixed(1)}K+`
+                                                : `${platformStats.totalLearners || 0}+`
+                                        ) : (
+                                            '50+'
+                                        )}
+                                    </div>
                                     <div className="text-blue-100 text-xs sm:text-sm">Active Learners</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">15+</div>
-                                    <div className="text-blue-100 text-xs sm:text-sm">Expert Courses</div>
+                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
+                                        {platformStats ? `${platformStats.totalCourses || 0}+` : '10+'}
+                                    </div>
+                                    <div className="text-blue-100 text-xs sm:text-sm">Curriculum Courses</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">4.8★</div>
+                                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">
+                                        {platformStats ? `${platformStats.averageRating?.toFixed(1)}★` : '4.8★'}
+                                    </div>
                                     <div className="text-blue-100 text-xs sm:text-sm">Avg Rating</div>
                                 </div>
                             </div>
@@ -127,7 +146,7 @@ const Home = () => {
 
                         {/* Right Column - D3 Interactive Platform Metrics Hub */}
                         <div className="w-full mt-6 lg:mt-0 animate-slide-up">
-                            <D3PlatformMetrics isDarkMode={isDarkMode} />
+                            <D3PlatformMetrics isDarkMode={isDarkMode} stats={platformStats} />
                         </div>
                     </div>
                 </div>

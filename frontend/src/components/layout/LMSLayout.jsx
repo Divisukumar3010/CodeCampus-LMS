@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
+import { userAPI } from '../../services/api';
 import {
     FiHome,
     FiBookOpen,
@@ -33,6 +34,43 @@ const LMSLayout = ({ children }) => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [weeklyActivity, setWeeklyActivity] = useState([0, 0, 0, 0, 0, 0, 0]);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchWeeklyPace = async () => {
+            if (!user) return;
+            try {
+                const res = await userAPI.getEnrolledCourses();
+                const enrolled = res.data.courses || [];
+
+                // Calculate completed lessons over past 7 days
+                const countsByDay = [0, 0, 0, 0, 0, 0, 0];
+                const now = new Date();
+                now.setHours(23, 59, 59, 999);
+
+                enrolled.forEach(prog => {
+                    (prog.completedLessons || []).forEach(cl => {
+                        if (!cl.completedAt) return;
+                        const date = new Date(cl.completedAt);
+                        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+                        if (diffDays >= 0 && diffDays < 7) {
+                            countsByDay[6 - diffDays] += 1;
+                        }
+                    });
+                });
+
+                if (isMounted) {
+                    setWeeklyActivity(countsByDay);
+                }
+            } catch {
+                // Keep default baseline
+            }
+        };
+
+        fetchWeeklyPace();
+        return () => { isMounted = false; };
+    }, [user, location.pathname]);
 
     const handleLogout = async () => {
         await logout();
@@ -239,7 +277,7 @@ const LMSLayout = ({ children }) => {
                     {/* Bottom Quick Card / System Meta */}
                     {!isCollapsed && (
                         <div className="p-3.5 m-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs space-y-2">
-                            <D3WeeklySparkline />
+                            <D3WeeklySparkline data={weeklyActivity} />
                             <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
                                 <span className="text-slate-500 dark:text-slate-400 text-[10px]">
                                     Term Active

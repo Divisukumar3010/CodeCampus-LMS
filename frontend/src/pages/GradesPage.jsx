@@ -88,10 +88,22 @@ const GradesPage = () => {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="badge badge-success py-1 px-3 text-xs animate-scale-in">
-                        <FiCheckCircle size={13} />
-                        Good Academic Standing
-                    </span>
+                    {totalExamsAttempted.length === 0 ? (
+                        <span className="badge badge-secondary py-1 px-3 text-xs animate-scale-in">
+                            <FiAlertCircle size={13} />
+                            Enrolled Scholar
+                        </span>
+                    ) : passRate >= 70 ? (
+                        <span className="badge badge-success py-1 px-3 text-xs animate-scale-in">
+                            <FiCheckCircle size={13} />
+                            Good Academic Standing ({passRate}% Pass)
+                        </span>
+                    ) : (
+                        <span className="badge badge-warning py-1 px-3 text-xs animate-scale-in">
+                            <FiAlertCircle size={13} />
+                            Academic Review Needed
+                        </span>
+                    )}
                 </div>
             </div>
 
