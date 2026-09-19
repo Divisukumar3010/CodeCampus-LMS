@@ -1,132 +1,147 @@
 import { Link } from 'react-router-dom';
-import { FiFacebook, FiTwitter, FiLinkedin, FiInstagram } from 'react-icons/fi';
+import { FiFacebook, FiTwitter, FiLinkedin, FiInstagram, FiGithub } from 'react-icons/fi';
 
 const Footer = () => {
     return (
-        <footer className="w-full flex justify-center mt-5 mb-8 px-2 sm:px-3 md:px-4 lg:px-6">
-            <div
-                className="
-      w-full max-w-[95%] md:max-w-[98%]
-      rounded-2xl sm:rounded-3xl md:rounded-[3rem]
-      bg-gray-900 dark:bg-gray-800 text-gray-300 dark:text-gray-400
-      px-3 sm:px-6 md:px-8 lg:px-12
-      py-6 sm:py-8 md:py-12 lg:py-16
-    "
-            >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 auto-rows-max">
-                    {/* Brand */}
-                    <div className="col-span-1">
-                        <h3 className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-4">CodeCampus
-                        </h3>
-                        <p className="text-xs sm:text-sm md:text-base mb-4">
-                            Empowering learners worldwide with quality education and expert instructors.
+        <footer className="bg-[#060913] border-t border-slate-800/80 pt-16 pb-12 text-slate-400" data-purpose="page-footer">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/70">
+                    {/* Brand & Newsletter */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <Link to="/" className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 p-[1.5px] flex items-center justify-center">
+                                <div className="w-full h-full bg-[#090e1c] rounded-[10px] flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
+                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                        <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <span className="text-xl font-bold text-white tracking-tight">
+                                Code<span className="text-indigo-400">Campus</span>
+                            </span>
+                        </Link>
+                        <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+                            Empowering students, developers, and global enterprise engineers with career-defining technical competencies, cloud sandbox tooling, and verified certifications.
                         </p>
-                        <div className="flex space-x-4">
-                            <a href="#" className="hover:text-blue-400 transition text-gray-400 hover:text-gray-300">
-                                <FiFacebook size={20} />
-                            </a>
-                            <a href="#" className="hover:text-blue-400 transition text-gray-400 hover:text-gray-300">
-                                <FiTwitter size={20} />
-                            </a>
-                            <a href="#" className="hover:text-blue-400 transition text-gray-400 hover:text-gray-300">
-                                <FiLinkedin size={20} />
-                            </a>
-                            <a href="#" className="hover:text-blue-400 transition text-gray-400 hover:text-gray-300">
-                                <FiInstagram size={20} />
-                            </a>
+                        <div className="pt-2">
+                            <div className="text-xs font-semibold text-slate-300 mb-2">Subscribe to Engineering Weekly</div>
+                            <form onSubmit={(e) => { e.preventDefault(); }} className="flex items-center gap-2 max-w-sm">
+                                <input
+                                    className="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1"
+                                    placeholder="Enter your email"
+                                    type="email"
+                                    required
+                                />
+                                <button
+                                    type="submit"
+                                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors"
+                                >
+                                    Join
+                                </button>
+                            </form>
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div className="col-span-1">
-                        <h4 className="text-white text-sm sm:text-base md:text-lg font-semibold mb-4 sm:mb-6">Quick Links</h4>
-                        <ul className="space-y-2 sm:space-y-3">
+                    {/* Platform Links */}
+                    <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Platform</h4>
+                        <ul className="space-y-2.5 text-sm text-slate-400">
                             <li>
-                                <Link to="/courses" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
-                                    Browse Courses
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Courses Catalog
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/about" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
-                                    About Us
+                                <Link to="/online-compiler" className="hover:text-white transition-colors">
+                                    Online Compiler
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/contact" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
-                                    Contact
+                                <Link to="/calendar" className="hover:text-white transition-colors">
+                                    Academic Calendar
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/grades" className="hover:text-white transition-colors">
+                                    Grades & Transcripts
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Support */}
-                    <div className="col-span-1">
-                        <h4 className="text-white text-sm sm:text-base md:text-lg font-semibold mb-4 sm:mb-6">Support</h4>
-                        <ul className="space-y-2 sm:space-y-3">
+                    {/* Resources */}
+                    <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Resources</h4>
+                        <ul className="space-y-2.5 text-sm text-slate-400">
                             <li>
-                                <Link to="/help" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
-                                    Help Center
+                                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                                    Student Community
+                                </a>
+                            </li>
+                            <li>
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Accreditation
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/terms" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
-                                    Terms of Service
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Faculty Directory
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/privacy" className="text-xs sm:text-sm md:text-base hover:text-blue-400 transition">
+                                <Link to="/dashboard" className="hover:text-white transition-colors">
+                                    Documentation
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Institutional & Legal */}
+                    <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4">Institutional</h4>
+                        <ul className="space-y-2.5 text-sm text-slate-400">
+                            <li>
+                                <Link to="/courses" className="hover:text-white transition-colors">
                                     Privacy Policy
                                 </Link>
                             </li>
+                            <li>
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Curriculum Terms
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Compliance & SOC2
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/courses" className="hover:text-white transition-colors">
+                                    Support Desk
+                                </Link>
+                            </li>
                         </ul>
-                    </div>
-
-                    {/* Newsletter */}
-                    <div className="col-span-1 sm:col-span-1 lg:col-span-1">
-                        <h4 className="text-white text-sm sm:text-base md:text-lg font-semibold mb-4 sm:mb-6">Newsletter</h4>
-                        <p className="text-xs sm:text-sm md:text-base mb-4">
-                            Subscribe to get updates on new courses
-                        </p>
-                        <div className="flex flex-col gap-2 w-full">
-                            <input
-                                type="email"
-                                placeholder="Your email"
-                                className="
-              px-3 sm:px-4 py-2 sm:py-3
-              text-xs sm:text-sm
-              rounded-lg
-              bg-gray-800 dark:bg-gray-700 text-white
-              placeholder-gray-500
-              focus:outline-none focus:ring-2 focus:ring-blue-500/50
-              w-full
-              box-border
-            "
-                            />
-                            <button
-                                className="
-              px-4 sm:px-6 py-2 sm:py-3
-              text-xs sm:text-sm
-              bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700
-              rounded-lg
-              font-semibold
-              transition
-              w-full
-              box-border
-            "
-                            >
-                                Subscribe
-                            </button>
-                        </div>
                     </div>
                 </div>
 
-                {/* Bottom */}
-                <div className="border-t border-gray-700 mt-6 sm:mt-8 md:mt-10 pt-4 sm:pt-6 text-center sm:text-left text-xs sm:text-sm">
-                    <p>&copy; {new Date().getFullYear()} CodeCampus. All rights reserved.</p>
+                {/* Bottom Bar */}
+                <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                    <div>
+                        © {new Date().getFullYear()} CodeCampus LMS Inc. All rights reserved. Learn Without Limits.
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <span className="inline-flex items-center gap-2 text-emerald-400 font-mono">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                            </span>
+                            All Systems Operational (99.98%)
+                        </span>
+                    </div>
                 </div>
             </div>
         </footer>
-
     );
 };
 

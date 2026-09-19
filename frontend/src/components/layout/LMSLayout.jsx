@@ -142,19 +142,18 @@ const LMSLayout = ({ children }) => {
 
                     {/* Logo & Portal Identity */}
                     <Link to="/dashboard" className="flex items-center gap-2.5 group">
-                        <img
-                            src="/CodeCampus.png"
-                            alt="CodeCampus"
-                            className="w-8 h-8 object-contain rounded"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.style.display = 'none';
-                            }}
-                        />
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 p-[1px] shadow-sm group-hover:scale-105 transition-transform duration-300">
+                            <div className="w-full h-full bg-[#090e1c] rounded-[7px] flex items-center justify-center">
+                                <svg className="w-4 h-4 text-indigo-400 group-hover:text-cyan-300 transition-colors" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                                </svg>
+                            </div>
+                        </div>
                         <div className="flex flex-col">
-                            <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                                CodeCampus
-                                <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/40">
+                            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                                Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Campus</span>
+                                <span className="text-[9px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20">
                                     LMS
                                 </span>
                             </span>
