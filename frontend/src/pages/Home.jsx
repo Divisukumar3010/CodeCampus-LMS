@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAuthModal } from '../context/AuthModalContext';
 import { useTheme } from '../hooks/useTheme';
 import ThreeHeroCanvas from '../components/common/ThreeHeroCanvas';
+import ThreeAmbientParticles from '../components/common/ThreeAmbientParticles';
 
 const Home = () => {
     const { user, isAuthenticated } = useAuth();
@@ -376,8 +377,13 @@ const Home = () => {
                     </div>
                 </section>
 
-                {/* 2. WHY CHOOSE CODECAMPUS SECTION */}
-                <section className="py-20 bg-surface-950/60 relative border-t border-slate-800/50" data-purpose="why-choose-us">
+                {/* POST-HERO SECTIONS CONTAINER WITH CONTINUOUS 3D AMBIENT BACKGROUND */}
+                <div className="relative overflow-hidden">
+                    {/* Continuous 3D Ambient Particles & Geometric Crystals Canvas */}
+                    <ThreeAmbientParticles />
+
+                    {/* 2. WHY CHOOSE CODECAMPUS SECTION */}
+                    <section className="py-20 bg-surface-950/40 relative border-t border-slate-800/50" data-purpose="why-choose-us">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                         <div className="text-center max-w-2xl mx-auto mb-16">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glow-pill text-indigo-300 text-xs font-semibold mb-4 backdrop-blur-md">
@@ -674,6 +680,7 @@ const Home = () => {
                         </div>
                     </div>
                 </section>
+                </div>
             </main>
         </div>
     );
