@@ -24,7 +24,7 @@ router.get('/:userId/profile', getUserPublicProfile);
 router.get('/enrolled-courses', protect, async (req, res, next) => {
     try {
         const progress = await Progress.find({ user: req.user.id })
-            .populate('course', 'title thumbnail trainer price averageRating totalLessons totalDuration') // Added totalDuration
+            .populate('course', 'title thumbnail trainer price averageRating totalLessons totalDuration createdAt updatedAt') // Added totalDuration, createdAt, updatedAt
             .sort({ lastAccessedAt: -1 });
 
         res.status(200).json({

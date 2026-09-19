@@ -137,6 +137,7 @@ export const adminAPI = {
     getRevenueByTrainer: () => api.get('/admin/revenue/trainers'),
     createCategory: (data) => api.post('/admin/categories', data),
     getCategories: () => api.get('/admin/categories'),
+    getPublicPlatformStats: () => api.get('/admin/platform-stats'),
 };
 
 // Exam APIs

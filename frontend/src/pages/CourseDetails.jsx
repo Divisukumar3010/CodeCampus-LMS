@@ -217,9 +217,12 @@ const CourseDetailsPage = () => {
                                     <div className={`rounded-2xl shadow-2xl overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                                         <div className="relative">
                                             <img
-                                                src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
+                                                src={course.thumbnail?.url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80'}
                                                 alt={course.title}
                                                 className="w-full h-48 sm:h-56 object-cover"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80';
+                                                }}
                                             />
                                             {hasDiscount && (
                                                 <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-sm sm:text-base shadow-lg">
@@ -394,9 +397,12 @@ const CourseDetailsPage = () => {
                             <div className={`rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden sticky top-24 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                                 <div className="relative">
                                     <img
-                                        src={course.thumbnail?.url || 'https://via.placeholder.com/400x250'}
+                                        src={course.thumbnail?.url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80'}
                                         alt={course.title}
                                         className="w-full h-40 sm:h-48 object-cover"
+                                        onError={(e) => {
+                                            e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80';
+                                        }}
                                     />
                                     {hasDiscount && (
                                         <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-lg">
