@@ -142,14 +142,11 @@ const LMSLayout = ({ children }) => {
 
                     {/* Logo & Portal Identity */}
                     <Link to="/dashboard" className="flex items-center gap-2.5 group">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 p-[1px] shadow-sm group-hover:scale-105 transition-transform duration-300">
-                            <div className="w-full h-full bg-[#090e1c] rounded-[7px] flex items-center justify-center">
-                                <svg className="w-4 h-4 text-indigo-400 group-hover:text-cyan-300 transition-colors" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
-                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-                                </svg>
-                            </div>
-                        </div>
+                        <img
+                            src="/CodeCampus.png"
+                            alt="CodeCampus"
+                            className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-300"
+                        />
                         <div className="flex flex-col">
                             <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
                                 Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Campus</span>

@@ -46,7 +46,7 @@ const CourseCard = ({ course, onDelete, currentUser, isEnrolled, progressPercent
     const courseCode = `#${course._id?.slice(-6).toUpperCase() || '088508'}`;
 
     return (
-        <div className="glass-card rounded-2xl overflow-hidden flex flex-col border border-slate-800/80 hover:border-indigo-500/40 group transition-all duration-300">
+        <div className="glass-card rounded-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800/80 hover:border-indigo-500/40 group transition-all duration-300 shadow-sm hover:shadow-md">
             {/* Thumbnail Header with simulated IDE / preview header */}
             <div className="h-44 bg-[#090e1c] p-4 relative border-b border-white/[0.06] flex flex-col justify-between overflow-hidden">
                 <div className="flex items-center justify-between z-10">
@@ -112,8 +112,8 @@ const CourseCard = ({ course, onDelete, currentUser, isEnrolled, progressPercent
             {/* Content Body */}
             <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                        <span className="font-mono text-indigo-400 font-semibold">{courseCode}</span>
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
+                        <span className="font-mono text-indigo-600 dark:text-indigo-400 font-semibold">{courseCode}</span>
                         <span className="flex items-center gap-1">
                             <FiClock className="w-3.5 h-3.5 text-slate-400" />
                             {courseDurationHours} hrs
@@ -121,7 +121,7 @@ const CourseCard = ({ course, onDelete, currentUser, isEnrolled, progressPercent
                     </div>
 
                     <Link to={`/courses/${course._id}`}>
-                        <h3 className="text-base font-bold text-white line-clamp-1 hover:text-indigo-300 transition-colors">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">
                             {course.title}
                         </h3>
                     </Link>
@@ -131,31 +131,31 @@ const CourseCard = ({ course, onDelete, currentUser, isEnrolled, progressPercent
                         <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-[10px] font-bold text-white">
                             {course.trainer?.name?.charAt(0).toUpperCase() || 'P'}
                         </div>
-                        <span className="text-xs text-slate-300 font-medium truncate max-w-[120px]">
+                        <span className="text-xs text-slate-700 dark:text-slate-300 font-medium truncate max-w-[120px]">
                             {course.trainer?.name || 'Faculty Mentor'}
                         </span>
-                        <span className="text-[10px] text-cyan-300 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+                        <span className="text-[10px] text-cyan-600 dark:text-cyan-300 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
                             Verified
                         </span>
                     </div>
                 </div>
 
                 {/* Rating & Price */}
-                <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-amber-400 flex items-center">
+                        <span className="font-bold text-amber-500 dark:text-amber-400 flex items-center">
                             ★ {course.averageRating ? course.averageRating.toFixed(1) : '5.0'}
                         </span>
-                        <span className="text-slate-500">
+                        <span className="text-slate-400 dark:text-slate-500">
                             ({course.ratingsCount || course.reviews?.length || 1})
                         </span>
-                        <span className="text-slate-400 flex items-center gap-1 pl-1 text-[11px]">
-                            <FiUsers className="w-3 h-3 text-slate-500" />
+                        <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 pl-1 text-[11px]">
+                            <FiUsers className="w-3 h-3 text-slate-400" />
                             {course.enrolledCount || 124}
                         </span>
                     </div>
 
-                    <div className="text-sm font-extrabold text-white">
+                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">
                         {displayPrice > 0 ? `₹${displayPrice}` : 'Free'}
                     </div>
                 </div>

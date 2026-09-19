@@ -264,7 +264,7 @@ function MainContentRoutes() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
+      {location.pathname !== '/online-compiler' && <Footer />}
     </>
   );
 }
